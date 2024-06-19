@@ -4,7 +4,7 @@
 #include <functional>
 
 class TypeInfo {
-
+public:
     template<class T>
     static consteval void Make()
     {
@@ -19,9 +19,14 @@ class TypeInfo {
             const auto& casted_rhs = std::any_cast<std::reference_wrapper<T>>(rhs);
             casted_lhs = casted_rhs;
         };
-
+        move_constructor = [](std::any& lhs, std::any&& rhs) {
+            auto& casted_lhs = std::any_cast<std::reference_wrapper<T>>(lhs);
+            auto&& casted_rhs = std::any_cast<std::reference_wrapper<T>>(rhs);
+            casted_lhs = casted_rhs;
+        };
     }
 
+private:
     std::size_t type_size;
     std::size_t align_size;
 

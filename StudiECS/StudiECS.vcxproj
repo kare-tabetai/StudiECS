@@ -132,7 +132,9 @@
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ArchetypeInfo.h" />
     <ClInclude Include="Chunk.h" />
+    <ClInclude Include="ChunkContainer.h" />
     <ClInclude Include="SparseSet.h" />
     <ClInclude Include="Type.h" />
     <ClInclude Include="TypeIDGenerator.h" />
