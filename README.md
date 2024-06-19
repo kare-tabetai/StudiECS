@@ -1,1 +1,2 @@
 # StudiECS
+ECSの勉強のためシンプルなArchetype形式のECSを作る
