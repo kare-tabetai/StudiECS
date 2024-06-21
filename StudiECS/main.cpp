@@ -1,6 +1,7 @@
+#include"TypeInfoTest.h"
 
-
-int main() { 
-	
-	return 0;
+int main()
+{
+    TypeInfoTest();
+    return 0;
 }

@@ -139,6 +139,7 @@
     <ClInclude Include="Type.h" />
     <ClInclude Include="TypeIDGenerator.h" />
     <ClInclude Include="TypeInfo.h" />
+    <ClInclude Include="TypeInfoTest.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
