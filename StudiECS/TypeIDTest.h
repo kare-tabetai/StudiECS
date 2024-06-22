@@ -1,5 +1,6 @@
 #pragma once
 #include "TypeIDGenerator.h"
+#include <iostream>
 
 void TepeIDTest()
 {

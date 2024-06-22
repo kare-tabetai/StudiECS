@@ -1,6 +1,7 @@
-#include"TypeInfoTest.h"
-#include"TypeIDTest.h"
-#include"World.h"
+#include "HanaTest.h"
+#include "TypeIDTest.h"
+#include "TypeInfoTest.h"
+#include "World.h"
 
 int main()
 {

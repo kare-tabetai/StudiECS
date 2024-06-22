@@ -12,10 +12,9 @@ struct TypeIDCounter {
 template<typename Type>
 struct TypeIDGenerator {
 
-    static constexpr uint32 id()
+    static consteval uint32 id()
     {
-        static constexpr auto value = murmur3::to_hash(__FUNCSIG__, std::size(__FUNCSIG__));
-        return value;
+        return murmur3::to_u32hash(__FUNCSIG__, std::size(__FUNCSIG__));
     }
 
     static uint32 number() {

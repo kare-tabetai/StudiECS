@@ -36,6 +36,6 @@ constexpr uint32_t murmur3c_0(uint32_t h) { return murmur3c_1(h ^ (h >> 16)); }
 constexpr uint32_t murmur3c(uint32_t h, size_t len) { return murmur3c_0(h ^ len); }
 
 constexpr uint32_t operator"" _murmur3(char const* str, size_t len) { return murmur3c(murmur3b(str + ((len >> 2) * sizeof(uint32_t)), len & 3, murmur3a(str, len >> 2)), len); }
-constexpr uint32_t to_hash(char const* str, size_t len) { return murmur3c(murmur3b(str + ((len >> 2) * sizeof(uint32_t)), len & 3, murmur3a(str, len >> 2)), len); }
+constexpr uint32_t to_u32hash(char const* str, size_t len) { return murmur3c(murmur3b(str + ((len >> 2) * sizeof(uint32_t)), len & 3, murmur3a(str, len >> 2)), len); }
 #pragma warning(pop)
 }

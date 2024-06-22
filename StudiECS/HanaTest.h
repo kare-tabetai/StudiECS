@@ -1,23 +1,32 @@
-#pragma once
-#include <type_traits>
-#include <boost/mpl/vector.hpp>
-#include <boost/mpl/remove_if.hpp>
-#include <boost/mpl/transform.hpp>
-#include <boost/mpl/equal.hpp>
+#include "TypeIDGenerator.h"
+#include <boost/hana/equal.hpp>
+#include <boost/hana/remove_if.hpp>
+#include <boost/hana/traits.hpp>
+#include <boost/hana/tuple.hpp>
+#include <boost/hana.hpp>
 
-namespace mpl = boost::mpl;
+namespace hana = boost::hana;
 
 // 型のシーケンス
-using Types = mpl::vector<int, void, char, void, double>;
+auto Types = hana::tuple_t<int, double, void,int, char, void>;
 
 // void 型を取り除く
-using NoVoid = mpl::remove_if<Types, std::is_void<mpl::_1>>::type;
-// -> mpl::vector<int, char, double>
-
-static_assert(boost::mpl::equal<NoVoid, mpl::vector<int, char, double>>::value);
+auto NoVoid = hana::remove_if(Types, [](auto t) {
+    return hana::traits::is_void(t);
+}); // -> hana::tuple_t<int, char, double>
 
 // ポインタに変換
-using Ptrs = mpl::transform<Types, std::add_pointer<mpl::_1>>::type;
-// -> mpl::vector<int*, void*, char*, void*, double*>
+auto Ptrs = hana::transform(Types, [](auto t) {
+    return hana::traits::add_pointer(t);
+}); // -> hana::tuple_t<int*, void*, char*, void*, double*>
 
-static_assert(boost::mpl::equal<Ptrs, mpl::vector<int*, void*, char*, void*, double*>>::value);
+
+auto sort_func = [](auto a, auto b) {
+    using TypeA =decltype(a);
+    using TypeB =decltype(b);
+    constexpr uint32 a_val = TypeIDGenerator<TypeA>::id();
+    constexpr uint32 b_val = TypeIDGenerator<TypeB>::id();
+    return hana::size_c<a_val> < hana::size_c<b_val>;
+};
+auto sorted_types = hana::sort(Types, sort_func);
+
