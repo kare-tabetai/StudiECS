@@ -1,27 +1,27 @@
 #pragma once
 #include "Type.h"
+#include "MurMur3.h"
+#include <functional>
+#include <string_view>
 
-class TypeIDCounter {
-public:
-    static TypeID Generate() {
-        count++;
-        return count;
-    }
-    private:
-    static inline TypeID count = 0;
+struct TypeIDCounter {
+    static inline uint32 counter = 0;
 };
 
-template<class T>
-class TypeIDHolder {
-    static TypeID Get() {
-        if (type_id == 0) {
-            type_id = TypeIDCounter::Generate();
-        } else {
-            return type_id;
-        }
+//https://skypjack.github.io/2020-03-14-ecs-baf-part-8/
+template<typename Type>
+struct TypeIDGenerator {
+
+    static constexpr uint32 id()
+    {
+        static constexpr auto value = murmur3::to_hash(__FUNCSIG__, std::size(__FUNCSIG__));
+        return value;
     }
 
-private:
-    static inline TypeID type_id = 0;
+    static uint32 number() {
+        static const uint32 number = TypeIDCounter::counter;
+        TypeIDCounter::counter++;
+        return number;
+    }
 };
 

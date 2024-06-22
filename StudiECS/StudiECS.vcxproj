@@ -132,14 +132,20 @@
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ArchetypeBrunch.h" />
     <ClInclude Include="ArchetypeInfo.h" />
     <ClInclude Include="Chunk.h" />
     <ClInclude Include="ChunkContainer.h" />
+    <ClInclude Include="Entity.h" />
+    <ClInclude Include="MurMur3.h" />
     <ClInclude Include="SparseSet.h" />
     <ClInclude Include="Type.h" />
     <ClInclude Include="TypeIDGenerator.h" />
+    <ClInclude Include="TypeIDTest.h" />
     <ClInclude Include="TypeInfo.h" />
     <ClInclude Include="TypeInfoTest.h" />
+    <ClInclude Include="Util.h" />
+    <ClInclude Include="World.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

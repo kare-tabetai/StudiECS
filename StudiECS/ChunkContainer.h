@@ -1,8 +1,7 @@
 #pragma once
 #include"Chunk.h"
-#include<memory>
-#include<vector>
+#include <list>
 
 class ChunkContainer {
-    std::vector<std::unique_ptr<Chunk>> chunks;
+    std::list<Chunk> chunks;
 };
