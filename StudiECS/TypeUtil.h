@@ -8,15 +8,35 @@
 
 namespace TypeUtil {
 
-template <bool b>
+template<bool b>
 using BoolToType = std::integral_constant<bool, b>;
 
 template<class... Args>
-constexpr auto MakeTuple() {
+constexpr auto MakeTuple()
+{
     return boost::hana::tuple_t<Args...>;
 }
 
-constexpr auto SortTypeList(auto in_type_list)
+constexpr auto AddTypes(auto lhs, auto rhs)
+{
+    return boost::hana::concat(lhs, rhs);
+}
+
+constexpr auto RemoveTypes(auto input_type_list, auto remove_type_list)
+{
+    return boost::hana::remove_if(input_type_list, [remove_type_list](auto input_type) {
+        return boost::hana::contains(remove_type_list, input_type);
+    });
+}
+
+constexpr bool HasTypes(auto input_type_list, auto search_type_list)
+{
+    return boost::hana::all_of(search_type_list, [input_type_list](auto t) {
+        return boost::hana::contains(input_type_list, t);
+    });
+}
+
+constexpr auto SortTypeList(auto input_type_list)
 {
     auto id_sort_func = [](auto a, auto b) constexpr {
         using TypeA = decltype(a);
@@ -27,10 +47,11 @@ constexpr auto SortTypeList(auto in_type_list)
         constexpr auto b_size = boost::hana::size_c<b_val>;
         return a_size < b_size;
     };
-    return boost::hana::sort(in_type_list, id_sort_func);
+    return boost::hana::sort(input_type_list, id_sort_func);
 }
 
-constexpr bool TypeToBool(auto b) {
+constexpr bool TypeToBool(auto b)
+{
     return decltype(b)::value;
 }
 
@@ -41,16 +62,16 @@ constexpr bool IsCantCDType(auto type)
         || boost::hana::traits::is_reference(type);
 }
 
-constexpr auto SanitizeTuple(auto types)
+constexpr auto SanitizeTuple(auto test_types)
 {
-    return boost::hana::remove_if(types, [](auto t) {
+    return boost::hana::remove_if(test_types, [](auto t) {
         return BoolToType<IsCantCDType(t)>();
     });
 }
 
-constexpr auto ToPointerTuple(auto types)
+constexpr auto ToPointerTuple(auto test_types)
 {
-    return boost::hana::transform(types, [](auto t) {
+    return boost::hana::transform(test_types, [](auto t) {
         return boost::hana::traits::add_pointer(t);
     });
 }

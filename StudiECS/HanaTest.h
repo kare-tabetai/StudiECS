@@ -1,27 +1,40 @@
 #include "TypeIDGenerator.h"
 #include "TypeUtil.h"
+#include <boost/hana.hpp>
 #include <boost/hana/equal.hpp>
 #include <boost/hana/remove_if.hpp>
 #include <boost/hana/traits.hpp>
 #include <boost/hana/tuple.hpp>
-#include <boost/hana.hpp>
 
-constexpr auto types = boost::hana::tuple_t<int, double, void, int, char*, char, void, int&>;
+constexpr auto test_types = boost::hana::tuple_t<int, double, void, int, char*, char, void, int&>;
 
-constexpr auto sorted_types = TypeUtil::SortTypeList(types);
-constexpr auto ptr_types = TypeUtil::ToPointerTuple(types);
-constexpr auto sanitized_types = TypeUtil::SanitizeTuple(types);
+constexpr auto sorted_types = TypeUtil::SortTypeList(test_types);
+constexpr auto ptr_types = TypeUtil::ToPointerTuple(test_types);
+constexpr auto sanitized_types = TypeUtil::SanitizeTuple(test_types);
+constexpr auto removed_types = TypeUtil::RemoveTypes(
+    test_types,
+    boost::hana::tuple_t<void, int>);
+constexpr auto connected_types = TypeUtil::AddTypes(
+    boost::hana::tuple_t<double, void>,
+    boost::hana::tuple_t<float, void, int>);
 
 constexpr bool is_cant_void = TypeUtil::IsCantCDType(boost::hana::type_c<void>);
 constexpr bool is_cant_ptr = TypeUtil::IsCantCDType(boost::hana::type_c<int*>);
 constexpr bool is_cant_ref = TypeUtil::IsCantCDType(boost::hana::type_c<int&>);
 
-constexpr bool is_true_type = 
-TypeUtil::TypeToBool(
-	boost::hana::traits::is_void(boost::hana::type_c<void>)
-);
+constexpr bool is_true_type = TypeUtil::TypeToBool(
+    boost::hana::traits::is_void(boost::hana::type_c<void>));
 
 constexpr bool is_false_type = TypeUtil::TypeToBool(
     boost::hana::traits::is_void(boost::hana::type_c<int>));
 
 constexpr auto make_tuple_types = TypeUtil::MakeTuple<int, void, float, double, void>();
+
+constexpr bool has_not_type = TypeUtil::HasTypes(
+    test_types,
+    boost::hana::tuple_t<bool, void*>);
+
+//TODO:Ç»ÇÒÇ©ê≥ÇµÇ≠ìÆÇ¢ÇƒÇ¢Ç»Ç¢
+constexpr bool has_type = TypeUtil::HasTypes(
+    test_types,
+    boost::hana::tuple_t<bool, int&,int, void*>);
