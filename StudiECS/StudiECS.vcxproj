@@ -606,6 +606,7 @@
     <ClInclude Include="Entity.h" />
     <ClInclude Include="external\boost\hana.hpp" />
     <ClInclude Include="HanaTest.h" />
+    <ClInclude Include="TypeUtil.h" />
     <ClInclude Include="MurMur3.h" />
     <ClInclude Include="SparseSet.h" />
     <ClInclude Include="Type.h" />

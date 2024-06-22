@@ -1,32 +1,27 @@
 #include "TypeIDGenerator.h"
+#include "TypeUtil.h"
 #include <boost/hana/equal.hpp>
 #include <boost/hana/remove_if.hpp>
 #include <boost/hana/traits.hpp>
 #include <boost/hana/tuple.hpp>
 #include <boost/hana.hpp>
 
-namespace hana = boost::hana;
+constexpr auto types = boost::hana::tuple_t<int, double, void, int, char*, char, void, int&>;
 
-// 型のシーケンス
-auto Types = hana::tuple_t<int, double, void,int, char, void>;
+constexpr auto sorted_types = TypeUtil::SortTypeList(types);
+constexpr auto ptr_types = TypeUtil::ToPointerTuple(types);
+constexpr auto sanitized_types = TypeUtil::SanitizeTuple(types);
 
-// void 型を取り除く
-auto NoVoid = hana::remove_if(Types, [](auto t) {
-    return hana::traits::is_void(t);
-}); // -> hana::tuple_t<int, char, double>
+constexpr bool is_cant_void = TypeUtil::IsCantCDType(boost::hana::type_c<void>);
+constexpr bool is_cant_ptr = TypeUtil::IsCantCDType(boost::hana::type_c<int*>);
+constexpr bool is_cant_ref = TypeUtil::IsCantCDType(boost::hana::type_c<int&>);
 
-// ポインタに変換
-auto Ptrs = hana::transform(Types, [](auto t) {
-    return hana::traits::add_pointer(t);
-}); // -> hana::tuple_t<int*, void*, char*, void*, double*>
+constexpr bool is_true_type = 
+TypeUtil::TypeToBool(
+	boost::hana::traits::is_void(boost::hana::type_c<void>)
+);
 
+constexpr bool is_false_type = TypeUtil::TypeToBool(
+    boost::hana::traits::is_void(boost::hana::type_c<int>));
 
-auto sort_func = [](auto a, auto b) {
-    using TypeA =decltype(a);
-    using TypeB =decltype(b);
-    constexpr uint32 a_val = TypeIDGenerator<TypeA>::id();
-    constexpr uint32 b_val = TypeIDGenerator<TypeB>::id();
-    return hana::size_c<a_val> < hana::size_c<b_val>;
-};
-auto sorted_types = hana::sort(Types, sort_func);
-
+constexpr auto make_tuple_types = TypeUtil::MakeTuple<int, void, float, double, void>();
