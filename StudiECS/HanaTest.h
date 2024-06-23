@@ -30,11 +30,18 @@ constexpr bool is_false_type = TypeUtil::TypeToBool(
 
 constexpr auto make_tuple_types = TypeUtil::MakeTuple<int, void, float, double, void>();
 
-constexpr bool has_not_type = TypeUtil::HasTypes(
+constexpr bool has_not_any_type = TypeUtil::HasAnyTypes(
     test_types,
     boost::hana::tuple_t<bool, void*>);
 
-//TODO:Ç»ÇÒÇ©ê≥ÇµÇ≠ìÆÇ¢ÇƒÇ¢Ç»Ç¢
-constexpr bool has_type = TypeUtil::HasTypes(
-    test_types,
-    boost::hana::tuple_t<bool, int&,int, void*>);
+constexpr auto has_any_type = TypeUtil::HasAnyTypes(
+    boost::hana::tuple_t<void, int, int, void*>,
+    boost::hana::tuple_t<bool, int&, int, void*>);
+
+constexpr auto has_all_type = TypeUtil::HasAllTypes(
+    boost::hana::tuple_t<void, int, int, void*>,
+    boost::hana::tuple_t<int, void*>);
+
+constexpr auto has_not_all_type = TypeUtil::HasAllTypes(
+    boost::hana::tuple_t<void, int, int, void*>,
+    boost::hana::tuple_t<int, void*, float>);

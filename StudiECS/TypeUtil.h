@@ -29,7 +29,14 @@ constexpr auto RemoveTypes(auto input_type_list, auto remove_type_list)
     });
 }
 
-constexpr bool HasTypes(auto input_type_list, auto search_type_list)
+constexpr bool HasAnyTypes(auto input_type_list, auto search_type_list)
+{
+    return boost::hana::any_of(search_type_list, [input_type_list](auto t) {
+        return boost::hana::contains(input_type_list, t);
+    });
+}
+
+constexpr bool HasAllTypes(auto input_type_list, auto search_type_list)
 {
     return boost::hana::all_of(search_type_list, [input_type_list](auto t) {
         return boost::hana::contains(input_type_list, t);
