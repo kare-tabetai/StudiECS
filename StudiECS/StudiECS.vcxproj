@@ -601,9 +601,12 @@
     <ClInclude Include="boost\hana\zip_shortest.hpp" />
     <ClInclude Include="boost\hana\zip_shortest_with.hpp" />
     <ClInclude Include="boost\hana\zip_with.hpp" />
+    <ClInclude Include="CdIdGenerator.h" />
     <ClInclude Include="Chunk.h" />
     <ClInclude Include="ChunkContainer.h" />
     <ClInclude Include="Entity.h" />
+    <ClInclude Include="EnumUtil.h" />
+    <ClInclude Include="EnumUtilTest.h" />
     <ClInclude Include="external\boost\hana.hpp" />
     <ClInclude Include="HanaTest.h" />
     <ClInclude Include="TypeUtil.h" />
@@ -615,6 +618,7 @@
     <ClInclude Include="TypeInfo.h" />
     <ClInclude Include="TypeInfoTest.h" />
     <ClInclude Include="Util.h" />
+    <ClInclude Include="UtilTest.h" />
     <ClInclude Include="World.h" />
   </ItemGroup>
   <ItemGroup>

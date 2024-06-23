@@ -4,8 +4,21 @@
 
 class Entity {
 public:
+    static constexpr Entity Invalid()
+    {
+        Entity entity;
+        //entity.value.index_generation.flags
+        //TODO:
+        return entity;
+    }
+
     uint64 Get() const{ return value.entity; }
     uint32 Index() const { return value.index_generation.index; }
+
+    /// \brief –³Œø‚Èentity‚©‚Ç‚¤‚©
+    bool IsInvalid() const {
+
+    }
 
     bool operator==(const Entity& other) const
     {
@@ -15,7 +28,7 @@ public:
 private:
     enum class Flag : uint16 {
         None = 0,
-        Deleted = 1 << 0,
+        Invalid = 1 << 0,
     };
 
     struct IndexGeneration {

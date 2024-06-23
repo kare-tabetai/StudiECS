@@ -8,11 +8,11 @@
 
 constexpr auto test_types = boost::hana::tuple_t<int, double, void, int, char*, char, void, int&>;
 
-constexpr auto sorted_types = TypeUtil::SortTypes(test_types);
-constexpr auto ptred_types = TypeUtil::ToPointerTypes(test_types);
+constexpr auto sorted_types = TypeUtil::SortTypeList(test_types);
+constexpr auto ptred_types = TypeUtil::ToPointerTypeList(test_types);
 constexpr auto uniqued_types = TypeUtil::Unique(sorted_types);
 constexpr auto removed_cant_cd_types = TypeUtil::RemoveCantCDType(test_types);
-constexpr auto sanitized_types = TypeUtil::SanitizeTypes(test_types);
+constexpr auto sanitized_types = TypeUtil::SanitizeTypeList(test_types);
 constexpr auto removed_types = TypeUtil::RemoveTypes(
     test_types,
     boost::hana::tuple_t<void, int>);
@@ -30,7 +30,7 @@ constexpr bool is_true_type = TypeUtil::TypeToBool(
 constexpr bool is_false_type = TypeUtil::TypeToBool(
     boost::hana::traits::is_void(boost::hana::type_c<int>));
 
-constexpr auto make_tuple_types = TypeUtil::MakeTuple<int, void, float, double, void>();
+constexpr auto make_tuple_types = TypeUtil::MakeTypeList<int, void, float, double, void>();
 
 constexpr bool has_not_any_type = TypeUtil::HasAnyTypes(
     test_types,

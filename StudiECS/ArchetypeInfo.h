@@ -1,13 +1,22 @@
 #pragma once
 #include "Type.h"
-#include <unordered_map>
 #include "ArchetypeBrunch.h"
 #include "ChunkContainer.h"
+#include <unordered_map>
 
-struct ArchetypeInfo {
+class ArchetypeInfo {
+    ArchetypeInfo(ArcheTypeID _id, const Archetype& _archetype)
+        : id(_id)
+        , archetype(_archetype)
+        , chunks()
+    {
+        // TODO: ChunkContainerの初期化
+    }
+
+private:
     ArcheTypeID id;
-    Archetype cds_id;
+    Archetype archetype;
     ChunkContainer chunks;
-    ///  \brief CD追加時に移動するArchetypeへの参照
+    ///  \brief CD追加時に移動するArchetypeへの参照キャッシュ
     std::unordered_map<CdID, ArchetypeBrunch> brunch;
 };

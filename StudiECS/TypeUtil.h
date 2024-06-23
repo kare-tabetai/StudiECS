@@ -1,10 +1,6 @@
 #pragma once
 #include "TypeIDGenerator.h"
 #include <boost/hana.hpp>
-#include <boost/hana/equal.hpp>
-#include <boost/hana/remove_if.hpp>
-#include <boost/hana/traits.hpp>
-#include <boost/hana/tuple.hpp>
 
 namespace TypeUtil {
 
@@ -12,7 +8,7 @@ template<bool b>
 using BoolToType = std::integral_constant<bool, b>;
 
 template<class... Args>
-constexpr auto MakeTuple()
+constexpr auto MakeTypeList()
 {
     return boost::hana::tuple_t<Args...>;
 }
@@ -43,7 +39,7 @@ constexpr bool HasAllTypes(auto input_type_list, auto search_type_list)
     });
 }
 
-constexpr auto SortTypes(auto input_type_list)
+constexpr auto SortTypeList(auto input_type_list)
 {
     auto id_sort_func = [](auto a, auto b) constexpr {
         using TypeA = decltype(a);
@@ -60,7 +56,7 @@ constexpr auto SortTypes(auto input_type_list)
 constexpr auto Unique(auto input_type_list)
 {
     //MEMO:hana::unique‚Ísort‚µ‚Ä‚©‚ç‚Å‚Í‚È‚¢‚Æ‚¤‚Ü‚­“®‚©‚È‚¢‚ç‚µ‚¢
-    return boost::hana::unique(SortTypes(input_type_list));
+    return boost::hana::unique(SortTypeList(input_type_list));
 }
 
 constexpr bool TypeToBool(auto b)
@@ -82,12 +78,12 @@ constexpr auto RemoveCantCDType(auto input_type_list)
     });
 }
 
-constexpr auto SanitizeTypes(auto input_type_list)
+constexpr auto SanitizeTypeList(auto input_type_list)
 {
-    return SortTypes(RemoveCantCDType(Unique(input_type_list)));
+    return SortTypeList(RemoveCantCDType(Unique(input_type_list)));
 }
 
-constexpr auto ToPointerTypes(auto input_type_list)
+constexpr auto ToPointerTypeList(auto input_type_list)
 {
     return boost::hana::transform(input_type_list, [](auto t) {
         return boost::hana::traits::add_pointer(t);
