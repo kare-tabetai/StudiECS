@@ -8,9 +8,11 @@
 
 constexpr auto test_types = boost::hana::tuple_t<int, double, void, int, char*, char, void, int&>;
 
-constexpr auto sorted_types = TypeUtil::SortTypeList(test_types);
-constexpr auto ptr_types = TypeUtil::ToPointerTuple(test_types);
-constexpr auto sanitized_types = TypeUtil::SanitizeTuple(test_types);
+constexpr auto sorted_types = TypeUtil::SortTypes(test_types);
+constexpr auto ptred_types = TypeUtil::ToPointerTypes(test_types);
+constexpr auto uniqued_types = TypeUtil::Unique(sorted_types);
+constexpr auto removed_cant_cd_types = TypeUtil::RemoveCantCDType(test_types);
+constexpr auto sanitized_types = TypeUtil::SanitizeTypes(test_types);
 constexpr auto removed_types = TypeUtil::RemoveTypes(
     test_types,
     boost::hana::tuple_t<void, int>);
