@@ -39,7 +39,8 @@ constexpr bool HasAllTypes(auto input_type_list, auto search_type_list)
     });
 }
 
-constexpr auto SortTypeList(auto input_type_list)
+template<class... T>
+constexpr auto SortTypeList(boost::hana::tuple<T...> input_type_list)
 {
     auto id_sort_func = [](auto a, auto b) constexpr {
         using TypeA = decltype(a);
@@ -53,7 +54,8 @@ constexpr auto SortTypeList(auto input_type_list)
     return boost::hana::sort(input_type_list, id_sort_func);
 }
 
-constexpr auto Unique(auto input_type_list)
+template<class... T>
+constexpr auto Unique(boost::hana::tuple<T...> input_type_list)
 {
     //MEMO:hana::unique‚Ísort‚µ‚Ä‚©‚ç‚Å‚Í‚È‚¢‚Æ‚¤‚Ü‚­“®‚©‚È‚¢‚ç‚µ‚¢
     return boost::hana::unique(SortTypeList(input_type_list));
@@ -71,23 +73,36 @@ constexpr bool IsCantCDType(auto type)
         || boost::hana::traits::is_reference(type);
 }
 
-constexpr auto RemoveCantCDType(auto input_type_list)
+template<class... T>
+constexpr auto RemoveCantCDType(boost::hana::tuple<T...> input_type_list)
 {
     return boost::hana::remove_if(input_type_list, [](auto t) {
         return BoolToType<IsCantCDType(t)>();
     });
 }
 
-constexpr auto SanitizeTypeList(auto input_type_list)
+template<class... T>
+constexpr auto SanitizeTypeList(boost::hana::tuple<T...> input_type_list)
 {
     return SortTypeList(RemoveCantCDType(Unique(input_type_list)));
 }
 
-constexpr auto ToPointerTypeList(auto input_type_list)
+template<class... T>
+constexpr auto ToPointerTypeList(boost::hana::tuple<T...> input_type_list)
 {
     return boost::hana::transform(input_type_list, [](auto t) {
         return boost::hana::traits::add_pointer(t);
     });
+}
+
+constexpr uint32 GetAlignedTypeSize(uint32 type_size, uint32 align_size)
+{
+    return (type_size + align_size - 1) / align_size * align_size;
+}
+
+constexpr uint32 GetAlignedIndexPtr(uint32 type_size, uint32 align_size)
+{
+    return (type_size + align_size - 1) / align_size * align_size;
 }
 
 }

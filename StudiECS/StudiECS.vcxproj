@@ -152,6 +152,7 @@
   <ItemGroup>
     <ClInclude Include="ArchetypeBrunch.h" />
     <ClInclude Include="ArchetypeInfo.h" />
+    <ClInclude Include="ArrayView.h" />
     <ClInclude Include="boost\hana\accessors.hpp" />
     <ClInclude Include="boost\hana\adapt_adt.hpp" />
     <ClInclude Include="boost\hana\adapt_struct.hpp" />
@@ -603,6 +604,7 @@
     <ClInclude Include="boost\hana\zip_with.hpp" />
     <ClInclude Include="CdIdGenerator.h" />
     <ClInclude Include="Chunk.h" />
+    <ClInclude Include="ChunkTest.h" />
     <ClInclude Include="Entity.h" />
     <ClInclude Include="EnumUtil.h" />
     <ClInclude Include="EnumUtilTest.h" />

@@ -11,9 +11,11 @@
 class World {
 public:
     template<class... Args>
-    Entity CreateEntity() {
+    Entity CreateEntity()
+    {
         constexpr auto type_list = TypeUtil::MakeTypeList<Args...>();
         constexpr auto sanitized = TypeUtil::SanitizeTypeList(type_list);
+        TypeInfoRefContainer type_info_refs = registerTypeInfos(sanitized);
 
         return Entity::Invalid();
     }
@@ -27,8 +29,21 @@ private:
     using ArchetypeMap = std::unordered_map<ArcheTypeID, std::weak_ptr<ArchetypeInfo>>;
     std::unordered_map<CdID, ArchetypeMap> component_index;
 
+    template<typename... T>
+    TypeInfoRefContainer registerTypeInfos(const boost::hana::tuple<T...>& sanitized_type_list)
+    {
+        TypeInfoRefContainer refs;
+        boost::hana::for_each(sanitized_type_list, [this,&refs](auto t) {
+            using T = typename decltype(t)::type;
+            auto weak_tpr = getOrRegisterTypeInfo<T>();
+            refs.push_back(weak_tpr);
+        });
+        return refs;
+    }
+
     template<class CD>
-    std::weak_ptr<TypeInfo> getOrRegisterTypeInfo() {
+    std::weak_ptr<TypeInfo> getOrRegisterTypeInfo()
+    {
         constexpr CdID cd_id = CdIdGenerator<CD>::id();
         auto itr = type_infos.find(cd_id);
         if (itr != type_infos.end()) {
@@ -41,9 +56,10 @@ private:
         }
     }
 
-    ArchetypeInfo& getOrRegisterArchetypeInfo(const auto& sanitized_type_list)
+    template<typename... T>
+    ArchetypeInfo& getOrRegisterArchetypeInfo(const boost::hana::tuple<T...>& sanitized_type_list)
     {
-        ArcheTypeID arch_id = CdIdGenerator<decltype(sanitized_type_list)>::id();
+        constexpr ArcheTypeID arch_id = CdIdGenerator<decltype(sanitized_type_list)>::id();
         auto itr = archetype_infos.find(arch_id);
         if (itr != archetype_infos.end()) {
             return itr;
@@ -56,9 +72,7 @@ private:
     {
         auto archetype = Util::TypeListToArchetype(sanitized_type_list);
 
-
         auto info = std::make_shared<ArchetypeInfo>(arch_id, std::move(archetype));
-
 
         archetype_infos.try_emplace(arch_id, std::move(info));
     }

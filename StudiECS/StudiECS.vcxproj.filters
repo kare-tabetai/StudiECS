@@ -1436,6 +1436,12 @@
     <ClInclude Include="EnumUtilTest.h">
       <Filter>ヘッダー ファイル\Test</Filter>
     </ClInclude>
+    <ClInclude Include="ArrayView.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="ChunkTest.h">
+      <Filter>ヘッダー ファイル\Test</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="boost\hana\detail\struct_macros.hpp.erb">

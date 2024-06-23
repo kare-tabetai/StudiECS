@@ -2,6 +2,7 @@
 #include "TypeIDTest.h"
 #include "TypeInfoTest.h"
 #include "UtilTest.h"
+#include "ChunkTest.h"
 #include "World.h"
 
 int main()
@@ -12,5 +13,6 @@ int main()
     TypeInfoTest();
     TepeIDTest();
     UtilTest();
+    ChunkTest();
     return 0;
 }

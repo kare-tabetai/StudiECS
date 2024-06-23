@@ -5,9 +5,13 @@
 #include <unordered_map>
 
 class ArchetypeInfo {
-    ArchetypeInfo(ArcheTypeID _id, const Archetype& _archetype)
+    ArchetypeInfo(
+        ArcheTypeID _id, 
+        const Archetype& _archetype, 
+        TypeInfoRefContainer&& _type_infos_ref)
         : id(_id)
         , archetype(_archetype)
+        , type_infos_ref(_type_infos_ref)
         , chunks()
     {
     }
