@@ -1,23 +1,40 @@
 #pragma once
+#include "EnumUtil.h"
 #include "Type.h"
 #include <bitset>
 
 class Entity {
 public:
+    enum class Flag : uint16 {
+        None = 0,
+        Invalid = 1 << 0,
+    };
+
     static constexpr Entity Invalid()
     {
         Entity entity;
-        //entity.value.index_generation.flags
-        //TODO:
+        entity.value.index_generation.flags = Flag::Invalid;
         return entity;
     }
 
-    uint64 Get() const{ return value.entity; }
+    uint64 Get() const { return value.entity; }
     uint32 Index() const { return value.index_generation.index; }
 
     /// \brief –³Œø‚Èentity‚©‚Ç‚¤‚©
-    bool IsInvalid() const {
+    bool IsInvalid() const
+    {
+        return ToBool(value.index_generation.flags | Flag::Invalid);
+    }
 
+    Entity& SetFlag(Flag flag)
+    {
+        value.index_generation.flags = flag;
+        return *this;
+    }
+    Entity& AddFlag(Flag flag)
+    {
+        value.index_generation.flags |= flag;
+        return *this;
     }
 
     bool operator==(const Entity& other) const
@@ -26,11 +43,6 @@ public:
     }
 
 private:
-    enum class Flag : uint16 {
-        None = 0,
-        Invalid = 1 << 0,
-    };
-
     struct IndexGeneration {
         Flag flags = Flag::None;
         uint16 generation = 0;
