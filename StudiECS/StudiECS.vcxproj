@@ -603,7 +603,6 @@
     <ClInclude Include="boost\hana\zip_with.hpp" />
     <ClInclude Include="CdIdGenerator.h" />
     <ClInclude Include="Chunk.h" />
-    <ClInclude Include="ChunkContainer.h" />
     <ClInclude Include="Entity.h" />
     <ClInclude Include="EnumUtil.h" />
     <ClInclude Include="EnumUtilTest.h" />

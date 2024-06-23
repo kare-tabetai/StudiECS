@@ -12,18 +12,34 @@ class World {
 public:
     template<class... Args>
     Entity CreateEntity() {
-        auto type_list = TypeUtil::MakeTypeList<Args...>();
-        auto sanitized = TypeUtil::SanitizeTypeList(type_list);
+        constexpr auto type_list = TypeUtil::MakeTypeList<Args...>();
+        constexpr auto sanitized = TypeUtil::SanitizeTypeList(type_list);
 
         return Entity::Invalid();
     }
 
 private:
+    TypeInfoContainer type_infos;
+
     std::unordered_map<ArcheTypeID, std::shared_ptr<ArchetypeInfo>> archetype_infos;
     std::unordered_map<Entity, std::weak_ptr<ArchetypeInfo>> entity_to_archetype;
 
     using ArchetypeMap = std::unordered_map<ArcheTypeID, std::weak_ptr<ArchetypeInfo>>;
     std::unordered_map<CdID, ArchetypeMap> component_index;
+
+    template<class CD>
+    std::weak_ptr<TypeInfo> getOrRegisterTypeInfo() {
+        constexpr CdID cd_id = CdIdGenerator<CD>::id();
+        auto itr = type_infos.find(cd_id);
+        if (itr != type_infos.end()) {
+            return itr->second;
+        } else {
+            auto&& type_info_ptr = std::make_shared<TypeInfo>(TypeInfo::Make<CD>());
+            std::weak_ptr<TypeInfo> ret_ptr = type_info_ptr;
+            type_infos.try_emplace(cd_id, std::move(type_info_ptr));
+            return ret_ptr;
+        }
+    }
 
     ArchetypeInfo& getOrRegisterArchetypeInfo(const auto& sanitized_type_list)
     {

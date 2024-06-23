@@ -3,7 +3,9 @@
 
 void UtilTest()
 {
-    auto test_types = boost::hana::tuple_t<int, double, void, int, char*, char, void, int&>;
+    std::cout << "UtilTest\n";
 
-    Util::typeListToArchetypeImpl(test_types);
+    auto test_types = boost::hana::tuple_t<int, double, void, int, char*, char, void, int&>;
+    Archetype archetype = Util::TypeListToArchetype(test_types);
+
 }
