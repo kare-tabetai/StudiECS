@@ -31,7 +31,7 @@ namespace boost { namespace hana {
         }
     };
 
-    BOOST_HANA_INLINE_VARIABLE constexpr id_t id{};
+    BOOST_HANA_INLINE_VARIABLE constexpr id_t m_id{};
 #endif
 }} // end namespace boost::hana
 

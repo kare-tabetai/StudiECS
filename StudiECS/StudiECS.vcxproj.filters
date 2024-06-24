@@ -1442,6 +1442,9 @@
     <ClInclude Include="ChunkTest.h">
       <Filter>ヘッダー ファイル\Test</Filter>
     </ClInclude>
+    <ClInclude Include="OffsetArrayView.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="boost\hana\detail\struct_macros.hpp.erb">

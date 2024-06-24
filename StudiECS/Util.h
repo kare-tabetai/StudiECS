@@ -8,13 +8,13 @@ namespace Util {
 template<typename... T>
 Archetype TypeListToArchetype(const boost::hana::tuple<T...>& type_list)
 {
-    Archetype archetype;
-    boost::hana::for_each(type_list, [&archetype](auto t) {
+    Archetype m_archetype;
+    boost::hana::for_each(type_list, [&m_archetype](auto t) {
         using T = typename decltype(t)::type;
-        archetype.push_back(CdIdGenerator<T>::id());
+        m_archetype.push_back(CdIdGenerator<T>::m_id());
     });
 
-    return archetype;
+    return m_archetype;
 }
 
 }

@@ -47,7 +47,7 @@ namespace boost { namespace hana {
     struct flatten_impl<M, when<condition>> : default_ {
         template <typename Xs>
         static constexpr auto apply(Xs&& xs)
-        { return hana::chain(static_cast<Xs&&>(xs), hana::id); }
+        { return hana::chain(static_cast<Xs&&>(xs), hana::m_id); }
     };
 
     template <typename S>

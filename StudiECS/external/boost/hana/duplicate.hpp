@@ -41,7 +41,7 @@ namespace boost { namespace hana {
     struct duplicate_impl<W, when<condition>> : default_ {
         template <typename X>
         static constexpr decltype(auto) apply(X&& x)
-        { return hana::extend(static_cast<X&&>(x), hana::id); }
+        { return hana::extend(static_cast<X&&>(x), hana::m_id); }
     };
 }} // end namespace boost::hana
 

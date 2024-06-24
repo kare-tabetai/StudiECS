@@ -4,17 +4,17 @@
 
 template<class SanitizedTypeList>
 struct ArchetypeIDGenerator {
-    static consteval ArcheTypeID id()
+    static consteval ArcheTypeID m_id()
     {
-        return TypeIDGenerator<ArchetypeIDGenerator<SanitizedTypeList>>::id();
+        return TypeIDGenerator<ArchetypeIDGenerator<SanitizedTypeList>>::m_id();
     }
 };
 
 template<class Type>
 struct CdIdGenerator {
-    static constexpr CdID id()
+    static constexpr CdID m_id()
     {
-        return TypeIDGenerator<CdIdGenerator<Type>>::id();
+        return TypeIDGenerator<CdIdGenerator<Type>>::m_id();
     }
 
     static CdNumber number()

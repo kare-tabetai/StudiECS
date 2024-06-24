@@ -2,32 +2,31 @@
 #include "Type.h"
 #include <cassert>
 
+template<class T>
 class ArrayView {
 public:
-    constexpr ArrayView(void* _begin,
+    ArrayView(T* _begin,
         size_t _size)
         : m_begin(_begin)
-        , m_size(_size)
+        , m_size(static_cast<uint32>(_size))
     {
     }
 
-    template<class T>
-    constexpr T* At(size_t index)
+    const T& operator[](uint32 index) const
     {
         assert(index < m_size);
         T* casted_ptr = static_cast<T*>(m_begin);
-        return &casted_ptr[index];
+        return casted_ptr[index];
     }
 
-    void* At(size_t index, uint32 type_size, uint32 type_align)
+    T& operator[](uint32 index)
     {
         assert(index < m_size);
-        void* ptr = m_begin;
-        std::align(type_align, type_size, ptr, index);
-        return ptr;
+        T* casted_ptr = static_cast<T*>(m_begin);
+        return casted_ptr[index];
     }
 
 private:
     void* m_begin = nullptr;
-    size_t m_size = 0;
+    uint32 m_size = 0;
 };

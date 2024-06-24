@@ -37,8 +37,8 @@ namespace boost { namespace hana {
 
         template <typename Expr>
         static constexpr auto eval_helper(Expr&& expr, long)
-            -> decltype(static_cast<Expr&&>(expr)(hana::id))
-        { return static_cast<Expr&&>(expr)(hana::id); }
+            -> decltype(static_cast<Expr&&>(expr)(hana::m_id))
+        { return static_cast<Expr&&>(expr)(hana::m_id); }
 
         template <typename Expr>
         static constexpr auto eval_helper(Expr&&, ...) {

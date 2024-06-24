@@ -1,4 +1,5 @@
 #pragma once
+#include "Type.h"
 #include <any>
 #include <cstddef>
 #include <functional>
@@ -17,8 +18,8 @@ public:
     static TypeInfo Make()
     {
         TypeInfo ret;
-        ret.is_trivial_copyable_and_trivial_destructible
-            = std::is_trivially_copyable_v<T> && std::is_trivially_destructible_v<T>;
+        ret.is_trivial_copyable = std::is_trivially_copyable_v<T>;
+        ret.is_trivial_destructible = std::is_trivially_destructible_v<T>;
         ret.type_size = sizeof(T);
         ret.align_size = alignof(T);
 
@@ -116,14 +117,17 @@ public:
         return true;
     }
 
-    bool CanTrivialCopyAndDestruct() const { return is_trivial_copyable_and_trivial_destructible; }
+    bool CanTrivialCopy() const { return is_trivial_copyable; }
+    bool CanTrivialDestruct() const { return is_trivial_destructible; }
     bool GetTypeSize() const { return type_size; }
     bool GetAlignSize() const { return align_size; }
 
 private:
-    bool is_trivial_copyable_and_trivial_destructible = false;
+    bool is_trivial_copyable = false;
+    bool is_trivial_destructible = false;
     std::size_t type_size = -1;
     std::size_t align_size = -1;
+    TypeDataID id ;
 
     ConstructorFunc default_constructor = nullptr;
     DestructorFunc destructor = nullptr;

@@ -41,7 +41,7 @@ namespace boost { namespace hana {
     struct all_impl<S, when<condition>> : default_ {
         template <typename Xs>
         static constexpr auto apply(Xs&& xs)
-        { return hana::all_of(static_cast<Xs&&>(xs), hana::id); }
+        { return hana::all_of(static_cast<Xs&&>(xs), hana::m_id); }
     };
 }} // end namespace boost::hana
 

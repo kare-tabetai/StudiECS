@@ -21,12 +21,12 @@ public:
     }
 
 private:
-    TypeInfoContainer type_infos;
+    TypeInfoContainer m_type_infos;
 
-    std::unordered_map<ArcheTypeID, std::shared_ptr<ArchetypeInfo>> archetype_infos;
-    std::unordered_map<Entity, std::weak_ptr<ArchetypeInfo>> entity_to_archetype;
+    std::unordered_map<ArcheTypeID, OwnerPtr<ArchetypeInfo>> archetype_infos;
+    std::unordered_map<Entity, RefPtr<ArchetypeInfo>> entity_to_archetype;
 
-    using ArchetypeMap = std::unordered_map<ArcheTypeID, std::weak_ptr<ArchetypeInfo>>;
+    using ArchetypeMap = std::unordered_map<ArcheTypeID, RefPtr<ArchetypeInfo>>;
     std::unordered_map<CdID, ArchetypeMap> component_index;
 
     template<typename... T>
@@ -42,16 +42,16 @@ private:
     }
 
     template<class CD>
-    std::weak_ptr<TypeInfo> getOrRegisterTypeInfo()
+    RefPtr<TypeInfo> getOrRegisterTypeInfo()
     {
-        constexpr CdID cd_id = CdIdGenerator<CD>::id();
-        auto itr = type_infos.find(cd_id);
-        if (itr != type_infos.end()) {
+        constexpr CdID cd_id = CdIdGenerator<CD>::m_id();
+        auto itr = m_type_infos.find(cd_id);
+        if (itr != m_type_infos.end()) {
             return itr->second;
         } else {
             auto&& type_info_ptr = std::make_shared<TypeInfo>(TypeInfo::Make<CD>());
-            std::weak_ptr<TypeInfo> ret_ptr = type_info_ptr;
-            type_infos.try_emplace(cd_id, std::move(type_info_ptr));
+            RefPtr<TypeInfo> ret_ptr = type_info_ptr;
+            m_type_infos.try_emplace(cd_id, std::move(type_info_ptr));
             return ret_ptr;
         }
     }
@@ -59,7 +59,7 @@ private:
     template<typename... T>
     ArchetypeInfo& getOrRegisterArchetypeInfo(const boost::hana::tuple<T...>& sanitized_type_list)
     {
-        constexpr ArcheTypeID arch_id = CdIdGenerator<decltype(sanitized_type_list)>::id();
+        constexpr ArcheTypeID arch_id = CdIdGenerator<decltype(sanitized_type_list)>::m_id();
         auto itr = archetype_infos.find(arch_id);
         if (itr != archetype_infos.end()) {
             return itr;
@@ -70,9 +70,9 @@ private:
 
     ArchetypeInfo& registerArchetypeInfo(ArcheTypeID arch_id, const auto& sanitized_type_list)
     {
-        auto archetype = Util::TypeListToArchetype(sanitized_type_list);
+        auto m_archetype = Util::TypeListToArchetype(sanitized_type_list);
 
-        auto info = std::make_shared<ArchetypeInfo>(arch_id, std::move(archetype));
+        auto info = std::make_shared<ArchetypeInfo>(arch_id, std::move(m_archetype));
 
         archetype_infos.try_emplace(arch_id, std::move(info));
     }

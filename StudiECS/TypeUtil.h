@@ -45,8 +45,8 @@ constexpr auto SortTypeList(boost::hana::tuple<T...> input_type_list)
     auto id_sort_func = [](auto a, auto b) constexpr {
         using TypeA = decltype(a);
         using TypeB = decltype(b);
-        constexpr uint32 a_val = TypeIDGenerator<TypeA>::id();
-        constexpr uint32 b_val = TypeIDGenerator<TypeB>::id();
+        constexpr uint32 a_val = TypeIDGenerator<TypeA>::m_id();
+        constexpr uint32 b_val = TypeIDGenerator<TypeB>::m_id();
         constexpr auto a_size = boost::hana::size_c<a_val>;
         constexpr auto b_size = boost::hana::size_c<b_val>;
         return a_size < b_size;
@@ -57,7 +57,7 @@ constexpr auto SortTypeList(boost::hana::tuple<T...> input_type_list)
 template<class... T>
 constexpr auto Unique(boost::hana::tuple<T...> input_type_list)
 {
-    //MEMO:hana::unique‚Ísort‚µ‚Ä‚©‚ç‚Å‚Í‚È‚¢‚Æ‚¤‚Ü‚­“®‚©‚È‚¢‚ç‚µ‚¢
+    // MEMO:hana::unique‚Ísort‚µ‚Ä‚©‚ç‚Å‚Í‚È‚¢‚Æ‚¤‚Ü‚­“®‚©‚È‚¢‚ç‚µ‚¢
     return boost::hana::unique(SortTypeList(input_type_list));
 }
 
@@ -70,7 +70,8 @@ constexpr bool IsCantCDType(auto type)
 {
     return boost::hana::traits::is_void(type)
         || boost::hana::traits::is_pointer(type)
-        || boost::hana::traits::is_reference(type);
+        || boost::hana::traits::is_reference(type)
+        || boost::hana::traits::is_empty(type);
 }
 
 template<class... T>
@@ -93,16 +94,6 @@ constexpr auto ToPointerTypeList(boost::hana::tuple<T...> input_type_list)
     return boost::hana::transform(input_type_list, [](auto t) {
         return boost::hana::traits::add_pointer(t);
     });
-}
-
-constexpr uint32 GetAlignedTypeSize(uint32 type_size, uint32 align_size)
-{
-    return (type_size + align_size - 1) / align_size * align_size;
-}
-
-constexpr uint32 GetAlignedIndexPtr(uint32 type_size, uint32 align_size)
-{
-    return (type_size + align_size - 1) / align_size * align_size;
 }
 
 }

@@ -1,5 +1,6 @@
 #pragma once
 #include "ArrayView.h"
+#include "ArchetypeInfo.h"
 #include <array>
 
 void ChunkTest()
@@ -7,14 +8,27 @@ void ChunkTest()
     constexpr uint32 int_size = sizeof(int);
     constexpr uint32 int_align = alignof(int);
 
-    std::array<int, 1024> int_array;
+    std::array<int, 18> int_array;
     std::fill(int_array.begin(), int_array.end(), -1);
-    ArrayView view(int_array.data(), int_array.size());
-    *view.At<int>(1) = 56;
-    *view.At<int>(3) = 35;
-    int* ptr_8 = static_cast<int*>(view.At(8, int_size, int_align));
-    *ptr_8 = 7;
-    int* ptr_3 = static_cast<int*>(view.At(3, int_size, int_align));
-    *ptr_3 = 321;
+
+    ArrayView<int> int_view(int_array.data(), int_array.size());
+    int_view[1] = 56;
+    int_view[3] = 35;
+    int_view[8] = 7;
+    int_view[3] = 321;
+
+    using Bool = bool;
+    constexpr uint32 bool_size = sizeof(Bool);
+    constexpr uint32 bool_align = alignof(Bool);
+
+    std::array<Bool, 1024> bool_array;
+    std::fill(bool_array.begin(), bool_array.end(), false);
+
+    ArrayView<bool> bool_view(bool_array.data(), bool_array.size());
+    bool_view[0] = true;
+    bool_view[1023] = true;
+    bool_view[3] = true;
+    bool_view[5] = true;
+    bool_view[11] = true;
 
 }
