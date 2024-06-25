@@ -22,6 +22,9 @@
     <Filter Include="ヘッダー ファイル\external\boost">
       <UniqueIdentifier>{fa024bc6-c64a-4a33-a06b-8ebfea3ccdbd}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ヘッダー ファイル\Util">
+      <UniqueIdentifier>{f2bf4fd2-aa35-4db0-86dc-9b81f426f0bd}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -63,9 +66,6 @@
       <Filter>ヘッダー ファイル\external</Filter>
     </ClInclude>
     <ClInclude Include="Entity.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Util.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="boost\hana\accessors.hpp">
@@ -1418,20 +1418,11 @@
     <ClInclude Include="HanaTest.h">
       <Filter>ヘッダー ファイル\Test</Filter>
     </ClInclude>
-    <ClInclude Include="external\boost\hana.hpp">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="TypeUtil.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="CdIdGenerator.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="UtilTest.h">
       <Filter>ヘッダー ファイル\Test</Filter>
-    </ClInclude>
-    <ClInclude Include="EnumUtil.h">
-      <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="EnumUtilTest.h">
       <Filter>ヘッダー ファイル\Test</Filter>
@@ -1444,6 +1435,18 @@
     </ClInclude>
     <ClInclude Include="OffsetArrayView.h">
       <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="EnumUtil.h">
+      <Filter>ヘッダー ファイル\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="TypeUtil.h">
+      <Filter>ヘッダー ファイル\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="external\boost\hana.hpp">
+      <Filter>ヘッダー ファイル\external\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="Util.h">
+      <Filter>ヘッダー ファイル\Util</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
