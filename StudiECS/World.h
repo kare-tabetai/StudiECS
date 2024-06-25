@@ -16,6 +16,8 @@ public:
         constexpr auto type_list = TypeUtil::MakeTypeList<Args...>();
         constexpr auto sanitized = TypeUtil::SanitizeTypeList(type_list);
         TypeInfoRefContainer type_info_refs = registerTypeInfos(sanitized);
+        auto& arche_info = getOrRegisterArchetypeInfo(sanitized, type_info_refs);
+        
 
         return Entity::Invalid();
     }
@@ -23,57 +25,58 @@ public:
 private:
     TypeInfoContainer m_type_infos;
 
-    std::unordered_map<ArcheTypeID, OwnerPtr<ArchetypeInfo>> archetype_infos;
-    std::unordered_map<Entity, RefPtr<ArchetypeInfo>> entity_to_archetype;
+    std::vector<OwnerPtr<ArchetypeInfo>> m_archetype_infos;//m_archetype_infos[archetype_number]
+    std::unordered_map<Entity, RefPtr<ArchetypeInfo>> m_entity_to_archetype;
 
-    using ArchetypeMap = std::unordered_map<ArcheTypeID, RefPtr<ArchetypeInfo>>;
-    std::unordered_map<CdID, ArchetypeMap> component_index;
+    using ArchetypeMap = std::unordered_map<ArchetypeNumber, RefPtr<ArchetypeInfo>>;
+    std::vector<ArchetypeMap> m_component_index;//m_component_index[cd_number]
 
-    template<typename... T>
-    TypeInfoRefContainer registerTypeInfos(const boost::hana::tuple<T...>& sanitized_type_list)
+    template<class CD>
+    RefPtr<TypeInfo> getOrRegisterTypeInfo()
+    {
+        CdNumber cd_number = CdIdGenerator<CD>::number();
+        if (cd_number < m_type_infos.size()) {
+            return m_type_infos[cd_number];
+        } else {
+            assert(m_type_infos.size() == cd_number);
+            auto&& type_info_ptr = std::make_shared<TypeInfo>(TypeInfo::Make<CD>());
+            RefPtr<TypeInfo> ret_ptr = type_info_ptr;
+            m_type_infos.push_back(std::move(type_info_ptr));
+            return ret_ptr;
+        }
+    }
+    
+    template<class... T>
+    TypeInfoRefContainer registerTypeInfos(const hana_tuple<T...>& sanitized_type_list)
     {
         TypeInfoRefContainer refs;
-        boost::hana::for_each(sanitized_type_list, [this,&refs](auto t) {
+        boost::hana::for_each(sanitized_type_list, [this, &refs](auto t) {
             using T = typename decltype(t)::type;
             auto weak_tpr = getOrRegisterTypeInfo<T>();
             refs.push_back(weak_tpr);
         });
         return refs;
     }
-
-    template<class CD>
-    RefPtr<TypeInfo> getOrRegisterTypeInfo()
+    
+    template<class... T>
+    ArchetypeInfo& registerArchetypeInfo(ArcheTypeID archetype_number, const hana_tuple<T...>& sanitized_type_list, const TypeInfoRefContainer& types_ref)
     {
-        constexpr CdID cd_id = CdIdGenerator<CD>::m_id();
-        auto itr = m_type_infos.find(cd_id);
-        if (itr != m_type_infos.end()) {
-            return itr->second;
+        Archetype arche_type = Util::TypeListToArchetype(sanitized_type_list);
+        auto&& info = std::make_shared<ArchetypeInfo>(archetype_number, arche_type, types_ref);
+        m_archetype_infos.push_back(std::move(info));
+        return *m_archetype_infos.back();
+    }
+
+    template<class... T>
+    ArchetypeInfo& getOrRegisterArchetypeInfo(const hana_tuple<T...>& sanitized_type_list, const TypeInfoRefContainer& types_ref)
+    {
+        ArchetypeNumber archetype_number = ArchetypeIDGenerator<decltype(sanitized_type_list)>::number();
+        if (archetype_number < m_archetype_infos.size()) {
+            return *m_archetype_infos[archetype_number];
         } else {
-            auto&& type_info_ptr = std::make_shared<TypeInfo>(TypeInfo::Make<CD>());
-            RefPtr<TypeInfo> ret_ptr = type_info_ptr;
-            m_type_infos.try_emplace(cd_id, std::move(type_info_ptr));
-            return ret_ptr;
+            assert(m_archetype_infos.size() == archetype_number);
+            return registerArchetypeInfo(archetype_number, sanitized_type_list, types_ref);
         }
     }
 
-    template<typename... T>
-    ArchetypeInfo& getOrRegisterArchetypeInfo(const boost::hana::tuple<T...>& sanitized_type_list)
-    {
-        constexpr ArcheTypeID arch_id = CdIdGenerator<decltype(sanitized_type_list)>::m_id();
-        auto itr = archetype_infos.find(arch_id);
-        if (itr != archetype_infos.end()) {
-            return itr;
-        } else {
-            return registerArchetypeInfo(arch_id, sanitized_type_list);
-        }
-    }
-
-    ArchetypeInfo& registerArchetypeInfo(ArcheTypeID arch_id, const auto& sanitized_type_list)
-    {
-        auto m_archetype = Util::TypeListToArchetype(sanitized_type_list);
-
-        auto info = std::make_shared<ArchetypeInfo>(arch_id, std::move(m_archetype));
-
-        archetype_infos.try_emplace(arch_id, std::move(info));
-    }
 };

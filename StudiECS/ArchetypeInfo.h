@@ -3,9 +3,11 @@
 #include "Chunk.h"
 #include "OffsetArrayView.h"
 #include "Type.h"
+#include "Entity.h"
 #include <unordered_map>
 
 class ArchetypeInfo {
+public:
     ArchetypeInfo(
         ArcheTypeID _id,
         const Archetype& _archetype,
@@ -18,6 +20,12 @@ class ArchetypeInfo {
         , m_brunch()
     {
         addChunk();
+    }
+
+    Entity CreateEntity()
+    {
+        // TODO
+        return Entity::Invalid();
     }
 
 private:

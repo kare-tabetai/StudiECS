@@ -45,8 +45,8 @@ constexpr auto SortTypeList(boost::hana::tuple<T...> input_type_list)
     auto id_sort_func = [](auto a, auto b) constexpr {
         using TypeA = decltype(a);
         using TypeB = decltype(b);
-        constexpr uint32 a_val = TypeIDGenerator<TypeA>::m_id();
-        constexpr uint32 b_val = TypeIDGenerator<TypeB>::m_id();
+        constexpr uint32 a_val = TypeIDGenerator<TypeA>::id();
+        constexpr uint32 b_val = TypeIDGenerator<TypeB>::id();
         constexpr auto a_size = boost::hana::size_c<a_val>;
         constexpr auto b_size = boost::hana::size_c<b_val>;
         return a_size < b_size;
@@ -70,8 +70,7 @@ constexpr bool IsCantCDType(auto type)
 {
     return boost::hana::traits::is_void(type)
         || boost::hana::traits::is_pointer(type)
-        || boost::hana::traits::is_reference(type)
-        || boost::hana::traits::is_empty(type);
+        || boost::hana::traits::is_reference(type);
 }
 
 template<class... T>

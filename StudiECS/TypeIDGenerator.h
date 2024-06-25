@@ -12,7 +12,7 @@ struct TypeIDCounter {
 template<class Type>
 struct TypeIDGenerator {
 
-    static consteval uint32 m_id()
+    static consteval uint32 id()
     {
         // MEMO: hana::type_c<T>.hash()‚Íconstexpr‘Î‰ž‚µ‚Ä‚¢‚È‚¢‚½‚ßŽg‚¦‚È‚©‚Á‚½
         return murmur3::to_u32hash(__FUNCSIG__, std::size(__FUNCSIG__));

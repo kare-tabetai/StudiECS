@@ -1,6 +1,7 @@
 #pragma once
-#include "ArrayView.h"
 #include "ArchetypeInfo.h"
+#include "ArrayView.h"
+#include "World.h"
 #include <array>
 
 void ChunkTest()
@@ -30,5 +31,8 @@ void ChunkTest()
     bool_view[3] = true;
     bool_view[5] = true;
     bool_view[11] = true;
+
+    World world;
+    auto entity = world.CreateEntity<void, int*, int, bool>();
 
 }
