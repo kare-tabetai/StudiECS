@@ -25,6 +25,9 @@
     <Filter Include="ヘッダー ファイル\Util">
       <UniqueIdentifier>{f2bf4fd2-aa35-4db0-86dc-9b81f426f0bd}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ヘッダー ファイル\Container">
+      <UniqueIdentifier>{dfdb0f8c-e78b-4c02-870c-e504f85d4026}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -36,9 +39,6 @@
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="TypeInfo.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="SparseSet.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="Type.h">
@@ -1427,14 +1427,8 @@
     <ClInclude Include="EnumUtilTest.h">
       <Filter>ヘッダー ファイル\Test</Filter>
     </ClInclude>
-    <ClInclude Include="ArrayView.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="ChunkTest.h">
       <Filter>ヘッダー ファイル\Test</Filter>
-    </ClInclude>
-    <ClInclude Include="OffsetArrayView.h">
-      <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="EnumUtil.h">
       <Filter>ヘッダー ファイル\Util</Filter>
@@ -1447,6 +1441,18 @@
     </ClInclude>
     <ClInclude Include="Util.h">
       <Filter>ヘッダー ファイル\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="SparseSetTest.h">
+      <Filter>ヘッダー ファイル\Test</Filter>
+    </ClInclude>
+    <ClInclude Include="ArrayView.h">
+      <Filter>ヘッダー ファイル\Container</Filter>
+    </ClInclude>
+    <ClInclude Include="OffsetArrayView.h">
+      <Filter>ヘッダー ファイル\Container</Filter>
+    </ClInclude>
+    <ClInclude Include="SparseSet.h">
+      <Filter>ヘッダー ファイル\Container</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

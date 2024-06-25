@@ -2,6 +2,7 @@
 #include "Type.h"
 #include <cassert>
 
+// TODO: std::span‚É’u‚«Š·‚¦
 template<class T>
 class ArrayView {
 public:
@@ -14,9 +15,7 @@ public:
 
     const T& operator[](uint32 index) const
     {
-        assert(index < m_size);
-        T* casted_ptr = static_cast<T*>(m_begin);
-        return casted_ptr[index];
+        return const_cast<ArrayView<T>*>(this)[index];
     }
 
     T& operator[](uint32 index)
