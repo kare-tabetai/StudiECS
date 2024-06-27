@@ -27,7 +27,7 @@ constexpr auto RemoveTypes(auto input_type_list, auto remove_type_list)
 }
 
 template<class... U>
-constexpr auto IsFrontType(auto check_type,boost::hana::tuple<U...> input_type_list)
+constexpr auto IsFrontType(auto check_type, hana_tuple<U...> input_type_list)
 {
     auto front = boost::hana::front(input_type_list );
     return check_type == front;
@@ -48,7 +48,7 @@ constexpr bool HasAllTypes(auto input_type_list, auto search_type_list)
 }
 
 template<class... T>
-constexpr auto SortTypeList(boost::hana::tuple<T...> input_type_list)
+constexpr auto SortTypeList(hana_tuple<T...> input_type_list)
 {
     auto id_sort_func = [](auto a, auto b) constexpr {
         using TypeA = decltype(a);
@@ -63,7 +63,7 @@ constexpr auto SortTypeList(boost::hana::tuple<T...> input_type_list)
 }
 
 template<class... T>
-constexpr auto Unique(boost::hana::tuple<T...> input_type_list)
+constexpr auto Unique(hana_tuple<T...> input_type_list)
 {
     // MEMO:hana::unique‚Ísort‚µ‚Ä‚©‚ç‚Å‚Í‚È‚¢‚Æ‚¤‚Ü‚­“®‚©‚È‚¢‚ç‚µ‚¢
     return boost::hana::unique(SortTypeList(input_type_list));
@@ -89,14 +89,14 @@ constexpr bool IsCantCDType(auto type)
 }
 
 template<class... T>
-constexpr auto PushFronEntity(boost::hana::tuple<T...> input_type_list)
+constexpr auto PushFronEntity(hana_tuple<T...> input_type_list)
 {
     constexpr auto entity_type_list = boost::hana::tuple_t<Entity>;
     return AddTypes(entity_type_list, input_type_list);
 }
 
 template<class... T>
-constexpr auto RemoveCantCDType(boost::hana::tuple<T...> input_type_list)
+constexpr auto RemoveCantCDType(hana_tuple<T...> input_type_list)
 {
     return boost::hana::remove_if(input_type_list, [](auto t) {
         return BoolToType<IsCantCDType(t)>();
@@ -104,13 +104,13 @@ constexpr auto RemoveCantCDType(boost::hana::tuple<T...> input_type_list)
 }
 
 template<class... T>
-constexpr auto SanitizeTypeList(boost::hana::tuple<T...> input_type_list)
+constexpr auto SanitizeTypeList(hana_tuple<T...> input_type_list)
 {
     return PushFronEntity(SortTypeList(RemoveCantCDType(Unique(input_type_list))));
 }
 
 template<class... T>
-constexpr auto ToPointerTypeList(boost::hana::tuple<T...> input_type_list)
+constexpr auto ToPointerTypeList(hana_tuple<T...> input_type_list)
 {
     return boost::hana::transform(input_type_list, [](auto t) {
         return boost::hana::traits::add_pointer(t);

@@ -26,7 +26,8 @@ public:
     Entity CreateEntity()
     {
         if (m_released_entity_index != EntityIndex::Invalid()) {
-        
+            auto* entity_ptr = getEntity(m_released_entity_index);
+            m_released_entity_index = entity_ptr->Index();
         }
         return Entity::Invalid();
     }
@@ -43,10 +44,18 @@ private:
         assert(entity_index.chunk_index < m_chunks.size());
         auto& chunk = m_chunks[entity_index.chunk_index];
 
-        for (uint32 cd_index = 0; cd_index < m_type_infos.size(); cd_index++) {
+        // MEMO: Entity‚Í‰Šú‰»‚µ‚È‚¢
+        for (uint32 cd_index = 1; cd_index < m_type_infos.size(); cd_index++) {
             void* cd = chunk->At(cd_index, entity_index.index, m_type_infos[cd_index]->GetTypeSize());
             m_type_infos[cd_index]->Construct(cd);
         }
+    }
+
+    Entity* getEntity(EntityIndex entity_index)
+    {
+        assert(entity_index.chunk_index < m_chunks.size());
+        auto& chunk = m_chunks[entity_index.chunk_index];
+        return chunk->GetEntity(entity_index.index);
     }
 
     ArchetypeNumber m_number;

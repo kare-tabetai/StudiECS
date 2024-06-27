@@ -33,6 +33,6 @@ void ChunkTest()
     bool_view[11] = true;
 
     World world;
-    auto entity = world.CreateEntity<void, int*, int, bool>();
+    auto entity = world.CreateEntity<int*, int, bool>();
 
 }

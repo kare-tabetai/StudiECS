@@ -12,7 +12,7 @@ public:
     Chunk(const TypeInfoRefContainer& type_infos_ref, uint32 max_entity_count)
         : m_chunk()
         , m_max_entity_count(max_entity_count)
-        , m_cd_accessor(createCdArrayAccessor(type_infos_ref))
+        , m_cd_accessor(createCdArrayAccessor(m_chunk, m_max_entity_count,type_infos_ref))
     {
     }
 
@@ -33,14 +33,15 @@ public:
         return m_cd_accessor[cd_index].At(m_chunk.data(), entity_index, type_size);
     }
 
-    Entity* GetEntity(uint32 entity_index) {
-        return At<Entity>(0, entity_index);
+    Entity* GetEntity(uint32 index) {
+        return At<Entity>(0, index);
     }
 
     template<class CD>
     ArrayView<CD> GetArray(uint32 cd_index)
     {
         assert(cd_index < m_cd_accessor.size());
+        assert(cd_index );
 
         return m_cd_accessor[cd_index].ToArrayView<CD>(m_chunk.data(), m_max_entity_count);
     }
@@ -61,14 +62,20 @@ public:
 private:
     static constexpr size_t kChunkSize = 64 * 1024; // 64KB
 
-    std::vector<OffsetArrayView> createCdArrayAccessor(const TypeInfoRefContainer& type_infos_ref)
+    static std::vector<OffsetArrayView> createCdArrayAccessor(
+        std::array<std::byte, kChunkSize>& chunk,
+        uint32 max_entity_count,
+        const TypeInfoRefContainer& type_infos_ref)
     {
         assert(type_infos_ref.front()->GetID() == TypeIDGenerator<Entity>::id());
 
         std::vector<OffsetArrayView> array_views;
-        const std::byte* end_ptr = m_chunk.data() + m_chunk.size();
-        std::byte* ptr = m_chunk.data();
+        const std::byte* end_ptr = chunk.data() + chunk.size();
+        std::byte* ptr = chunk.data();
         for (const auto& info : type_infos_ref) {
+            if (info->IsEmptyType()) {
+                array_views.emplace_back(0);
+            }
 
             // 型情報でアラインした配列先頭位置を計算
             size_t space = end_ptr - ptr;
@@ -77,12 +84,12 @@ private:
                 std::align(info->GetAlignSize(), info->GetTypeSize(), v_ptr, space));
 
             // 配列先頭位置からのオフセットサイズを計算
-            auto offset_byte = ptr - m_chunk.data();
+            auto offset_byte = ptr - chunk.data();
 
             array_views.emplace_back(static_cast<uint32>(offset_byte));
 
             // Entityの最大数*CDのサイズ分ずらす
-            ptr += info->GetTypeSize() * m_max_entity_count;
+            ptr += info->GetTypeSize() * max_entity_count;
         }
 
         return array_views;

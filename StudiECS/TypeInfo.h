@@ -22,6 +22,7 @@ public:
         ret.m_is_trivial_destructible = std::is_trivially_destructible_v<T>;
         ret.m_type_size = sizeof(T);
         ret.m_align_size = alignof(T);
+        ret.m_is_empty_type = std::is_empty_v<T>;
         ret.m_id = TypeIDGenerator<T>::id();
 
         if constexpr (std::is_default_constructible_v<T>) {
@@ -120,13 +121,15 @@ public:
 
     bool CanTrivialCopy() const { return m_is_trivial_copyable; }
     bool CanTrivialDestruct() const { return m_is_trivial_destructible; }
+    bool IsEmptyType() const { return m_is_empty_type; }
     bool GetTypeSize() const { return m_type_size; }
     bool GetAlignSize() const { return m_align_size; }
-    bool GetID() const { return m_id; }
+    TypeDataID GetID() const { return m_id; }
 
 private:
     bool m_is_trivial_copyable = false;
     bool m_is_trivial_destructible = false;
+    bool m_is_empty_type = false;
     std::size_t m_type_size = -1;
     std::size_t m_align_size = -1;
     TypeDataID m_id ;

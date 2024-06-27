@@ -6,7 +6,7 @@
 namespace Util {
 
 template<typename... T>
-Archetype TypeListToArchetype(const boost::hana::tuple<T...>& type_list)
+Archetype TypeListToArchetype(const hana_tuple<T...>& type_list)
 {
     Archetype m_archetype;
     boost::hana::for_each(type_list, [&m_archetype](auto t) {

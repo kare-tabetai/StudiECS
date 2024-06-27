@@ -16,6 +16,7 @@ using TypeDataID = uint32;
 using CdID = TypeDataID;
 using ArcheTypeID = uint32;
 
+using WorldNumber = uint8;
 /// \brief CD‚ÌŒ^‚²‚Æ‚ÉŠ„‚èU‚ç‚ê‚é”š 0‚©‚ç‘”•ª‰ÁZ‚³‚ê‚Ä‚¢‚­
 using CdNumber = uint32;
 /// \brief ‚»‚ÌArchetype‚Å‰½”Ô–Ú‚ÌCD‚©
@@ -35,3 +36,6 @@ using Archetype = std::vector<CdNumber>;
 
 template<class... T>
 using hana_tuple = boost::hana::tuple<T...>;
+
+template<typename T>
+concept DefaultConstructible = std::is_default_constructible_v<T>;
