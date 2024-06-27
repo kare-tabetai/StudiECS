@@ -73,7 +73,7 @@ namespace boost { namespace hana {
     //!     \f$ g : B \to C \f$.
     //! The following laws must be satisfied:
     //! @code
-    //!     transform(xs, id) == xs
+    //!     transform(xs, m_id) == xs
     //!     transform(xs, compose(g, f)) == transform(transform(xs, f), g)
     //! @endcode
     //! The first line says that mapping the identity function should not do

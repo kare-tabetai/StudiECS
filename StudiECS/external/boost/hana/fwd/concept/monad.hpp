@@ -102,7 +102,7 @@ namespace boost { namespace hana {
     //! Also, this composition has an identity element, which is the identity
     //! function. This simply means that
     //! @code
-    //!     compose(f, id) == compose(id, f) == f
+    //!     compose(f, m_id) == compose(m_id, f) == f
     //! @endcode
     //!
     //! This is probably nothing new if you are reading the `Monad` laws.

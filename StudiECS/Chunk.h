@@ -1,6 +1,7 @@
 #pragma once
 #include "ArrayView.h"
 #include "OffsetArrayView.h"
+#include "ContainerTypes.h"
 #include <array>
 #include <cstddef>
 #include <memory>
@@ -10,26 +11,38 @@ class Chunk {
 public:
     Chunk(const TypeInfoRefContainer& type_infos_ref, uint32 max_entity_count)
         : m_chunk()
-        , max_entity_count(max_entity_count)
-        , cd_accessor(createCdArrayAccessor(type_infos_ref))
+        , m_max_entity_count(max_entity_count)
+        , m_cd_accessor(createCdArrayAccessor(type_infos_ref))
     {
     }
 
     template<class CD>
     CD* At(uint32 cd_index, uint32 entity_index)
     {
-        assert(cd_index < cd_accessor.size());
-        assert(entity_index < max_entity_count);
+        assert(cd_index < m_cd_accessor.size());
+        assert(entity_index < m_max_entity_count);
 
-        return cd_accessor[cd_index][entity_index];
+        return m_cd_accessor[cd_index].At<CD>(m_chunk.data(),entity_index);
+    }
+
+    void* At(uint32 cd_index, uint32 entity_index, uint32 type_size)
+    {
+        assert(cd_index < m_cd_accessor.size());
+        assert(entity_index < m_max_entity_count);
+
+        return m_cd_accessor[cd_index].At(m_chunk.data(), entity_index, type_size);
+    }
+
+    Entity* GetEntity(uint32 entity_index) {
+        return At<Entity>(0, entity_index);
     }
 
     template<class CD>
     ArrayView<CD> GetArray(uint32 cd_index)
     {
-        assert(cd_index < cd_accessor.size());
+        assert(cd_index < m_cd_accessor.size());
 
-        return cd_accessor[cd_index].ToArrayView<CD>(m_chunk.data(), max_entity_count);
+        return m_cd_accessor[cd_index].ToArrayView<CD>(m_chunk.data(), m_max_entity_count);
     }
 
     /// \brief 1chunkÇ…ä‹ÇﬂÇÁÇÍÇÈç≈ëÂÇÃentityêîÇï‘Ç∑
@@ -50,6 +63,8 @@ private:
 
     std::vector<OffsetArrayView> createCdArrayAccessor(const TypeInfoRefContainer& type_infos_ref)
     {
+        assert(type_infos_ref.front()->GetID() == TypeIDGenerator<Entity>::id());
+
         std::vector<OffsetArrayView> array_views;
         const std::byte* end_ptr = m_chunk.data() + m_chunk.size();
         std::byte* ptr = m_chunk.data();
@@ -67,13 +82,13 @@ private:
             array_views.emplace_back(static_cast<uint32>(offset_byte));
 
             // EntityÇÃç≈ëÂêî*CDÇÃÉTÉCÉYï™Ç∏ÇÁÇ∑
-            ptr += info->GetTypeSize() * max_entity_count;
+            ptr += info->GetTypeSize() * m_max_entity_count;
         }
 
         return array_views;
     }
 
     std::array<std::byte, kChunkSize> m_chunk;
-    uint32 max_entity_count = 0;
-    std::vector<OffsetArrayView> cd_accessor;
+    uint32 m_max_entity_count = 0;
+    std::vector<OffsetArrayView> m_cd_accessor;
 };

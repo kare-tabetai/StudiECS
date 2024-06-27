@@ -25,7 +25,7 @@ Distributed under the Boost Software License, Version 1.0.
 #   endif
 
 // TODO: Right now, this intrinsic is never used directly because of
-//       https://llvm.org/bugs/show_bug.cgi?id=24173
+//       https://llvm.org/bugs/show_bug.cgi?m_id=24173
 #   if __has_extension(is_constructible) && false
 #       define BOOST_HANA_TT_IS_CONSTRUCTIBLE(...) __is_constructible(__VA_ARGS__)
 #   endif

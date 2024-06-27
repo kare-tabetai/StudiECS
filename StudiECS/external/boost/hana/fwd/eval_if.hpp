@@ -49,7 +49,7 @@ namespace boost { namespace hana {
     //!
     //! What happens here is that `eval_if` will call `eval` on the selected
     //! branch. In turn, `eval` will call the selected branch either with
-    //! nothing -- for the _then_ branch -- or with `hana::id` -- for the
+    //! nothing -- for the _then_ branch -- or with `hana::m_id` -- for the
     //! _else_ branch. Hence, `_(x)` is always the same as `x`, but the
     //! compiler can't tell until the lambda has been called! Hence, the
     //! compiler has to wait before it instantiates the body of the lambda

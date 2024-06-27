@@ -10,62 +10,76 @@ class SparseSet {
 public:
     T& operator[](uint32 sparse_index)
     {
-        if (sparse_index < sparse.size()) {
-            if (sparse[sparse_index].has_value()) {
-                return dense[sparse[sparse_index].value()];
+        if (sparse_index < m_sparse.size()) {
+            if (m_sparse[sparse_index].has_value()) {
+                return m_dense[m_sparse[sparse_index].value()];
             } else {
                 return add(sparse_index);
-
             }
         } else {
-            sparse.resize(sparse_index + 1);
+            m_sparse.resize(sparse_index + 1);
             return add(sparse_index);
         }
     }
 
     const T& operator[](uint32 sparse_index) const
     {
-        assert(sparse_index < sparse.size());
-        assert(sparse[sparse_index].has_value());
-        return dense[sparse[sparse_index].value()];
+        assert(sparse_index < m_sparse.size());
+        assert(m_sparse[sparse_index].has_value());
+        return m_dense[m_sparse[sparse_index].value()];
+    }
+
+    bool Has(uint32 sparse_index) const
+    {
+        if (m_sparse.size() <= sparse_index) {
+            return false;
+        } else {
+            return m_sparse[sparse_index].has_value();
+        }
     }
 
     void Erase(uint32 sparse_index)
     {
-        assert(sparse_index < sparse.size());
-        assert(sparse[sparse_index].has_value());
+        assert(sparse_index < m_sparse.size());
+        assert(m_sparse[sparse_index].has_value());
 
-        uint32 dense_index = sparse[sparse_index].value();
-        sparse[sparse_index] = std::nullopt;
-        dense.erase(dense.begin()+dense_index);
+        uint32 dense_index = m_sparse[sparse_index].value();
+        m_sparse[sparse_index] = std::nullopt;
+        m_dense.erase(m_dense.begin() + dense_index);
 
-        for (auto& item : sparse) {
-            if (item.has_value() && dense_index <=item.value()) {
+        for (auto& item : m_sparse) {
+            if (item.has_value() && dense_index <= item.value()) {
                 item.value()--;
             }
         }
     }
 
-    void Clear() {
-        sparse.clear();
-        dense.clear();
+    void Reserve(uint32 size) {
+        m_sparse.reserve();
+        m_dense.reserve();
+    }
+
+    void Clear()
+    {
+        m_sparse.clear();
+        m_dense.clear();
     }
 
     ArrayView<T> GetArray()
     {
-        return ArrayView<T>(dense.data(), dense.size());
+        return ArrayView<T>(m_dense.data(), m_dense.size());
     }
 
 private:
     T& add(uint32 sparse_index)
     {
-        assert(!sparse[sparse_index].has_value());
+        assert(!m_sparse[sparse_index].has_value());
 
-        dense.push_back(T());
-        sparse[sparse_index] = dense.size() - 1;
-        return dense.back();
+        m_dense.push_back(T());
+        m_sparse[sparse_index] = m_dense.size() - 1;
+        return m_dense.back();
     }
 
-    std::vector<std::optional<uint32>> sparse;
-    std::vector<T> dense;
+    std::vector<std::optional<uint32>> m_sparse;
+    std::vector<T> m_dense;
 };

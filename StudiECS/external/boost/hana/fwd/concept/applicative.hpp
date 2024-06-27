@@ -47,7 +47,7 @@ namespace boost { namespace hana {
     //! 1. Identity\n
     //! For all objects `xs` of tag `F(A)`,
     //! @code
-    //!     ap(lift<F>(id), xs) == xs
+    //!     ap(lift<F>(m_id), xs) == xs
     //! @endcode
     //!
     //! 2. Composition\n

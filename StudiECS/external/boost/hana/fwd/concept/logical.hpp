@@ -142,7 +142,7 @@ namespace boost { namespace hana {
     //! conversion to `bool` as a truth value. Specifically, the minimal
     //! complete definition for those data types is
     //! @code
-    //!     eval_if(cond, then, else_) = cond ? then(id) : else(id)
+    //!     eval_if(cond, then, else_) = cond ? then(m_id) : else(m_id)
     //!     not_(cond) = static_cast<T>(cond ? false : true)
     //!     while_(pred, state, f) = equivalent to a normal while loop
     //! @endcode

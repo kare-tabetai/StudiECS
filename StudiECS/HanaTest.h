@@ -8,6 +8,8 @@
 
 constexpr auto test_types = boost::hana::tuple_t<int, double, void, int, char*, char, void, int&>;
 
+constexpr auto pushed_entity = TypeUtil::PushFronEntity(test_types);
+
 constexpr auto sorted_types = TypeUtil::SortTypeList(test_types);
 constexpr auto ptred_types = TypeUtil::ToPointerTypeList(test_types);
 constexpr auto uniqued_types = TypeUtil::Unique(sorted_types);
@@ -20,14 +22,17 @@ constexpr auto connected_types = TypeUtil::AddTypes(
     boost::hana::tuple_t<double, void>,
     boost::hana::tuple_t<float, void, int>);
 
+
+
+constexpr bool is_front_type_entity = TypeUtil::IsFrontType(boost::hana::type_c<Entity>, sanitized_types);
 constexpr bool is_cant_void = TypeUtil::IsCantCDType(boost::hana::type_c<void>);
 constexpr bool is_cant_ptr = TypeUtil::IsCantCDType(boost::hana::type_c<int*>);
 constexpr bool is_cant_ref = TypeUtil::IsCantCDType(boost::hana::type_c<int&>);
 
-constexpr bool is_true_type = TypeUtil::TypeToBool(
+constexpr bool is_true_type = TypeUtil::HanaTypeToBool(
     boost::hana::traits::is_void(boost::hana::type_c<void>));
 
-constexpr bool is_false_type = TypeUtil::TypeToBool(
+constexpr bool is_false_type = TypeUtil::HanaTypeToBool(
     boost::hana::traits::is_void(boost::hana::type_c<int>));
 
 constexpr auto make_tuple_types = TypeUtil::MakeTypeList<int, void, float, double, void>();

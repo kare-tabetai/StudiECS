@@ -1,6 +1,6 @@
 #pragma once
 #include "Type.h"
-#include "CdIdGenerator.h"
+#include "IdGenerator.h"
 #include <boost/hana.hpp>
 
 namespace Util {

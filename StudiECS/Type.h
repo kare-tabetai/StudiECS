@@ -7,14 +7,20 @@
 
 class TypeInfo;
 
+using uint8 = unsigned __int8;
 using uint16 = unsigned __int16;
 using uint32 = unsigned __int32;
 using uint64 = unsigned __int64;
+
 using TypeDataID = uint32;
 using CdID = TypeDataID;
-using CdNumber = uint32;
-using ChunkContainerIndex = uint32;
 using ArcheTypeID = uint32;
+
+/// \brief CD‚ÌŒ^‚²‚Æ‚ÉŠ„‚èU‚ç‚ê‚é”š 0‚©‚ç‘”•ª‰ÁZ‚³‚ê‚Ä‚¢‚­
+using CdNumber = uint32;
+/// \brief ‚»‚ÌArchetype‚Å‰½”Ô–Ú‚ÌCD‚©
+using CdIndex = uint8;
+/// \brief Archetype‚Ì‘g‚İ‡‚í‚¹‚²‚Æ‚ÉŠ„‚èU‚ç‚ê‚é”š 0‚©‚ç‘”•ª‰ÁZ‚³‚ê‚Ä‚¢‚­
 using ArchetypeNumber = uint32;
 
 /// \brief Š—LŒ ‚ğ‚Á‚Ä‚¨‚«‚½‚¢ƒ|ƒCƒ“ƒ^(unique_ptr‚É’u‚«Š·‚¦—\’è)
@@ -26,8 +32,6 @@ template<class T>
 using RefPtr = std::shared_ptr<T>;
 
 using Archetype = std::vector<CdNumber>;
-using TypeInfoContainer = std::vector<OwnerPtr<TypeInfo>>;
-using TypeInfoRefContainer = std::vector<RefPtr<TypeInfo>>;
 
 template<class... T>
 using hana_tuple = boost::hana::tuple<T...>;

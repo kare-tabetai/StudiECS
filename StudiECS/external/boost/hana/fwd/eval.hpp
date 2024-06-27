@@ -23,14 +23,14 @@ namespace boost { namespace hana {
     //! also be used with nullary and unary function objects. Specifically,
     //! if `expr` is not a `hana::lazy`, it is called with no arguments at
     //! all and the result of that call (`expr()`) is returned. Otherwise,
-    //! if `expr()` is ill-formed, then `expr(hana::id)` is returned instead.
+    //! if `expr()` is ill-formed, then `expr(hana::m_id)` is returned instead.
     //! If that expression is ill-formed, then a compile-time error is
     //! triggered.
     //!
     //! The reason for allowing nullary callables in `eval` is because this
     //! allows using nullary lambdas as lazy branches to `eval_if`, which
     //! is convenient. The reason for allowing unary callables and calling
-    //! them with `hana::id` is because this allows deferring the
+    //! them with `hana::m_id` is because this allows deferring the
     //! compile-time evaluation of selected expressions inside the callable.
     //! How this can be achieved is documented by `hana::eval_if`.
     //!

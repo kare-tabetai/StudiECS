@@ -3,8 +3,10 @@
 #include "Entity.h"
 #include "Type.h"
 #include "TypeUtil.h"
+#include "SparseSet.h"
 #include <memory>
 #include <unordered_map>
+#include "EntityData.h"
 
 /// \brief 一番rootになるクラスここから全部操作する
 /// \note 型IDをhashではなくて単純な加算値にしたほうがstd::vectorにできて早そうな気がする
@@ -23,11 +25,16 @@ public:
     }
 
 private:
-    TypeInfoContainer m_type_infos;
+    // \brief CD情報の実体 [CdNumber]
+    SparseSet<OwnerPtr<TypeInfo>> m_cd_infos;
 
-    std::vector<OwnerPtr<ArchetypeInfo>> m_archetype_infos;//m_archetype_infos[archetype_number]
-    std::unordered_map<Entity, RefPtr<ArchetypeInfo>> m_entity_to_archetype;
+    // \brief Archetype情報の実体 [ArchetypeNumber]
+    SparseSet<OwnerPtr<ArchetypeInfo>> m_archetype_infos; 
 
+    // \brief Entityから持っているCDを探す用の参照
+    std::unordered_map<Entity, EntityData> m_entity_datas;
+
+    // \brief CD->所属Archetype検索用の参照
     using ArchetypeMap = std::unordered_map<ArchetypeNumber, RefPtr<ArchetypeInfo>>;
     std::vector<ArchetypeMap> m_component_index;//m_component_index[cd_number]
 
@@ -35,13 +42,12 @@ private:
     RefPtr<TypeInfo> getOrRegisterTypeInfo()
     {
         CdNumber cd_number = CdIdGenerator<CD>::number();
-        if (cd_number < m_type_infos.size()) {
-            return m_type_infos[cd_number];
+        if (m_cd_infos.Has(cd_number)) {
+            return m_cd_infos[cd_number];
         } else {
-            assert(m_type_infos.size() == cd_number);
             auto&& type_info_ptr = std::make_shared<TypeInfo>(TypeInfo::Make<CD>());
             RefPtr<TypeInfo> ret_ptr = type_info_ptr;
-            m_type_infos.push_back(std::move(type_info_ptr));
+            m_cd_infos[cd_number] = std::move(type_info_ptr);
             return ret_ptr;
         }
     }
@@ -59,22 +65,23 @@ private:
     }
     
     template<class... T>
-    ArchetypeInfo& registerArchetypeInfo(ArcheTypeID archetype_number, const hana_tuple<T...>& sanitized_type_list, const TypeInfoRefContainer& types_ref)
+    ArchetypeInfo& registerArchetypeInfo(ArchetypeNumber archetype_number, const hana_tuple<T...>& sanitized_type_list, const TypeInfoRefContainer& types_ref)
     {
         Archetype arche_type = Util::TypeListToArchetype(sanitized_type_list);
         auto&& info = std::make_shared<ArchetypeInfo>(archetype_number, arche_type, types_ref);
-        m_archetype_infos.push_back(std::move(info));
-        return *m_archetype_infos.back();
+        m_archetype_infos[archetype_number] = std::move(info);
+        return *m_archetype_infos[archetype_number];
     }
 
     template<class... T>
     ArchetypeInfo& getOrRegisterArchetypeInfo(const hana_tuple<T...>& sanitized_type_list, const TypeInfoRefContainer& types_ref)
     {
+        assert(TypeUtil::IsFrontType(boost::hana::type_c<Entity>, sanitized_type_list));
+
         ArchetypeNumber archetype_number = ArchetypeIDGenerator<decltype(sanitized_type_list)>::number();
-        if (archetype_number < m_archetype_infos.size()) {
+        if (m_archetype_infos.Has(archetype_number)) {
             return *m_archetype_infos[archetype_number];
         } else {
-            assert(m_archetype_infos.size() == archetype_number);
             return registerArchetypeInfo(archetype_number, sanitized_type_list, types_ref);
         }
     }

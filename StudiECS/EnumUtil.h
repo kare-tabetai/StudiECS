@@ -2,7 +2,6 @@
 #include <utility>
 #include <type_traits>
 
-
 namespace EnumUtil {
 
 template<typename T>

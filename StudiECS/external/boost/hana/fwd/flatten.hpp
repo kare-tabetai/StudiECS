@@ -21,7 +21,7 @@ namespace boost { namespace hana {
     //! Given a monadic value wrapped into two levels of monad, `flatten`
     //! removes one such level. An implementation of `flatten` must satisfy
     //! @code
-    //!     flatten(xs) == chain(xs, id)
+    //!     flatten(xs) == chain(xs, m_id)
     //! @endcode
     //!
     //! For `Sequence`s, this simply takes a `Sequence` of `Sequence`s, and

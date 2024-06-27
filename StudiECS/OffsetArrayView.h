@@ -14,7 +14,7 @@ public:
     {
         std::byte* ptr = static_cast<std::byte*>(head_ptr);
         ptr += offset_byte;
-        T* casted_ptr = static_cast<T*>(ptr);
+        T* casted_ptr = reinterpret_cast<T*>(ptr);
         return &casted_ptr[index];
     }
 

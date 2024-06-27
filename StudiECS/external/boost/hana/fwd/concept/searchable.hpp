@@ -89,9 +89,9 @@ namespace boost { namespace hana {
     //! Additionally, if all the keys of the `Searchable` are `Logical`s,
     //! the following laws should be satisfied:
     //! @code
-    //!     any(xs)  <=> any_of(xs, id)
-    //!     all(xs)  <=> all_of(xs, id)
-    //!     none(xs) <=> none_of(xs, id)
+    //!     any(xs)  <=> any_of(xs, m_id)
+    //!     all(xs)  <=> all_of(xs, m_id)
+    //!     none(xs) <=> none_of(xs, m_id)
     //! @endcode
     //!
     //!

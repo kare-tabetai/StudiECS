@@ -1,6 +1,6 @@
 /*!
 @file
-Defines `boost::hana::id`.
+Defines `boost::hana::m_id`.
 
 Copyright Louis Dionne 2013-2022
 Distributed under the Boost Software License, Version 1.0.
@@ -18,7 +18,7 @@ namespace boost { namespace hana {
     //! The identity function -- returns its argument unchanged.
     //!
     //! ### Example
-    //! @include example/functional/id.cpp
+    //! @include example/functional/m_id.cpp
 #ifdef BOOST_HANA_DOXYGEN_INVOKED
     constexpr auto id = [](auto&& x) -> decltype(auto) {
         return forwarded(x);
