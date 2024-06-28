@@ -32,6 +32,12 @@ public:
     }
 
     EntityIndex Index() const { return m_entity_index; }
+    EntityIndex SwapIndex(EntityIndex entity_index)
+    { 
+        auto tmp = m_entity_index;
+        m_entity_index = entity_index;
+        return tmp; 
+    }
 
     /// \brief –³Œø‚Èentity‚©‚Ç‚¤‚©
     bool IsInvalid() const
@@ -47,6 +53,11 @@ public:
     Entity& AddFlag(Flag flag)
     {
         m_flags |= flag;
+        return *this;
+    }
+    Entity& RemoveFlag(Flag flag)
+    {
+        m_flags &= ~flag;
         return *this;
     }
 

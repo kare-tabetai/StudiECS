@@ -61,6 +61,12 @@ constexpr Enum& operator^=(Enum& lhs, Enum rhs)
 }
 
 template<IsEnum Enum>
+constexpr Enum operator~(Enum flag)
+{
+    return static_cast<Enum>(~ToBase(flag));
+}
+
+template<IsEnum Enum>
 constexpr bool HasAnyFlags(Enum flag, Enum check_flag)
 {
     return (flag & check_flag) != 0;

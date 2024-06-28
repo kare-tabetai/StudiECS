@@ -12,7 +12,8 @@ public:
     ArchetypeInfo(
         ArchetypeNumber _number,
         const Archetype& _archetype,
-        const TypeInfoRefContainer& _type_infos)
+        const TypeInfoRefContainer& _type_infos,
+        WorldNumber world_number)
         : m_number(_number)
         , m_archetype(_archetype)
         , m_type_infos(_type_infos)
@@ -20,22 +21,23 @@ public:
         , m_chunks()
         , m_brunch()
     {
-        addChunk();
+        addChunk(world_number);
     }
 
     Entity CreateEntity()
     {
         if (m_released_entity_index != EntityIndex::Invalid()) {
             auto* entity_ptr = getEntity(m_released_entity_index);
-            m_released_entity_index = entity_ptr->Index();
+            m_released_entity_index = entity_ptr->SwapIndex(m_released_entity_index);
+            entity_ptr->RemoveFlag(Entity::Flag::Invalid);
         }
         return Entity::Invalid();
     }
 
 private:
-    void addChunk()
+    void addChunk(WorldNumber world_number)
     {
-        auto chunk = std::make_shared<Chunk>(m_type_infos, m_max_chunk_entity_max);
+        auto chunk = std::make_shared<Chunk>(m_type_infos, m_max_chunk_entity_max, world_number);
         m_chunks.emplace_back(std::move(chunk));
     }
 

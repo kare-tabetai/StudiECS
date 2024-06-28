@@ -9,11 +9,13 @@
 /// \brief CDを保存するストレージ
 class Chunk {
 public:
-    Chunk(const TypeInfoRefContainer& type_infos_ref, uint32 max_entity_count)
+    Chunk(const TypeInfoRefContainer& type_infos_ref, uint32 max_entity_count, WorldNumber world_number)
         : m_chunk()
         , m_max_entity_count(max_entity_count)
-        , m_cd_accessor(createCdArrayAccessor(m_chunk, m_max_entity_count,type_infos_ref))
+        , m_cd_accessor(createCdArrayAccessor(m_chunk, m_max_entity_count, type_infos_ref ))
     {
+        auto entity_array = GetArray<Entity>(0);
+        //TODO: EntityのWorldNumberを設定
     }
 
     template<class CD>

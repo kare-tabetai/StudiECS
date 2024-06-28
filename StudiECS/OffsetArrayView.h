@@ -28,9 +28,9 @@ public:
 
     template<class T>
     ArrayView<T> ToArrayView(void* head_ptr, uint32 size) {
-        std::byte* byte_ptr = head_ptr;
+        std::byte* byte_ptr = static_cast<std::byte*>(head_ptr);
         byte_ptr += offset_byte;
-        auto* array_begin_ptr = static_cast<T*>(byte_ptr);
+        auto* array_begin_ptr = reinterpret_cast<T*>(byte_ptr);
 
         return ArrayView<T>(array_begin_ptr, size);
     }

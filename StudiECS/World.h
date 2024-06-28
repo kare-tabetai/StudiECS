@@ -66,7 +66,7 @@ private:
     ArchetypeInfo& registerArchetypeInfo(ArchetypeNumber archetype_number, const hana_tuple<T...>& sanitized_type_list, const TypeInfoRefContainer& types_ref)
     {
         Archetype arche_type = Util::TypeListToArchetype(sanitized_type_list);
-        auto&& info = std::make_shared<ArchetypeInfo>(archetype_number, arche_type, types_ref);
+        auto&& info = std::make_shared<ArchetypeInfo>(archetype_number, arche_type, types_ref, m_number);
         m_archetype_infos[archetype_number] = std::move(info);
         return *m_archetype_infos[archetype_number];
     }
