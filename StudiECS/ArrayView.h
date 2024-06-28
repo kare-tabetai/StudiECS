@@ -2,7 +2,8 @@
 #include "Type.h"
 #include <cassert>
 
-// TODO: std::spanに置き換え
+/// \brief 配列ビュークラス
+/// \note std::spanと違い実行時にサイズの指定ができる
 template<class T>
 class ArrayView {
 public:

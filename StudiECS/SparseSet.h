@@ -76,7 +76,7 @@ private:
         assert(!m_sparse[sparse_index].has_value());
 
         m_dense.push_back(T());
-        m_sparse[sparse_index] = m_dense.size() - 1;
+        m_sparse[sparse_index] = static_cast<uint32>(m_dense.size()) - 1;
         return m_dense.back();
     }
 
