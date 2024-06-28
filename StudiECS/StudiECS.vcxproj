@@ -602,6 +602,7 @@
     <ClInclude Include="boost\hana\zip_shortest.hpp" />
     <ClInclude Include="boost\hana\zip_shortest_with.hpp" />
     <ClInclude Include="boost\hana\zip_with.hpp" />
+    <ClInclude Include="Concept.h" />
     <ClInclude Include="Constant.h" />
     <ClInclude Include="IdGenerator.h" />
     <ClInclude Include="Chunk.h" />
@@ -627,6 +628,7 @@
     <ClInclude Include="Util.h" />
     <ClInclude Include="UtilTest.h" />
     <ClInclude Include="World.h" />
+    <ClInclude Include="WorldTest.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="boost\hana\detail\struct_macros.hpp.erb" />

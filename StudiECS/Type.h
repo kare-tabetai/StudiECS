@@ -23,6 +23,8 @@ using CdNumber = uint32;
 using CdIndex = uint8;
 /// \brief Archetypeの組み合わせごとに割り振られる数字 0から総数分加算されていく
 using ArchetypeNumber = uint32;
+/// \brief アーキタイプごとのいくつめのchunkに属するかのindex
+using ChunkIndex = uint16;
 
 /// \brief 所有権を持っておきたいポインタ(unique_ptrに置き換え予定)
 template<class T>
@@ -34,8 +36,8 @@ using RefPtr = std::shared_ptr<T>;
 
 using Archetype = std::vector<CdNumber>;
 
+template<class T>
+using ToUnderlying = std::underlying_type_t<T>;
+
 template<class... T>
 using hana_tuple = boost::hana::tuple<T...>;
-
-template<typename T>
-concept DefaultConstructible = std::is_default_constructible_v<T>;

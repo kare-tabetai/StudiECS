@@ -10,34 +10,42 @@
 class ArchetypeInfo {
 public:
     ArchetypeInfo(
-        ArchetypeNumber _number,
-        const Archetype& _archetype,
-        const TypeInfoRefContainer& _type_infos,
+        ArchetypeNumber archetype_number,
+        const Archetype& archetype,
+        const TypeInfoRefContainer& type_infos,
         WorldNumber world_number)
-        : m_number(_number)
-        , m_archetype(_archetype)
-        , m_type_infos(_type_infos)
-        , m_max_chunk_entity_max(Chunk::CalcMaxEntityCount(_type_infos))
+        : m_world_number(world_number)
+        , m_archetype_number(archetype_number)
+        , m_archetype(archetype)
+        , m_released_entity_index(world_number, archetype_number,0,0)
+        , m_type_infos(type_infos)
+        , m_max_chunk_entity_max(Chunk::CalcMaxEntityCount(type_infos))
         , m_chunks()
         , m_brunch()
     {
-        addChunk(world_number);
+        addChunk();
     }
 
     Entity CreateEntity()
     {
-        if (m_released_entity_index != EntityIndex::Invalid()) {
-            auto* entity_ptr = getEntity(m_released_entity_index);
-            m_released_entity_index = entity_ptr->SwapIndex(m_released_entity_index);
-            entity_ptr->RemoveFlag(Entity::Flag::Invalid);
-        }
-        return Entity::Invalid();
+        assert(m_released_entity_index != EntityIndex::Invalid());
+        auto* entity_ptr = getEntity(m_released_entity_index);
+        m_released_entity_index = entity_ptr->SwapIndex(m_released_entity_index);
+        entity_ptr->RemoveFlag(Entity::Flag::Invalid);
+
+        construct(entity_ptr->GetIndex());
+        return *entity_ptr;
     }
 
 private:
-    void addChunk(WorldNumber world_number)
+    void addChunk()
     {
-        auto chunk = std::make_shared<Chunk>(m_type_infos, m_max_chunk_entity_max, world_number);
+        auto chunk = std::make_shared<Chunk>(
+            m_type_infos, 
+            m_max_chunk_entity_max,
+            m_world_number,
+            m_archetype_number,
+            static_cast<ChunkIndex>(m_chunks.size()));
         m_chunks.emplace_back(std::move(chunk));
     }
 
@@ -60,7 +68,8 @@ private:
         return chunk->GetEntity(entity_index.index);
     }
 
-    ArchetypeNumber m_number;
+    WorldNumber m_world_number;
+    ArchetypeNumber m_archetype_number;
     Archetype m_archetype;
 
     /// \brief ‹ó‚«entity‚Ö‚Ìindex

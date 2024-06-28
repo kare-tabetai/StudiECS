@@ -27,10 +27,10 @@ constexpr auto RemoveTypes(auto input_type_list, auto remove_type_list)
 }
 
 template<class... U>
-constexpr auto IsFrontType(auto check_type, hana_tuple<U...> input_type_list)
+constexpr bool IsFrontType(auto check_type, hana_tuple<U...> input_type_list)
 {
     auto front = boost::hana::front(input_type_list );
-    return check_type == front;
+    return decltype(check_type == front)::value;
 }
 
 constexpr bool HasAnyTypes(auto input_type_list, auto search_type_list)

@@ -40,7 +40,7 @@ void TepeIDTest()
     std::cout << "int&:" << TypeIDGenerator<int&>::number() << "\n";
 
     constexpr auto int_type_list = TypeUtil::MakeTypeList<int&,int,int*>();
-    constexpr auto CdId_int_type_list = CdIdGenerator<decltype(int_type_list)>::id();
-    std::cout << "CdNumber_int_type_list:" << CdIdGenerator<decltype(int_type_list)>::number() << "\n";
+    //constexpr auto CdId_int_type_list = CdIdGenerator<decltype(int_type_list)>::id();
+    std::cout << "CdNumber_int_type_list:" << CdIdGenerator<float>::number() << "\n";
     std::cout << "TypeID_int_type_list:" << TypeIDGenerator<decltype(int_type_list)>::number() << "\n";
 }

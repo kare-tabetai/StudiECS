@@ -5,13 +5,13 @@
 
 namespace Util {
 
-template<typename... T>
+template<CdOrEntityConcept... T>
 Archetype TypeListToArchetype(const hana_tuple<T...>& type_list)
 {
     Archetype m_archetype;
     boost::hana::for_each(type_list, [&m_archetype](auto t) {
         using T = typename decltype(t)::type;
-        m_archetype.push_back(CdIdGenerator<T>::id());
+        m_archetype.push_back(TypeIDGenerator<T>::id());
     });
 
     return m_archetype;

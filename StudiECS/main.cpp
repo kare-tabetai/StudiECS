@@ -3,18 +3,17 @@
 #include "TypeInfoTest.h"
 #include "UtilTest.h"
 #include "ChunkTest.h"
-#include "World.h"
 #include "SparseSetTest.h"
+#include "WorldTest.h"
 
 int main()
 {
-    World world;
-    //Entity entity = world.CreateEntity<int, float, void, int*, double&>();
 
     TypeInfoTest();
     TepeIDTest();
     UtilTest();
     //ChunkTest();
     SparseSetTest();
+    WorldTest();
     return 0;
 }

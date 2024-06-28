@@ -1,5 +1,6 @@
 #pragma once
 #include "Type.h"
+#include "Concept.h"
 #include "TypeIDGenerator.h"
 
 struct ArchetypeIdCounter {
@@ -25,13 +26,8 @@ struct CdIdCounter {
     static inline uint32 counter = 0;
 };
 
-template<class CD>
+template<CdOrEntityConcept CD>
 struct CdIdGenerator {
-    static constexpr CdID id()
-    {
-        return TypeIDGenerator<CdIdGenerator<CD>>::id();
-    }
-
     static CdNumber number()
     {
         static const uint32 number = CdIdCounter::counter;

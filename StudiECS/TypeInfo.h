@@ -1,5 +1,6 @@
 #pragma once
 #include "Type.h"
+#include "IdGenerator.h"
 #include <any>
 #include <cstddef>
 #include <functional>

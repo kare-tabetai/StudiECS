@@ -26,6 +26,13 @@ public:
         return casted_ptr[index];
     }
 
+    uint32 size() const {
+        return m_size;
+    }
+
+    T* begin() { return static_cast<T*>(m_begin); }
+    T* end() { return begin() + size(); }
+
 private:
     void* m_begin = nullptr;
     uint32 m_size = 0;

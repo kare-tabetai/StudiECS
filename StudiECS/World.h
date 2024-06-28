@@ -6,6 +6,7 @@
 #include "SparseSet.h"
 #include "EntityData.h"
 #include "Constant.h"
+#include "Concept.h"
 #include <memory>
 #include <unordered_map>
 
@@ -19,7 +20,7 @@ public:
         assert(s_counter != kUint8Max);
     }
 
-    template<DefaultConstructible... Args>
+    template<CdConcept... Args>
     Entity CreateEntity()
     {
         constexpr auto type_list = TypeUtil::MakeTypeList<Args...>();
@@ -32,11 +33,11 @@ public:
     }
 
 private:
-    // \brief CD->所属Archetype検索用の参照
+    // \brief CdOrEntity->所属Archetype検索用の参照
     using ArchetypeMap = std::unordered_map<ArchetypeNumber, RefPtr<ArchetypeInfo>>;
     std::vector<ArchetypeMap> m_component_index; // m_component_index[cd_number]
 
-    template<class CD>
+    template<CdOrEntityConcept CD>
     RefPtr<TypeInfo> getOrRegisterTypeInfo()
     {
         CdNumber cd_number = CdIdGenerator<CD>::number();
@@ -50,7 +51,7 @@ private:
         }
     }
 
-    template<class... T>
+    template<CdOrEntityConcept... T>
     TypeInfoRefContainer registerTypeInfos(const hana_tuple<T...>& sanitized_type_list)
     {
         TypeInfoRefContainer refs;
@@ -62,7 +63,7 @@ private:
         return refs;
     }
 
-    template<class... T>
+    template<CdOrEntityConcept... T>
     ArchetypeInfo& registerArchetypeInfo(ArchetypeNumber archetype_number, const hana_tuple<T...>& sanitized_type_list, const TypeInfoRefContainer& types_ref)
     {
         Archetype arche_type = Util::TypeListToArchetype(sanitized_type_list);
@@ -71,7 +72,7 @@ private:
         return *m_archetype_infos[archetype_number];
     }
 
-    template<class... T>
+    template<CdOrEntityConcept... T>
     ArchetypeInfo& getOrRegisterArchetypeInfo(const hana_tuple<T...>& sanitized_type_list, const TypeInfoRefContainer& types_ref)
     {
         assert(TypeUtil::IsFrontType(boost::hana::type_c<Entity>, sanitized_type_list));

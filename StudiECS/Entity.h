@@ -19,9 +19,18 @@ public:
     };
 
     Entity() = default;
-    
-    void Release() {
-        assert(IsInvalid());
+
+    Entity(EntityIndex entity_index)
+        : m_entity_index(entity_index)
+        , m_flags(Flag::Invalid)
+        , m_generation(0)
+    {
+    }
+
+    void Release()
+    {
+        AddFlag(Flag::Invalid);
+        m_generation++;
     }
 
     static constexpr Entity Invalid()
@@ -31,7 +40,8 @@ public:
         return entity;
     }
 
-    EntityIndex Index() const { return m_entity_index; }
+    EntityIndex GetIndex() const { return m_entity_index; }
+    /// \briefˆø”‚Ìindex‚ğm_entity_index‚Éİ’è‚µ‚ÄA‚à‚Æ‚Ìm_entity_index‚ğ•Ô‚·
     EntityIndex SwapIndex(EntityIndex entity_index)
     { 
         auto tmp = m_entity_index;
@@ -64,13 +74,11 @@ public:
     bool operator==(const Entity& other) const
     {
         return m_entity_index == other.m_entity_index 
-            && m_world_number == other.m_world_number
             && m_generation == other.m_generation;
     }
 
 private:
-    EntityIndex m_entity_index;
-    WorldNumber m_world_number = 0;
+    EntityIndex m_entity_index = {};
     Flag m_flags = Flag::None;
     uint16 m_generation = 0;
 };
@@ -83,7 +91,7 @@ struct hash<Entity> {
         auto h0 = std::hash<uint16>()(entity.m_entity_index.index);
         auto h1 = std::hash<uint16>()(entity.m_entity_index.chunk_index);
         auto h2 = std::hash<uint32>()(entity.m_entity_index.archetype_number);
-        auto h3 = std::hash<uint8>()(entity.m_world_number);
+        auto h3 = std::hash<uint8>()(entity.m_entity_index.world_number);
         auto h4 = std::hash<uint16>()(entity.m_generation);
         return h0 ^ (h1 << 1) ^ (h2 << 2) ^ (h3 << 3) ^ (h4 << 4);
     }
