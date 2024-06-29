@@ -49,7 +49,16 @@ public:
     {
         assert(cd_index < m_cd_accessor.size());
 
-        return m_cd_accessor[cd_index].ToArrayView<CD>(m_strage.data(), m_max_entity_count);
+        auto array_view = m_cd_accessor[cd_index].ToArrayView<CD>(
+            m_strage.data(), 
+            m_max_entity_count
+        );
+
+        assert(Util::IsInRange(array_view.begin(), m_strage.data(), &m_strage.back() + 1));
+        assert(Util::IsInRange(array_view.end(), m_strage.data(), &m_strage.back() + 1));
+
+
+        return array_view;
     }
 
     /// \brief 1chunk‚ÉŠÜ‚ß‚ç‚ê‚éÅ‘å‚Ìentity”‚ğ•Ô‚·
@@ -97,7 +106,8 @@ private:
             array_views.emplace_back(static_cast<uint32>(offset_byte));
 
             // Entity‚ÌÅ‘å”*CD‚ÌƒTƒCƒY•ª‚¸‚ç‚·
-            ptr += info->GetTypeSize() * max_entity_count;
+            auto array_byte_size = info->GetTypeSize() * max_entity_count;
+            ptr += array_byte_size;
             assert(Util::IsInRange(ptr, strage.data(), &strage.back() + 1));
         }
 

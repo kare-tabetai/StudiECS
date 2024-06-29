@@ -22,18 +22,17 @@ public:
     T& operator[](uint32 index)
     {
         assert(index < m_size);
-        T* casted_ptr = static_cast<T*>(m_begin);
-        return casted_ptr[index];
+        return m_begin[index];
     }
 
     uint32 size() const {
         return m_size;
     }
 
-    T* begin() { return static_cast<T*>(m_begin); }
+    T* begin() { return m_begin; }
     T* end() { return begin() + size(); }
 
 private:
-    void* m_begin = nullptr;
+    T* m_begin = nullptr;
     uint32 m_size = 0;
 };

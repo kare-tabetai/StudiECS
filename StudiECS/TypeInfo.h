@@ -123,8 +123,8 @@ public:
     bool CanTrivialCopy() const { return m_is_trivial_copyable; }
     bool CanTrivialDestruct() const { return m_is_trivial_destructible; }
     bool IsEmptyType() const { return m_is_empty_type; }
-    bool GetTypeSize() const { return m_type_size; }
-    bool GetAlignSize() const { return m_align_size; }
+    std::size_t GetTypeSize() const { return m_type_size; }
+    std::size_t GetAlignSize() const { return m_align_size; }
     TypeDataID GetID() const { return m_id; }
 
 private:
