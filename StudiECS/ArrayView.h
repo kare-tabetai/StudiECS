@@ -8,9 +8,9 @@ template<class T>
 class ArrayView {
 public:
     ArrayView(T* _begin,
-        size_t _size)
+        uint32 _size)
         : m_begin(_begin)
-        , m_size(static_cast<uint32>(_size))
+        , m_size(_size)
     {
     }
 

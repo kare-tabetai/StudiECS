@@ -4,7 +4,7 @@
 
 class OffsetArrayView {
 public:
-    OffsetArrayView(uint32 _offset_byte)
+    constexpr OffsetArrayView(uint32 _offset_byte)
         : offset_byte(_offset_byte)
     {
     }
@@ -34,6 +34,8 @@ public:
 
         return ArrayView<T>(array_begin_ptr, size);
     }
+
+    constexpr uint32 GetOffsetByte() const { return offset_byte; }
 
 private:
     uint32 offset_byte = 0;

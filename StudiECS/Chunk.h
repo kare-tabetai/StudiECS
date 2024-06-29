@@ -69,33 +69,36 @@ private:
     static constexpr size_t kChunkSize = 64 * 1024; // 64KB
 
     static std::vector<OffsetArrayView> createCdArrayAccessor(
-        std::array<std::byte, kChunkSize>& chunk,
+        std::array<std::byte, kChunkSize>& strage,
         uint32 max_entity_count,
         const TypeInfoRefContainer& type_infos_ref)
     {
         assert(type_infos_ref.front()->GetID() == TypeIDGenerator<Entity>::id());
 
         std::vector<OffsetArrayView> array_views;
-        const std::byte* end_ptr = chunk.data() + chunk.size();
-        std::byte* ptr = chunk.data();
+        const std::byte* end_ptr = strage.data() + strage.size();
+
+        std::byte* ptr = strage.data();
         for (const auto& info : type_infos_ref) {
             if (info->IsEmptyType()) {
                 array_views.emplace_back(0);
             }
 
+            size_t space = end_ptr - ptr;//残りのスペース
+            void* tmp = ptr;
             // 型情報でアラインした配列先頭位置を計算
-            size_t space = end_ptr - ptr;
-            void* v_ptr = ptr;
-            ptr = static_cast<std::byte*>(
-                std::align(info->GetAlignSize(), info->GetTypeSize(), v_ptr, space));
+            std::align(info->GetAlignSize(), info->GetTypeSize(), tmp, space);
+            ptr = static_cast<std::byte*>(tmp);
 
             // 配列先頭位置からのオフセットサイズを計算
-            auto offset_byte = ptr - chunk.data();
+            auto offset_byte = ptr - strage.data();
+            assert(strage.data() + offset_byte <= end_ptr);
 
             array_views.emplace_back(static_cast<uint32>(offset_byte));
 
             // Entityの最大数*CDのサイズ分ずらす
             ptr += info->GetTypeSize() * max_entity_count;
+            assert(Util::IsInRange(ptr, strage.data(), &strage.back() + 1));
         }
 
         return array_views;
@@ -108,6 +111,8 @@ private:
     {
         auto entity_array = GetArray<Entity>(0);
         for (uint32 i = 0; i < entity_array.size();++i) {
+            assert(Util::IsInRange(&entity_array[i], m_strage.data(), &m_strage.back() + 1));
+
             EntityIndex entity_index;
             entity_index.world_number = world_number;
             entity_index.archetype_number = archetype_number;

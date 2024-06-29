@@ -17,4 +17,9 @@ Archetype TypeListToArchetype(const hana_tuple<T...>& type_list)
     return m_archetype;
 }
 
+/// \brief start <= address && address < end‚È‚çtrue
+bool IsInRange(const void* address, void* start, void* end) {
+    return start <= address && address < end;
+}
+
 }
