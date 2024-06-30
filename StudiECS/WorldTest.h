@@ -16,6 +16,13 @@ class TestClass0 {
     bool d;
 };
 
+class TestClass1 {
+    bool d;
+    int* a;
+    long long* c;
+    double b;
+};
+
 void WorldTest()
 {
     World world;
@@ -26,6 +33,12 @@ void WorldTest()
     Entity entity_TestClass0_0 = world.CreateEntity<int, TestClass0>();
     Entity entity_FixedClass_1 = world.CreateEntity<int, FixedClass>();
     Entity entity_TestClass0_1 = world.CreateEntity<int, TestClass0>();
-    //Entity entity = world.CreateEntity<int, float>();
+    Entity entity_TestClass1_0 = world.CreateEntity<TestClass1, int>();
+    Entity entity_TestClass1_1 = world.CreateEntity<int, TestClass1>();
+    Entity entity_TestClass1_2 = world.CreateEntity<float, int, TestClass1>();
+    Entity entity_TestClass1_3 = world.CreateEntity<float, int, TestClass1>();
+    Entity entity_TestClass1_4 = world.CreateEntity<float, int, double, TestClass1>();
+    Entity entity_TestClass1_5 = world.CreateEntity<float, int, TestClass1>();
+    // Entity entity = world.CreateEntity<int, float>();
 
  }

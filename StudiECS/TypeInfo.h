@@ -18,6 +18,11 @@ public:
     static TypeInfo Make()
     {
         TypeInfo ret;
+
+#if _DEBUG
+        ret.m_type_name = TypeIDGenerator<T>::type_name();
+#endif // DEBUG
+
         ret.m_is_trivial_copyable = std::is_trivially_copyable_v<T>;
         ret.m_is_trivial_destructible = std::is_trivially_destructible_v<T>;
         ret.m_type_size = sizeof(T);
@@ -69,7 +74,11 @@ public:
         return ret;
     }
 
-    inline bool Construct(void* strage) const
+#if _DEBUG
+    std::string GetTypeName() const { return m_type_name; }
+#endif // DEBUG
+
+    bool Construct(void* strage) const
     {
         if (!m_default_constructor) {
             return false;
@@ -78,12 +87,12 @@ public:
         return true;
     }
 
-    inline void Destruct(void* strage) const
+    void Destruct(void* strage) const
     {
         m_destructor(strage);
     }
 
-    inline bool CopyConstruct(const void* source, void* dest) const
+    bool CopyConstruct(const void* source, void* dest) const
     {
         if (!m_copy_constructor) {
             return false;
@@ -92,7 +101,7 @@ public:
         return true;
     }
 
-    inline bool MoveConstruct(void* source, void* dest) const
+    bool MoveConstruct(void* source, void* dest) const
     {
         if (!m_move_constructor) {
             return false;
@@ -101,7 +110,7 @@ public:
         return true;
     }
 
-    inline bool CopyAsign(const void* source, void* dest) const
+    bool CopyAsign(const void* source, void* dest) const
     {
         if (!m_copy_asign) {
             return false;
@@ -110,7 +119,7 @@ public:
         return true;
     }
 
-    inline bool MoveAsign(void* source, void* dest) const
+    bool MoveAsign(void* source, void* dest) const
     {
         if (!m_move_asign) {
             return false;
@@ -127,12 +136,16 @@ public:
     TypeDataID GetID() const { return m_id; }
 
 private:
+#if _DEBUG
+    std::string m_type_name = "";
+#endif // DEBUG
+
     bool m_is_trivial_copyable = false;
     bool m_is_trivial_destructible = false;
     bool m_is_empty_type = false;
     std::size_t m_type_size = std::numeric_limits<std::size_t>::max();
     std::size_t m_align_size = std::numeric_limits<std::size_t>::max();
-    TypeDataID m_id  = kUint32Max;
+    TypeDataID m_id = kUint32Max;
 
     ConstructorFunc m_default_constructor = nullptr;
     DestructorFunc m_destructor = nullptr;

@@ -1,44 +1,49 @@
 #pragma once
 #include "TypeIDGenerator.h"
-#include "IdGenerator.h"
-#include "TypeUtil.h"
 #include <iostream>
+#include <tuple>
 
 void TepeIDTest()
 {
-    //std::cout << "id"
-    //          << "\n";
-    //std::cout << "int:" << TypeIDGenerator<int>::id() << "\n";
-    //std::cout << "int:" << TypeIDGenerator<int>::id() << "\n";
-    //std::cout << "float:" << TypeIDGenerator<float>::id() << "\n";
-    //std::cout << "std::vector<float>:" << TypeIDGenerator<std::vector<float>>::id() << "\n";
-    //std::cout << "std::tuple<float, int>:" << TypeIDGenerator<std::tuple<float, int>>::id() << "\n";
-    //std::cout << "std::tuple<float, int>:" << TypeIDGenerator<std::tuple<float, int>>::id() << "\n";
-    //std::cout << "std::tuple<int, float>:" << TypeIDGenerator<std::tuple<int, float>>::id() << "\n";
-    //std::cout << "int:" << TypeIDGenerator<int>::id() << "\n";
-    //std::cout << "int*:" << TypeIDGenerator<int*>::id() << "\n";
-    //std::cout << "int*:" << TypeIDGenerator<int*>::id() << "\n";
-    //std::cout << "int&:" << TypeIDGenerator<int&>::id() << "\n";
-    //std::cout << "int&:" << TypeIDGenerator<int&>::id() << "\n";
-    //std::cout << "\n";
+    // std::cout << "id"
+    //           << "\n";
+    // std::cout << "int:" << TypeIDGenerator<int>::id() << "\n";
+    // std::cout << "int:" << TypeIDGenerator<int>::id() << "\n";
+    // std::cout << "float:" << TypeIDGenerator<float>::id() << "\n";
+    // std::cout << "std::vector<float>:" << TypeIDGenerator<std::vector<float>>::id() << "\n";
+    // std::cout << "std::tuple<float, int>:" << TypeIDGenerator<std::tuple<float, int>>::id() << "\n";
+    // std::cout << "std::tuple<float, int>:" << TypeIDGenerator<std::tuple<float, int>>::id() << "\n";
+    // std::cout << "std::tuple<int, float>:" << TypeIDGenerator<std::tuple<int, float>>::id() << "\n";
+    // std::cout << "int:" << TypeIDGenerator<int>::id() << "\n";
+    // std::cout << "int*:" << TypeIDGenerator<int*>::id() << "\n";
+    // std::cout << "int*:" << TypeIDGenerator<int*>::id() << "\n";
+    // std::cout << "int&:" << TypeIDGenerator<int&>::id() << "\n";
+    // std::cout << "int&:" << TypeIDGenerator<int&>::id() << "\n";
+    // std::cout << "\n";
 
-    //std::cout << "number"
-    //          << "\n";
-    //std::cout << "int:" << TypeIDGenerator<int>::number() << "\n";
-    //std::cout << "int:" << TypeIDGenerator<int>::number() << "\n";
-    //std::cout << "float:" << TypeIDGenerator<float>::number() << "\n";
-    //std::cout << "std::vector<float>:" << TypeIDGenerator<std::vector<float>>::number() << "\n";
-    //std::cout << "std::tuple<float, int>:" << TypeIDGenerator<std::tuple<float, int>>::number() << "\n";
-    //std::cout << "std::tuple<float, int>:" << TypeIDGenerator<std::tuple<float, int>>::number() << "\n";
-    //std::cout << "std::tuple<int, float>:" << TypeIDGenerator<std::tuple<int, float>>::number() << "\n";
-    //std::cout << "int:" << TypeIDGenerator<int>::number() << "\n";
-    //std::cout << "int*:" << TypeIDGenerator<int*>::number() << "\n";
-    //std::cout << "int*:" << TypeIDGenerator<int*>::number() << "\n";
-    //std::cout << "int&:" << TypeIDGenerator<int&>::number() << "\n";
-    //std::cout << "int&:" << TypeIDGenerator<int&>::number() << "\n";
+    // std::cout << "number"
+    //           << "\n";
+    // std::cout << "int:" << TypeIDGenerator<int>::number() << "\n";
+    // std::cout << "int:" << TypeIDGenerator<int>::number() << "\n";
+    // std::cout << "float:" << TypeIDGenerator<float>::number() << "\n";
+    // std::cout << "std::vector<float>:" << TypeIDGenerator<std::vector<float>>::number() << "\n";
+    // std::cout << "std::tuple<float, int>:" << TypeIDGenerator<std::tuple<float, int>>::number() << "\n";
+    // std::cout << "std::tuple<float, int>:" << TypeIDGenerator<std::tuple<float, int>>::number() << "\n";
+    // std::cout << "std::tuple<int, float>:" << TypeIDGenerator<std::tuple<int, float>>::number() << "\n";
+    // std::cout << "int:" << TypeIDGenerator<int>::number() << "\n";
+    // std::cout << "int*:" << TypeIDGenerator<int*>::number() << "\n";
+    // std::cout << "int*:" << TypeIDGenerator<int*>::number() << "\n";
+    // std::cout << "int&:" << TypeIDGenerator<int&>::number() << "\n";
+    // std::cout << "int&:" << TypeIDGenerator<int&>::number() << "\n";
 
-    //constexpr auto int_type_list = TypeUtil::MakeTypeList<int&,int,int*>();
+    // constexpr auto int_type_list = TypeUtil::MakeTypeList<int&,int,int*>();
     ////constexpr auto CdId_int_type_list = CdIdGenerator<decltype(int_type_list)>::id();
-    //std::cout << "CdNumber_int_type_list:" << CdIdGenerator<float>::number() << "\n";
-    //std::cout << "TypeID_int_type_list:" << TypeIDGenerator<decltype(int_type_list)>::number() << "\n";
+    // std::cout << "CdNumber_int_type_list:" << CdIdGenerator<float>::number() << "\n";
+    // std::cout << "TypeID_int_type_list:" << TypeIDGenerator<decltype(int_type_list)>::number() << "\n";
+
+#if _DEBUG
+    std::cout << "\n";
+    std::cout << "int:" << TypeIDGenerator<int>::type_name() << "\n";
+    std::cout << "std::tuple<float,int>" << TypeIDGenerator<std::tuple<float, int>>::type_name() << "\n";
+#endif
 }

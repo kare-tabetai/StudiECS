@@ -14,7 +14,12 @@ public:
         const Archetype& archetype,
         const TypeInfoRefContainer& type_infos,
         WorldNumber world_number)
-        : m_world_number(world_number)
+        : 
+#if _DEBUG
+        m_archetype_name(calcArchetypeName(type_infos))
+        ,
+#endif // DEBUG
+        m_world_number(world_number)
         , m_archetype_number(archetype_number)
         , m_archetype(archetype)
         , m_released_entity_index(world_number, archetype_number,0,0)
@@ -82,6 +87,22 @@ private:
         auto& chunk = m_chunks[entity_index.chunk_index];
         return chunk->GetEntity(entity_index.index);
     }
+
+#if _DEBUG
+
+    static std::string calcArchetypeName(const TypeInfoRefContainer& type_infos)
+    {
+        std::string archetype_name = "";
+
+        for (const auto& info : type_infos) {
+            archetype_name.append(info->GetTypeName());
+            archetype_name.append(",");
+        }
+        return archetype_name;
+    }
+
+    std::string m_archetype_name;
+#endif // DEBUG
 
     WorldNumber m_world_number;
     ArchetypeNumber m_archetype_number;
