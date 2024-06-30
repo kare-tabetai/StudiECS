@@ -5,8 +5,8 @@
 
 void ChunkTest()
 {
-    constexpr uint32 int_size = sizeof(int);
-    constexpr uint32 int_align = alignof(int);
+    [[maybe_unused]] constexpr uint32 int_size = sizeof(int);
+    [[maybe_unused]] constexpr uint32 int_align = alignof(int);
 
     std::array<int, 18> int_array;
     std::fill(int_array.begin(), int_array.end(), -1);
@@ -18,8 +18,8 @@ void ChunkTest()
     int_view[3] = 321;
 
     using Bool = bool;
-    constexpr uint32 bool_size = sizeof(Bool);
-    constexpr uint32 bool_align = alignof(Bool);
+    [[maybe_unused]]  constexpr uint32 bool_size = sizeof(Bool);
+    [[maybe_unused]] constexpr uint32 bool_align = alignof(Bool);
 
     std::array<Bool, 1024> bool_array;
     std::fill(bool_array.begin(), bool_array.end(), false);

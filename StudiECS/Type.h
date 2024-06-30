@@ -1,5 +1,5 @@
 #pragma once
-#include <boost/hana.hpp>
+#include "boost_hana.h"
 #include <vector>
 #include <unordered_map>
 #include <memory>

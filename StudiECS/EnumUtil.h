@@ -14,32 +14,6 @@ constexpr std::underlying_type_t<Enum> ToBase(Enum flag)
 }
 
 template<EnumConcept Enum>
-class EnumWrapper {
-    Enum value;
-
-public:
-    // コンストラクタ
-    EnumWrapper(Enum val)
-        : value(val)
-    {
-    }
-
-    // Enum型への自動キャスト
-    operator Enum() const
-    {
-        return value;
-    }
-
-    // bool型への自動キャスト
-    explicit operator bool() const
-    {
-        return static_cast<std::underlying_type_t<Enum>>(value) != 0;
-    }
-};
-
-/// \note TODO: 論理演算の戻り値をenumラッパークラスにして、
-/// キャスト演算子でboolにもenumにも変換できるようにするとToBoolが不要にできるかも
-template<EnumConcept Enum>
 constexpr bool ToBool(Enum flag)
 {
     return ToBase(flag) != 0;

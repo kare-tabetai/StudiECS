@@ -1,5 +1,4 @@
 #pragma once
-#include "Type.h"
 #include "IdGenerator.h"
 #include <any>
 #include <cstddef>
@@ -131,8 +130,8 @@ private:
     bool m_is_trivial_copyable = false;
     bool m_is_trivial_destructible = false;
     bool m_is_empty_type = false;
-    std::size_t m_type_size = -1;
-    std::size_t m_align_size = -1;
+    std::size_t m_type_size = std::numeric_limits<std::size_t>::max();
+    std::size_t m_align_size = std::numeric_limits<std::size_t>::max();
     TypeDataID m_id  = kUint32Max;
 
     ConstructorFunc m_default_constructor = nullptr;

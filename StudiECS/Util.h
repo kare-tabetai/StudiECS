@@ -5,7 +5,7 @@
 #include "Util.h"
 #include "TypeUtil.h"
 #include "Entity.h"
-#include <boost/hana.hpp>
+#include "boost_hana.h"
 
 namespace Util {
 

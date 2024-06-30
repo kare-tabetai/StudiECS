@@ -1,6 +1,6 @@
 #pragma once
 #include "TypeIDGenerator.h"
-#include <boost/hana.hpp>
+#include "boost_hana.h"
 
 namespace TypeUtil {
 

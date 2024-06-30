@@ -1,11 +1,10 @@
+#pragma once
 #include "TypeIDGenerator.h"
 #include "TypeUtil.h"
 #include "Util.h"
-#include <boost/hana.hpp>
-#include <boost/hana/equal.hpp>
-#include <boost/hana/remove_if.hpp>
-#include <boost/hana/traits.hpp>
-#include <boost/hana/tuple.hpp>
+#include "boost_hana.h"
+
+namespace HanaTest {
 
 constexpr auto test_types = boost::hana::tuple_t<int, double, void, int, char*, char, void, int&>;
 
@@ -49,3 +48,5 @@ constexpr auto has_all_type = TypeUtil::HasAllTypes(
 constexpr auto has_not_all_type = TypeUtil::HasAllTypes(
     boost::hana::tuple_t<void, int, int, void*>,
     boost::hana::tuple_t<int, void*, float>);
+
+}

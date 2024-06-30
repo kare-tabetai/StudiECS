@@ -62,14 +62,14 @@ void TypeCopyTest(const T& cons = T(), const T& asign = T())
     std::array<std::byte, 1024> strage = {};
 
     int_info.Construct(&strage);
-    T& constructed = *(T*)(&strage);
+    [[maybe_unused]] T& constructed = *(T*)(&strage);
     int_info.Destruct(&strage);
 
     int_info.CopyConstruct(&cons, &strage);
-    T& _constructed = *(T*)(&strage);
+    [[maybe_unused]] T& _constructed = *(T*)(&strage);
 
     int_info.CopyAsign(&asign, &strage);
-    T& asigned = *(T*)(&strage);
+    [[maybe_unused]] T& asigned = *(T*)(&strage);
     int_info.Destruct(&strage);
 }
 
@@ -80,14 +80,14 @@ void TypeMoveTest(T&& cons = T(), T&& asign = T())
     std::array<std::byte, 1024> strage = {};
 
     int_info.Construct(&strage);
-    T& constructed = *(T*)(&strage);
+    [[maybe_unused]] T& constructed = *(T*)(&strage);
     int_info.Destruct(&strage);
 
     int_info.MoveConstruct(&cons, &strage);
-    T& _constructed = *(T*)(&strage);
+    [[maybe_unused]] T& _constructed = *(T*)(&strage);
 
     int_info.MoveAsign(&asign, &strage);
-    T& asigned = *(T*)(&strage);
+    [[maybe_unused]] T& asigned = *(T*)(&strage);
     int_info.Destruct(&strage);
 }
 

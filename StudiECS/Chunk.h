@@ -128,7 +128,7 @@ private:
             entity_index.chunk_index = chunk_index;
             // MEMO: 未使用のEntityは未使用リストとして扱うため
             // 次の未使用の要素(次のindex)をさすようにしている
-            entity_index.index = i+1;
+            entity_index.index = static_cast<uint16>(i+1);
             entity_array[i] = Entity(entity_index,Entity::Flag::IsInChunk & Entity::Flag::Invalid);
         }
     }

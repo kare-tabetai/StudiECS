@@ -1469,6 +1469,9 @@
     <ClInclude Include="Concept.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
+    <ClInclude Include="boost_hana.h">
+      <Filter>ヘッダー ファイル\external</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="boost\hana\detail\struct_macros.hpp.erb">

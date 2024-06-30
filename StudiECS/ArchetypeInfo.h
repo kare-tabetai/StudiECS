@@ -57,7 +57,7 @@ private:
             m_archetype_number,
             static_cast<ChunkIndex>(m_chunks.size()));
         m_chunks.emplace_back(std::move(chunk));
-        return EntityIndex(m_world_number, m_archetype_number,static_cast<uint32>( m_chunks.size() - 1), 0);
+        return EntityIndex(m_world_number, m_archetype_number,static_cast<ChunkIndex>( m_chunks.size() - 1), 0);
     }
 
     void construct(EntityIndex entity_index)

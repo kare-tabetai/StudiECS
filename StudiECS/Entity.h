@@ -3,7 +3,6 @@
 #include "EntityIndex.h"
 #include "Type.h"
 #include <bitset>
-#include <boost/hana/hash.hpp>
 #include <cassert>
 #include <type_traits>
 
