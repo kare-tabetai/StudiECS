@@ -1,6 +1,5 @@
 #pragma once
 #include "TypeIDGenerator.h"
-#include "Entity.h"
 #include <boost/hana.hpp>
 
 namespace TypeUtil {
@@ -80,34 +79,7 @@ constexpr bool TypeToBool()
     return HanaTypeToBool(boost::hana::type_c<T>);
 }
 
-constexpr bool IsCantCDType(auto type)
-{
-    return boost::hana::traits::is_void(type)
-        || boost::hana::traits::is_pointer(type)
-        || boost::hana::traits::is_reference(type)
-        || boost::hana::type_c<Entity> == type;
-}
 
-template<class... T>
-constexpr auto PushFronEntity(hana_tuple<T...> input_type_list)
-{
-    constexpr auto entity_type_list = boost::hana::tuple_t<Entity>;
-    return AddTypes(entity_type_list, input_type_list);
-}
-
-template<class... T>
-constexpr auto RemoveCantCDType(hana_tuple<T...> input_type_list)
-{
-    return boost::hana::remove_if(input_type_list, [](auto t) {
-        return BoolToType<IsCantCDType(t)>();
-    });
-}
-
-template<class... T>
-constexpr auto SanitizeTypeList(hana_tuple<T...> input_type_list)
-{
-    return PushFronEntity(SortTypeList(RemoveCantCDType(Unique(input_type_list))));
-}
 
 template<class... T>
 constexpr auto ToPointerTypeList(hana_tuple<T...> input_type_list)
@@ -116,5 +88,4 @@ constexpr auto ToPointerTypeList(hana_tuple<T...> input_type_list)
         return boost::hana::traits::add_pointer(t);
     });
 }
-
 }

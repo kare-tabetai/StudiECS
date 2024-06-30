@@ -133,7 +133,7 @@ private:
     bool m_is_empty_type = false;
     std::size_t m_type_size = -1;
     std::size_t m_align_size = -1;
-    TypeDataID m_id ;
+    TypeDataID m_id  = kUint32Max;
 
     ConstructorFunc m_default_constructor = nullptr;
     DestructorFunc m_destructor = nullptr;

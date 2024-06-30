@@ -37,6 +37,10 @@ public:
         return *entity_ptr;
     }
 
+    ArchetypeNumber GetNumber() const {
+        return m_archetype_number;
+    }
+
 private:
     void addChunk()
     {

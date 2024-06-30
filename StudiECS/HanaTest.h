@@ -1,5 +1,6 @@
 #include "TypeIDGenerator.h"
 #include "TypeUtil.h"
+#include "Util.h"
 #include <boost/hana.hpp>
 #include <boost/hana/equal.hpp>
 #include <boost/hana/remove_if.hpp>
@@ -8,13 +9,13 @@
 
 constexpr auto test_types = boost::hana::tuple_t<int, double, void, int, char*, char, void, int&>;
 
-constexpr auto pushed_entity = TypeUtil::PushFronEntity(test_types);
+constexpr auto pushed_entity = Util::PushFrontEntity(test_types);
 
 constexpr auto sorted_types = TypeUtil::SortTypeList(test_types);
 constexpr auto ptred_types = TypeUtil::ToPointerTypeList(test_types);
 constexpr auto uniqued_types = TypeUtil::Unique(sorted_types);
-constexpr auto removed_cant_cd_types = TypeUtil::RemoveCantCDType(test_types);
-constexpr auto sanitized_types = TypeUtil::SanitizeTypeList(test_types);
+constexpr auto removed_cant_cd_types = Util::RemoveCantCDType(test_types);
+constexpr auto sanitized_types = Util::SanitizeTypeList(test_types);
 constexpr auto removed_types = TypeUtil::RemoveTypes(
     test_types,
     boost::hana::tuple_t<void, int>);
@@ -25,9 +26,9 @@ constexpr auto connected_types = TypeUtil::AddTypes(
 
 
 constexpr bool is_front_type_entity = TypeUtil::IsFrontType(boost::hana::type_c<Entity>, sanitized_types);
-constexpr bool is_cant_void = TypeUtil::IsCantCDType(boost::hana::type_c<void>);
-constexpr bool is_cant_ptr = TypeUtil::IsCantCDType(boost::hana::type_c<int*>);
-constexpr bool is_cant_ref = TypeUtil::IsCantCDType(boost::hana::type_c<int&>);
+constexpr bool is_cant_void = Util::IsCantCDType(boost::hana::type_c<void>);
+constexpr bool is_cant_ptr = Util::IsCantCDType(boost::hana::type_c<int*>);
+constexpr bool is_cant_ref = Util::IsCantCDType(boost::hana::type_c<int&>);
 
 constexpr bool is_true_type = TypeUtil::HanaTypeToBool(
     boost::hana::traits::is_void(boost::hana::type_c<void>));

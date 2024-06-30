@@ -3,6 +3,7 @@
 #include "OffsetArrayView.h"
 #include "ContainerTypes.h"
 #include "Concept.h"
+#include "Constant.h"
 #include <array>
 #include <cstddef>
 #include <memory>
@@ -75,8 +76,6 @@ public:
     }
 
 private:
-    static constexpr size_t kChunkSize = 64 * 1024; // 64KB
-
     static std::vector<OffsetArrayView> createCdArrayAccessor(
         std::array<std::byte, kChunkSize>& strage,
         uint32 max_entity_count,
@@ -120,15 +119,17 @@ private:
         ChunkIndex chunk_index)
     {
         auto entity_array = GetArray<Entity>(0);
-        for (uint32 i = 0; i < entity_array.size();++i) {
+        for (uint32 i = 0; i < entity_array.size()-1;++i) {
             assert(Util::IsInRange(&entity_array[i], m_strage.data(), &m_strage.back() + 1));
 
             EntityIndex entity_index;
             entity_index.world_number = world_number;
             entity_index.archetype_number = archetype_number;
             entity_index.chunk_index = chunk_index;
-            entity_index.index = i;
-            entity_array[i] = Entity(entity_index);
+            // MEMO: 未使用のEntityは未使用リストとして扱うため
+            // 次の未使用の要素(次のindex)をさすようにしている
+            entity_index.index = i+1;
+            entity_array[i] = Entity(entity_index,Entity::Flag::IsInChunk & Entity::Flag::Invalid);
         }
     }
 

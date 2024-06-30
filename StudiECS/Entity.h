@@ -5,6 +5,7 @@
 #include <bitset>
 #include <boost/hana/hash.hpp>
 #include <cassert>
+#include <type_traits>
 
 /// \note entity‚ªíœ‚³‚ê‚Ä‚¢‚½ê‡‚ÍChunkContainer“à‚ÅíœÏ‚İƒŠƒXƒg‚Ì—v‘f‚Æ‚µ‚Äˆµ‚¤
 /// https://skypjack.github.io/2019-05-06-ecs-baf-part-3/
@@ -20,9 +21,9 @@ public:
 
     Entity() = default;
 
-    Entity(EntityIndex entity_index)
+    Entity(EntityIndex entity_index,Flag flags = Flag::Invalid)
         : m_entity_index(entity_index)
-        , m_flags(Flag::Invalid)
+        , m_flags(flags)
         , m_generation(0)
     {
     }
@@ -69,6 +70,16 @@ public:
     {
         m_flags &= ~flag;
         return *this;
+    }
+    bool IncrementGeneration() {
+        if (m_generation == kUint16Max) [[unlikely]] {
+            assert(false);
+            m_generation = 0;
+            return false;
+        }
+
+        m_generation++;
+        return true;
     }
 
     bool operator==(const Entity& other) const

@@ -609,7 +609,6 @@
     <ClInclude Include="ChunkTest.h" />
     <ClInclude Include="ContainerTypes.h" />
     <ClInclude Include="Entity.h" />
-    <ClInclude Include="EntityData.h" />
     <ClInclude Include="EntityIndex.h" />
     <ClInclude Include="EnumUtil.h" />
     <ClInclude Include="EnumUtilTest.h" />

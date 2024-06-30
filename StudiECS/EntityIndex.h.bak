@@ -25,11 +25,11 @@ struct EntityIndex {
     auto operator<=>(const EntityIndex&) const = default;
 
     /// \brief Š‘®‚µ‚Ä‚¢‚échunk“à‚Ìindex
-    uint16 index = kUint16Max;
+    uint16 index = Util::MaxVal<decltype(index)>();
     /// \brief Š‘®‚µ‚Ä‚¢‚échunk‚Ìidnex
-    ChunkIndex chunk_index = kUint16Max;
+    ChunkIndex chunk_index = Util::MaxVal<decltype(chunk_index)>();
     /// \brief ‚±‚ÌEntity‚ÌArchetype‚ÌArchetypeNumber
-    ArchetypeNumber archetype_number = kUint32Max;
+    ArchetypeNumber archetype_number = Util::MaxVal<decltype(archetype_number)>();
     /// \brief ‚±‚ÌEntity‚ª‘®‚·‚éWorld‚ÌNumber
-    WorldNumber world_number = kUint8Max;
+    WorldNumber world_number = Util::MaxVal<decltype(world_number)>();
 };

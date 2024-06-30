@@ -1457,9 +1457,6 @@
     <ClInclude Include="ContainerTypes.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="EntityData.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="EntityIndex.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
