@@ -9,12 +9,13 @@ concept MoveOrCopyable = std::is_copy_constructible_v<T> || std::is_move_constru
 template<typename T>
 concept DefaultConstructible = std::is_default_constructible_v<T>;
 
+/// \brief CDに利用できる型の制限
 template<class T>
 concept CdConcept = MoveOrCopyable<T>
-    && DefaultConstructible<T>
-    && !std::is_same_v<T, Entity>
-    && !std::is_pointer_v<T>
-    && (sizeof(T) < kChunkSize);
+    && DefaultConstructible<T> //現状はDefaultConstruct後に値を変更するインターフェースを想定しているため
+    && !std::is_same_v<T, Entity>// Entityはこちらで追加するため
+    && !std::is_pointer_v<T>//実装が面倒になりそうなため、参照はDefaultConstructibleではじいている
+    && (sizeof(T) <= kUint32Max);//内部でkUint32Max以下を前提に組んでいるため
 
 template<class T>
 concept CdOrEntityConcept = CdConcept<T> || std::is_same_v<T, Entity>;

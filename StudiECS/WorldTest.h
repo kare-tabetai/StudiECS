@@ -28,4 +28,4 @@ void WorldTest()
     Entity entity_TestClass0_1 = world.CreateEntity<int, TestClass0>();
     //Entity entity = world.CreateEntity<int, float>();
 
-}
+ }

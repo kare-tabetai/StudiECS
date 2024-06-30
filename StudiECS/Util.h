@@ -9,14 +9,6 @@
 
 namespace Util {
 
-constexpr bool IsCantCDType(auto type)
-{
-    return boost::hana::traits::is_void(type)
-        || boost::hana::traits::is_pointer(type)
-        || boost::hana::traits::is_reference(type)
-        || boost::hana::type_c<Entity> == type;
-}
-
 template<class... T>
 constexpr auto PushFrontEntity(hana_tuple<T...> input_type_list)
 {
@@ -24,18 +16,11 @@ constexpr auto PushFrontEntity(hana_tuple<T...> input_type_list)
     return TypeUtil::AddTypes(entity_type_list, input_type_list);
 }
 
-template<class... T>
-constexpr auto RemoveCantCDType(hana_tuple<T...> input_type_list)
-{
-    return boost::hana::remove_if(input_type_list, [](auto t) {
-        return TypeUtil::BoolToType<IsCantCDType(t)>();
-    });
-}
 
 template<class... T>
 constexpr auto SanitizeTypeList(hana_tuple<T...> input_type_list)
 {
-    return PushFrontEntity(TypeUtil::SortTypeList(RemoveCantCDType(TypeUtil::Unique(input_type_list))));
+    return PushFrontEntity(TypeUtil::SortTypeList(TypeUtil::Unique(input_type_list)));
 }
 
 template<CdOrEntityConcept... T>

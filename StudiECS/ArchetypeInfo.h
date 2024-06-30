@@ -31,7 +31,12 @@ public:
         assert(m_released_entity_index != EntityIndex::Invalid());
         auto* entity_ptr = getEntity(m_released_entity_index);
         m_released_entity_index = entity_ptr->SwapIndex(m_released_entity_index);
-        entity_ptr->RemoveFlag(Entity::Flag::Invalid);
+        entity_ptr->RemoveFlag(Entity::Flag::Invalid);//g—p’†‚É‚·‚é
+
+        // Chunk‚ª‚¢‚Á‚Ï‚¢‚É‚È‚Á‚½ê‡
+        if (m_max_chunk_entity_max <= m_released_entity_index.index) [[unlikely]] {
+            m_released_entity_index = addChunk();
+        }
 
         construct(entity_ptr->GetIndex());
         return *entity_ptr;
@@ -42,7 +47,8 @@ public:
     }
 
 private:
-    void addChunk()
+    /// \ret_val ’Ç‰Á‚µ‚½chunk‚ÌÅ‰‚Ì—v‘f‚ğ¦‚·index‚ğ•Ô‚·
+    EntityIndex addChunk()
     {
         auto chunk = std::make_shared<Chunk>(
             m_type_infos, 
@@ -51,6 +57,7 @@ private:
             m_archetype_number,
             static_cast<ChunkIndex>(m_chunks.size()));
         m_chunks.emplace_back(std::move(chunk));
+        return EntityIndex(m_world_number, m_archetype_number,static_cast<uint32>( m_chunks.size() - 1), 0);
     }
 
     void construct(EntityIndex entity_index)
@@ -60,7 +67,11 @@ private:
 
         // MEMO: Entity‚Í‰Šú‰»‚µ‚È‚¢
         for (uint32 cd_index = 1; cd_index < m_type_infos.size(); cd_index++) {
-            void* cd = chunk->At(cd_index, entity_index.index, m_type_infos[cd_index]->GetTypeSize());
+            void* cd = chunk->At(
+                cd_index, 
+                entity_index.index,
+                static_cast<uint32>(m_type_infos[cd_index]->GetTypeSize())
+            );
             m_type_infos[cd_index]->Construct(cd);
         }
     }

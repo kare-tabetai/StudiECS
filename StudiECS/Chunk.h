@@ -68,8 +68,8 @@ public:
         uint32 sum_size = 0;
         uint32 sum_align = 0;
         for (const auto& info : types_ref) {
-            sum_size += info->GetTypeSize();
-            sum_align += info->GetAlignSize();
+            sum_size += static_cast<uint32>(info->GetTypeSize());
+            sum_align += static_cast<uint32>(info->GetAlignSize());
         }
 
         return (kChunkSize - sum_align) / sum_size;
