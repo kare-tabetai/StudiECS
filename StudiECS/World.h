@@ -8,15 +8,15 @@
 #include "Concept.h"
 #include <memory>
 #include <unordered_map>
+#include <vector>
 
 /// \brief 一番rootになるクラスここから全部操作する
-/// \note 型IDをhashではなくて単純な加算値にしたほうがstd::vectorにできて早そうな気がする
 class World {
 public:
     World() {
-        m_number = s_counter;
-        s_counter++;
-        assert(s_counter != kUint8Max);
+        m_number = s_world_number_counter;
+        s_world_number_counter++;
+        assert(s_world_number_counter != kUint8Max);
     }
 
     template<CdConcept... Args>
@@ -57,6 +57,17 @@ public:
     PtrTuple<CD...> GetTypes(Entity entity)
     {
         return m_archetype_infos[entity.GetIndex().archetype_number]->GetTypes<CD...>(entity.GetIndex());
+    }
+
+    template<CdOrEntityConcept CdOrEntity>
+    std::vector<ArrayView<CdOrEntity>> GetCdArray() {
+        m_component_index.find()
+            //TODO:
+    }
+
+    void Shrink() {
+        //未使用になっているchunkなどを削除する
+        // denseを指していないsparse setのsparse配列をdenseを指しているところまで縮める
     }
 
 private:
@@ -109,7 +120,7 @@ private:
         }
     }
 
-    static inline uint8 s_counter = 0;
+    static inline WorldNumber s_world_number_counter = 0;
 
     WorldNumber m_number = 0;
 

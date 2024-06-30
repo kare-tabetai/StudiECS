@@ -26,8 +26,8 @@ class TestClass1 {
 void WorldTest()
 {
     World world;
-    //Entity entity = world.CreateEntity<int, float*>();
-    //Entity entity = world.CreateEntity<int, float&>();
+    // Entity entity = world.CreateEntity<int, float*>();
+    // Entity entity = world.CreateEntity<int, float&>();
     // Entity entity = world.CreateEntity<int, Entity>();
     Entity entity_FixedClass_0 = world.CreateEntity<int, FixedClass>();
     Entity entity_TestClass0_0 = world.CreateEntity<int, TestClass0>();
