@@ -39,6 +39,8 @@ void WorldTest()
     Entity entity_TestClass1_3 = world.CreateEntity<float, int, TestClass1>();
     Entity entity_TestClass1_4 = world.CreateEntity<float, int, double, TestClass1>();
     Entity entity_TestClass1_5 = world.CreateEntity<float, int, TestClass1>();
-    // Entity entity = world.CreateEntity<int, float>();
+    auto float_ptr = world.Get<float>(entity_TestClass1_4);
+    *float_ptr = 0.5f;
+    auto [float_ptr_, duble_ptr] = world.GetTypes<float, double>(entity_TestClass1_4);
 
  }

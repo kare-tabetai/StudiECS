@@ -49,13 +49,14 @@ public:
 
     template<CdConcept CD>
     CD* Get(Entity entity) {
-        //TODO:
+        PtrTuple<CD> cd_ptr_tuple = GetTypes<CD>(entity);
+        return std::get<0>(cd_ptr_tuple);
     }
 
-    template<CdConcept... Args>
-    std::tuple<Args*...> Get(Entity entity)
+    template<CdConcept... CD>
+    PtrTuple<CD...> GetTypes(Entity entity)
     {
-        // TODO:
+        return m_archetype_infos[entity.GetIndex().archetype_number]->GetTypes<CD...>(entity.GetIndex());
     }
 
 private:
@@ -112,17 +113,19 @@ private:
 
     WorldNumber m_number = 0;
 
-    // \brief CdOrEntity->所属Archetype検索用の参照
+    /// \brief CdOrEntity->所属Archetype検索用の参照
     using ArchetypeMap = SparseSet<RefPtr<ArchetypeInfo>>;//[ArchetypeNumber]
     std::unordered_map<TypeDataID,ArchetypeMap> m_component_index; // [TypeInfo::GetID()]
 
-    // \brief CD情報の実体 [CdNumber]
+    /// \brief CD情報の実体 [CdNumber]
     SparseSet<OwnerPtr<TypeInfo>> m_cd_infos;
 
-    // \brief Archetype情報の実体 [ArchetypeNumber]
+    /// \brief Archetype情報の実体 [ArchetypeNumber]
     SparseSet<OwnerPtr<ArchetypeInfo>> m_archetype_infos; 
 
-    // \brief Entityから持っているCDを探す用の参照
+    /// \brief Entityから持っているCDを探す用の参照
+    /// \note EntityにArchetypeNUmberを持たせているため、おそらくいらない
+    /// TODO:消す
     std::unordered_map<Entity, RefPtr<ArchetypeInfo>> m_entity_datas;
 
 };

@@ -25,7 +25,7 @@ public:
     }
 
     template<CdOrEntityConcept CdOrEntity>
-    CdOrEntity* At(uint32 cd_index, uint32 entity_index)
+    CdOrEntity* At(CdIndex cd_index, uint32 entity_index)
     {
         assert(cd_index < m_cd_accessor.size());
         assert(entity_index < m_max_entity_count);

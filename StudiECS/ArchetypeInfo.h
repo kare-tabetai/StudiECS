@@ -51,6 +51,13 @@ public:
         return m_archetype_number;
     }
 
+    template<CdConcept... CD>
+    PtrTuple<CD...> GetTypes(EntityIndex entity_index)
+    {
+        PtrTuple<CD...> result = { getCD<CD>(entity_index)... };
+        return result;
+    }
+
 private:
     /// \ret_val ’Ç‰Á‚µ‚½chunk‚ÌÅ‰‚Ì—v‘f‚ğ¦‚·index‚ğ•Ô‚·
     EntityIndex addChunk()
@@ -86,6 +93,25 @@ private:
         assert(entity_index.chunk_index < m_chunks.size());
         auto& chunk = m_chunks[entity_index.chunk_index];
         return chunk->GetEntity(entity_index.index);
+    }
+
+    template<CdConcept CD>
+    CD* getCD(EntityIndex entity_index)
+    {
+        assert(entity_index.chunk_index < m_chunks.size());
+        auto& chunk = m_chunks[entity_index.chunk_index];
+        return chunk->At<CD>(getCdIndex<CD>(), entity_index.index);
+    }
+
+    template<CdConcept CD>
+    CdIndex getCdIndex()const {
+        for (CdIndex i = 0; i < m_archetype.size(); ++i) {
+            if (m_archetype[i] == TypeIDGenerator<CD>::id()) {
+                return i;
+            }
+        }
+        assert(false);
+        return kUint8Max;
     }
 
 #if _DEBUG

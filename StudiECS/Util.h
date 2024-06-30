@@ -6,6 +6,10 @@
 #include "TypeUtil.h"
 #include "Entity.h"
 #include "boost_hana.h"
+#include <tuple>
+
+template<CdConcept... CD>
+using EntityCdPtrTuple = std::tuple<Entity*,CD*...>;
 
 namespace Util {
 

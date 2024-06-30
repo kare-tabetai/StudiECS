@@ -34,10 +34,15 @@ using OwnerPtr = std::shared_ptr<T>;
 template<class T>
 using RefPtr = std::shared_ptr<T>;
 
-using Archetype = std::vector<CdNumber>;
+/// \brief ‚Ç‚ÌŒ^‚ğ‚Á‚Ä‚¢‚é‚©‚ğ¦‚·
+/// \note number‚Å‚Í‚È‚­‚ÄID
+using Archetype = std::vector<CdID>;
 
 template<class T>
 using ToUnderlying = std::underlying_type_t<T>;
 
 template<class... T>
 using hana_tuple = boost::hana::tuple<T...>;
+
+template<class... T>
+using PtrTuple = std::tuple<T*...>;

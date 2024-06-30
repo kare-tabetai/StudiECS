@@ -79,8 +79,6 @@ constexpr bool TypeToBool()
     return HanaTypeToBool(boost::hana::type_c<T>);
 }
 
-
-
 template<class... T>
 constexpr auto ToPointerTypeList(hana_tuple<T...> input_type_list)
 {
