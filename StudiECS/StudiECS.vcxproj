@@ -637,6 +637,9 @@
   <ItemGroup>
     <None Include="boost\hana\detail\struct_macros.hpp.erb" />
   </ItemGroup>
+  <ItemGroup>
+    <Natvis Include="ArrayView.natvis" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

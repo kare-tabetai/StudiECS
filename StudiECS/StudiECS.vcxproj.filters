@@ -1478,4 +1478,9 @@
       <Filter>ヘッダー ファイル\external\boost</Filter>
     </None>
   </ItemGroup>
+  <ItemGroup>
+    <Natvis Include="ArrayView.natvis">
+      <Filter>リソース ファイル</Filter>
+    </Natvis>
+  </ItemGroup>
 </Project>

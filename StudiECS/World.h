@@ -61,7 +61,11 @@ public:
 
     template<CdOrEntityConcept CdOrEntity>
     std::vector<ArrayView<CdOrEntity>> GetCdArray() {
-        m_component_index.find()
+        TypeDataID id = TypeIDGenerator<CdOrEntity>();
+        auto component_data_itr = m_component_index.find(id);
+        if (component_data_itr == m_component_index.end()) {
+        
+        }
             //TODO:
     }
 

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AutoVisualizer xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010">
+  <Type Name="ArrayView&lt;*&gt;">
+    <DisplayString>{{size = {m_size}}}</DisplayString>
+    <Expand>
+      <Item Name="m_size">m_size</Item>
+      <Item Name="begin">m_begin</Item>
+      <Item Name="end">m_begin+m_size</Item>
+        <ArrayItems>
+          <Size>m_size</Size>
+          <ValuePointer>m_begin</ValuePointer>
+        </ArrayItems>
+    </Expand>
+  </Type>
+</AutoVisualizer>

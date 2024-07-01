@@ -12,7 +12,7 @@ int main()
     TypeInfoTest();
     TepeIDTest();
     UtilTest();
-    //ChunkTest();
+    ChunkTest();
     SparseSetTest();
     WorldTest();
     return 0;
