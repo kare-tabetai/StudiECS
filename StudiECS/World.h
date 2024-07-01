@@ -61,12 +61,20 @@ public:
 
     template<CdOrEntityConcept CdOrEntity>
     std::vector<ArrayView<CdOrEntity>> GetCdArray() {
-        TypeDataID id = TypeIDGenerator<CdOrEntity>();
+        TypeDataID id = TypeIDGenerator<CdOrEntity>::id();
         auto component_data_itr = m_component_index.find(id);
         if (component_data_itr == m_component_index.end()) {
-        
+            return std::vector<ArrayView<CdOrEntity>>();
         }
-            //TODO:
+
+        auto archetypes = component_data_itr->second.GetArray();
+        std::vector<ArrayView<CdOrEntity>> result;
+        result.reserve(archetypes.size() * 2);
+        for (auto& archetype : archetypes) {
+            auto cd_arrays = archetype->GetTypeArrays<CdOrEntity>();
+            result.insert(result.end(), cd_arrays.begin(), cd_arrays.end());
+        }
+        return result;
     }
 
     void Shrink() {

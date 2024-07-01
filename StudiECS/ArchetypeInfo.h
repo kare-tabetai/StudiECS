@@ -58,6 +58,17 @@ public:
         return result;
     }
 
+    template<CdOrEntityConcept CdOrEntity>
+    std::vector<ArrayView<CdOrEntity>> GetTypeArrays() {
+        std::vector<ArrayView<CdOrEntity>> result;
+        result.reserve(m_chunks.size());
+
+        for (auto& chunk : m_chunks) {
+            result.push_back(chunk->GetArray<CdOrEntity>(getCdIndex<CdOrEntity>()));
+        }
+        return result;
+    }
+
 private:
     /// \ret_val ’Ç‰Á‚µ‚½chunk‚ÌÅ‰‚Ì—v‘f‚ğ¦‚·index‚ğ•Ô‚·
     EntityIndex addChunk()
