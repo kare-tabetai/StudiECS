@@ -15,18 +15,18 @@ Distributed under the Boost Software License, Version 1.0.
 
 
 namespace boost { namespace hana {
-    //! Insert several values at a given index in a sequence.
+    //! Insert several values at a given record_index in a sequence.
     //! @ingroup group-Sequence
     //!
-    //! Given a sequence, an index and any `Foldable` containing elements to
+    //! Given a sequence, an record_index and any `Foldable` containing elements to
     //! insert, `insert_range` inserts the elements in the `Foldable` at the
-    //! given index of the sequence.
+    //! given record_index of the sequence.
     //!
     //! @param xs
     //! The sequence in which values should be inserted.
     //!
     //! @param n
-    //! The index at which elements should be inserted. This must be a
+    //! The record_index at which elements should be inserted. This must be a
     //! non-negative `Constant` of an integral type, and it must also be
     //! true that `n < length(xs)` if `xs` is a finite sequence.
     //!

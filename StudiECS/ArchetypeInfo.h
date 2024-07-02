@@ -3,7 +3,7 @@
 #include "Chunk.h"
 #include "OffsetArrayView.h"
 #include "Type.h"
-#include "Entity.h"
+#include "NewEntity.h"
 #include "ContainerTypes.h"
 #include <unordered_map>
 
@@ -22,7 +22,6 @@ public:
         m_world_number(world_number)
         , m_archetype_number(archetype_number)
         , m_archetype(archetype)
-        , m_released_entity_index(world_number, archetype_number,0,0)
         , m_type_infos(type_infos)
         , m_max_chunk_entity_max(Chunk::CalcMaxEntityCount(type_infos))
         , m_chunks()
@@ -31,19 +30,28 @@ public:
         addChunk();
     }
 
-    Entity CreateEntity()
+    NewEntity CreateEntity(uint32 record_index)
     {
-        assert(m_released_entity_index != EntityIndex::Invalid());
-        auto* entity_ptr = getEntity(m_released_entity_index);
-        m_released_entity_index = entity_ptr->SwapIndex(m_released_entity_index);
-        entity_ptr->RemoveFlag(Entity::Flag::Invalid);//使用中にする
+        auto chunk_index = static_cast<ChunkIndex>(m_chunks.size() - 1); // 最後のchunk
+        auto index = m_empty_index;
+        auto* entity_ptr = getEntity(
+            chunk_index,
+            index
+        );
+        assert(entity_ptr->IsInvalid());
+
+        entity_ptr->ReUse(record_index,m_world_number); // 使用中にする
+
+        m_empty_index++;//空きentityを指すように加算
 
         // Chunkがいっぱいになった場合
-        if (m_max_chunk_entity_max <= m_released_entity_index.index) [[unlikely]] {
-            m_released_entity_index = addChunk();
+        if (m_max_chunk_entity_max <= m_empty_index) [[unlikely]] {
+            addChunk();
+            m_empty_index = 0;
         }
 
-        construct(entity_ptr->GetIndex());
+        //CDをコンストラクト
+        construct(chunk_index,index);
         return *entity_ptr;
     }
 
@@ -52,9 +60,9 @@ public:
     }
 
     template<CdConcept... CD>
-    PtrTuple<CD...> GetTypes(EntityIndex entity_index)
+    PtrTuple<CD...> GetTypes(ChunkIndex chunk_index, uint32 index)
     {
-        PtrTuple<CD...> result = { getCD<CD>(entity_index)... };
+        PtrTuple<CD...> result = { getCD<CD>(chunk_index, index)... };
         return result;
     }
 
@@ -71,47 +79,47 @@ public:
 
 private:
     /// \ret_val 追加したchunkの最初の要素を示すindexを返す
-    EntityIndex addChunk()
+    void addChunk()
     {
         auto chunk = std::make_shared<Chunk>(
             m_type_infos, 
             m_max_chunk_entity_max,
             m_world_number,
-            m_archetype_number,
             static_cast<ChunkIndex>(m_chunks.size()));
         m_chunks.emplace_back(std::move(chunk));
-        return EntityIndex(m_world_number, m_archetype_number,static_cast<ChunkIndex>( m_chunks.size() - 1), 0);
     }
 
-    void construct(EntityIndex entity_index)
+    void construct(ChunkIndex chunk_index, uint32 index)
     {
-        assert(entity_index.chunk_index < m_chunks.size());
-        auto& chunk = m_chunks[entity_index.chunk_index];
+        assert(chunk_index < m_chunks.size());
+        auto& chunk = m_chunks[chunk_index];
 
         // MEMO: Entityは初期化しない
         for (uint32 cd_index = 1; cd_index < m_type_infos.size(); cd_index++) {
             void* cd = chunk->At(
                 cd_index, 
-                entity_index.index,
+                index,
                 static_cast<uint32>(m_type_infos[cd_index]->GetTypeSize())
             );
             m_type_infos[cd_index]->Construct(cd);
         }
     }
 
-    Entity* getEntity(EntityIndex entity_index)
+    NewEntity* getEntity(ChunkIndex chunk_index, uint32 index)
     {
-        assert(entity_index.chunk_index < m_chunks.size());
-        auto& chunk = m_chunks[entity_index.chunk_index];
-        return chunk->GetEntity(entity_index.index);
+        assert(chunk_index < m_chunks.size());
+        assert(chunk_index < m_max_chunk_entity_max);
+        auto& chunk = m_chunks[chunk_index];
+        return chunk->GetEntity(index);
     }
 
     template<CdConcept CD>
-    CD* getCD(EntityIndex entity_index)
+    CD* getCD(ChunkIndex chunk_index, uint32 index)
     {
-        assert(entity_index.chunk_index < m_chunks.size());
-        auto& chunk = m_chunks[entity_index.chunk_index];
-        return chunk->At<CD>(getCdIndex<CD>(), entity_index.index);
+        assert(chunk_index < m_chunks.size());
+        assert(chunk_index < m_max_chunk_entity_max);
+        auto& chunk = m_chunks[chunk_index];
+        return chunk->At<CD>(getCdIndex<CD>(), index);
     }
 
     template<CdConcept CD>
@@ -146,7 +154,7 @@ private:
     Archetype m_archetype;
 
     /// \brief 空きentityへのindex
-    EntityIndex m_released_entity_index; 
+    uint32 m_empty_index = 0;
 
     /// \brief 型情報への参照 indexはcd_index
     TypeInfoRefContainer m_type_infos;

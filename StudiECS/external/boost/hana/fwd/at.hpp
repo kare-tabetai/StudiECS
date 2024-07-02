@@ -20,8 +20,8 @@ namespace boost { namespace hana {
     //! Returns the `n`th element of an iterable.
     //! @ingroup group-Iterable
     //!
-    //! Given an `Iterable` and an `IntegralConstant` index, `at` returns the
-    //! element located at the index in the linearization of the iterable.
+    //! Given an `Iterable` and an `IntegralConstant` record_index, `at` returns the
+    //! element located at the record_index in the linearization of the iterable.
     //! Specifically, given an iterable `xs` with a linearization of
     //! `[x1, ..., xN]`, `at(xs, k)` is equivalent to `xk`.
     //!
@@ -38,8 +38,8 @@ namespace boost { namespace hana {
     //! contain at least `n + 1` elements.
     //!
     //! @param n
-    //! A non-negative `IntegralConstant` representing the 0-based index of
-    //! the element to return. It is an error to call `at` with an index that
+    //! A non-negative `IntegralConstant` representing the 0-based record_index of
+    //! the element to return. It is an error to call `at` with an record_index that
     //! out of bounds of the iterable.
     //!
     //!

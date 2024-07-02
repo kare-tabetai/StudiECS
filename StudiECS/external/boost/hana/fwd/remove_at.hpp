@@ -17,16 +17,16 @@ Distributed under the Boost Software License, Version 1.0.
 
 
 namespace boost { namespace hana {
-    //! Remove the element at a given index from a sequence.
+    //! Remove the element at a given record_index from a sequence.
     //! @ingroup group-Sequence
     //!
     //! `remove_at` returns a new sequence identical to the original, except
-    //! that the element at the given index is removed. Specifically,
+    //! that the element at the given record_index is removed. Specifically,
     //! `remove_at([x0, ..., xn-1, xn, xn+1, ..., xm], n)` is a new
     //! sequence equivalent to `[x0, ..., xn-1, xn+1, ..., xm]`.
     //!
     //! @note
-    //! The behavior is undefined if the index is out of the bounds of the
+    //! The behavior is undefined if the record_index is out of the bounds of the
     //! sequence.
     //!
     //!
@@ -34,9 +34,9 @@ namespace boost { namespace hana {
     //! A sequence from which an element is to be removed.
     //!
     //! @param n
-    //! An non-negative `IntegralConstant` representing the index of the
+    //! An non-negative `IntegralConstant` representing the record_index of the
     //! element to be removed from the sequence. The behavior is undefined
-    //! if that index is not in the bounds of the sequence.
+    //! if that record_index is not in the bounds of the sequence.
     //!
     //!
     //! Example

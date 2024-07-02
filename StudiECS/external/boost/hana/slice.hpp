@@ -75,7 +75,7 @@ namespace boost { namespace hana {
         }
 
         //! @todo
-        //! Since we have the right to specify the same index more than once,
+        //! Since we have the right to specify the same record_index more than once,
         //! we can't move from the elements of the source sequence even if it
         //! is a temporary object: we could end up double-moving. Perhaps it
         //! would be possible to determine the indices from which we can move

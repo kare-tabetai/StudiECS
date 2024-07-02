@@ -35,7 +35,7 @@ namespace boost { namespace hana {
     //! sequence is lexicographically less than the other. Hence, it can be
     //! used to compare infinite sequences. However, for the procedure to
     //! terminate on infinite sequences, the predicate has to be satisfied
-    //! at a finite index.
+    //! at a finite record_index.
     //!
     //!
     //! Signature

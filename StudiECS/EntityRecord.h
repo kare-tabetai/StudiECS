@@ -6,6 +6,6 @@
 
 struct EntityRecord {
     uint16 index = kUint16Max;
-    RefPtr<Chunk> chunk_ref = nullptr;
+    ChunkIndex chunk_index = kUint8Max;
     RefPtr<ArchetypeInfo> archetype_ref = nullptr;
 };

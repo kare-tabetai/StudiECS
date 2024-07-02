@@ -24,7 +24,7 @@ using CdIndex = uint8;
 /// \brief Archetypeの組み合わせごとに割り振られる数字 0から総数分加算されていく
 using ArchetypeNumber = uint32;
 /// \brief アーキタイプごとのいくつめのchunkに属するかのindex
-using ChunkIndex = uint16;
+using ChunkIndex = uint8;
 
 /// \brief 所有権を持っておきたいポインタ(unique_ptrに置き換え予定)
 template<class T>

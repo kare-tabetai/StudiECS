@@ -4,19 +4,18 @@
 #include "Concept.h"
 #include "Util.h"
 #include "TypeUtil.h"
-#include "Entity.h"
 #include "boost_hana.h"
 #include <tuple>
 
 template<CdConcept... CD>
-using EntityCdPtrTuple = std::tuple<Entity*,CD*...>;
+using EntityCdPtrTuple = std::tuple<NewEntity*,CD*...>;
 
 namespace Util {
 
 template<class... T>
 constexpr auto PushFrontEntity(hana_tuple<T...> input_type_list)
 {
-    constexpr auto entity_type_list = boost::hana::tuple_t<Entity>;
+    constexpr auto entity_type_list = boost::hana::tuple_t<NewEntity>;
     return TypeUtil::AddTypes(entity_type_list, input_type_list);
 }
 

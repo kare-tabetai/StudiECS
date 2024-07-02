@@ -65,9 +65,6 @@
     <ClInclude Include="TypeIDGenerator.h">
       <Filter>ヘッダー ファイル\external</Filter>
     </ClInclude>
-    <ClInclude Include="Entity.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="boost\hana\accessors.hpp">
       <Filter>ヘッダー ファイル\external\boost</Filter>
     </ClInclude>
@@ -1455,9 +1452,6 @@
       <Filter>ヘッダー ファイル\Container</Filter>
     </ClInclude>
     <ClInclude Include="ContainerTypes.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="EntityIndex.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="Constant.h">

@@ -17,10 +17,10 @@ Distributed under the Boost Software License, Version 1.0.
 namespace boost { namespace hana {
     //! @ingroup group-concepts
     //! @defgroup group-Sequence Sequence
-    //! The `Sequence` concept represents generic index-based sequences.
+    //! The `Sequence` concept represents generic record_index-based sequences.
     //!
     //! Compared to other abstract concepts, the Sequence concept is very
-    //! specific. It represents generic index-based sequences. The reason
+    //! specific. It represents generic record_index-based sequences. The reason
     //! why such a specific concept is provided is because there are a lot
     //! of models that behave exactly the same while being implemented in
     //! wildly different ways. It is useful to regroup all those data types
@@ -68,7 +68,7 @@ namespace boost { namespace hana {
     //! ----------------
     //! 1. `Comparable` (definition provided automatically)\n
     //! Two `Sequence`s are equal if and only if they contain the same number
-    //! of elements and their elements at any given index are equal.
+    //! of elements and their elements at any given record_index are equal.
     //! @include example/sequence/comparable.cpp
     //!
     //! 2. `Orderable` (definition provided automatically)\n

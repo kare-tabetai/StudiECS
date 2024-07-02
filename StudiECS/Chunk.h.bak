@@ -4,7 +4,6 @@
 #include "ContainerTypes.h"
 #include "Concept.h"
 #include "Constant.h"
-#include "NewEntity.h"
 #include <array>
 #include <cstddef>
 #include <memory>
@@ -14,14 +13,11 @@ class Chunk {
 public:
     Chunk(
         const TypeInfoRefContainer& type_infos_ref,
-        uint32 max_entity_count, 
-        WorldNumber world_number,
-        ChunkIndex chunk_index)
+        uint32 max_entity_count)
         : m_strage()
         , m_max_entity_count(max_entity_count)
         , m_cd_accessor(createCdArrayAccessor(m_strage, m_max_entity_count, type_infos_ref ))
     {
-        initializeEntities(world_number, chunk_index);
     }
 
     template<CdOrEntityConcept CdOrEntity>
@@ -81,7 +77,7 @@ private:
         uint32 max_entity_count,
         const TypeInfoRefContainer& type_infos_ref)
     {
-        assert(type_infos_ref.front()->GetID() == TypeIDGenerator<NewEntity>::id());
+        assert(type_infos_ref.front()->GetID() == TypeIDGenerator<Entity>::id());
 
         std::vector<OffsetArrayView> array_views;
         const std::byte* end_ptr = strage.data() + strage.size();
@@ -113,7 +109,9 @@ private:
         return array_views;
     }
 
-    void initializeEntities(ChunkIndex chunk_index)
+    void initializeEntities(
+        WorldNumber world_number,
+        ChunkIndex chunk_index)
     {
         auto entity_array = GetArray<NewEntity>(0);
         for (uint32 i = 0; i < entity_array.size() - 1; ++i) {
@@ -122,7 +120,7 @@ private:
             // MEMO: placement new
             // 未使用のEntityは未使用リストとして扱うため
             // 次の未使用の要素(次のindex)をさすようにしている
-            new (&entity_array[i]) NewEntity(i + 1, chunk_index, NewEntity::Flag::Invalid);
+            new (&entity_array[i]) NewEntity(i + 1, chunk_index, NewEntity::Flag::Invalid | NewEntity::Flag::IsInChunk);
         }
     }
 

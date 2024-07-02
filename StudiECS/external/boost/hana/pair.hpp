@@ -29,7 +29,7 @@ Distributed under the Boost Software License, Version 1.0.
 
 namespace boost { namespace hana {
     namespace detail {
-        template <int> struct pix; // pair index
+        template <int> struct pix; // pair record_index
     }
 
     //////////////////////////////////////////////////////////////////////////

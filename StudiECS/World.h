@@ -1,6 +1,5 @@
 #pragma once
 #include "ArchetypeInfo.h"
-#include "Entity.h"
 #include "Type.h"
 #include "TypeUtil.h"
 #include "SparseSet.h"
@@ -22,7 +21,7 @@ public:
     }
 
     template<CdConcept... Args>
-    Entity CreateEntity()
+    NewEntity CreateEntity()
     {
         constexpr auto type_list = TypeUtil::MakeTypeList<Args...>();
         constexpr auto sanitized = Util::SanitizeTypeList(type_list);
@@ -32,11 +31,9 @@ public:
 
         //m_archetype_infosにアーキタイプを設定
         RefPtr<ArchetypeInfo> archetype_ref = getOrRegisterArchetypeInfo(sanitized, type_info_refs);
-        Entity entity = archetype_ref->CreateEntity();
 
-        //m_entity_datasにアーキタイプを設定
-        //assert(m_entity_datas.count(entity) == 0);
-        //m_entity_datas.emplace(entity, archetype_ref);
+        uint32 record_index = 0;//TODO:m_entity_recordから空きindexを抽出
+        NewEntity entity = archetype_ref->CreateEntity(record_index);
 
         // m_component_indexにアーキタイプを設定
         for (const auto& type_info : type_info_refs) {
@@ -50,14 +47,16 @@ public:
     }
 
     template<CdConcept CD>
-    CD* Get(Entity entity) {
+    CD* Get(NewEntity entity) {
         PtrTuple<CD> cd_ptr_tuple = GetTypes<CD>(entity);
         return std::get<0>(cd_ptr_tuple);
     }
 
     template<CdConcept... CD>
-    PtrTuple<CD...> GetTypes(Entity entity)
+    PtrTuple<CD...> GetTypes(NewEntity entity)
     {
+        //TODO:m_entity_recordからchunkにアクセスして取ってくるように変更
+
         return m_archetype_infos[entity.GetIndex().archetype_number]->GetTypes<CD...>(entity.GetIndex());
     }
 
@@ -150,6 +149,6 @@ private:
 
     /// \brief Entityの情報コンテナ
     /// \note Entity->Chunkとそのindexをたどるよう
-    std::unordered_map<NewEntity,EntityRecord> m_entity_record;
+    std::unordered_map<NewEntity,EntityRecord> m_entity_record;// TODO:SparseSetにする?
 
 };

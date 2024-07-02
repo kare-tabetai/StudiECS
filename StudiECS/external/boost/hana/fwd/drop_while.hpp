@@ -24,7 +24,7 @@ namespace boost { namespace hana {
     //! delimited by [`head`, `e`), where `head` is the first element and
     //! `e` is the first element for which the `predicate` is not satisfied.
     //! If the iterable is not finite, the `predicate` has to return a false-
-    //! valued `Logical` at a finite index for this method to return.
+    //! valued `Logical` at a finite record_index for this method to return.
     //!
     //!
     //! @param iterable

@@ -1,5 +1,5 @@
 #pragma once
-#include "Entity.h"
+#include "NewEntity.h"
 #include "Constant.h"
 #include <type_traits>
 
@@ -13,12 +13,12 @@ concept DefaultConstructible = std::is_default_constructible_v<T>;
 template<class T>
 concept CdConcept = MoveOrCopyable<T>
     && DefaultConstructible<T> //現状はDefaultConstruct後に値を変更するインターフェースを想定しているため
-    && !std::is_same_v<T, Entity>// Entityはこちらで追加するため
+    && !std::is_same_v<T, NewEntity> // Entityはこちらで追加するため
     && !std::is_pointer_v<T>//実装が面倒になりそうなため、参照はDefaultConstructibleではじいている
     && (sizeof(T) <= kUint32Max);//内部でkUint32Max以下を前提に組んでいるため
 
 template<class T>
-concept CdOrEntityConcept = CdConcept<T> || std::is_same_v<T, Entity>;
+concept CdOrEntityConcept = CdConcept<T> || std::is_same_v<T, NewEntity>;
 
 template<typename T>
 concept ArithmeticConcept = std::integral<T> || std::floating_point<T>;

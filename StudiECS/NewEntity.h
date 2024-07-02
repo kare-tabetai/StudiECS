@@ -11,24 +11,46 @@ public:
     enum class Flag : uint8 {
         None = 0,
         Invalid = 1 << 0,
-        IsInChunk = 1 << 1,
     };
 
     struct Impl {
-        uint32 index = kUint32Max;
-        uint16 generation = kUint16Max;
-        Flag flag = Flag::None;
-        uint8 world_number = kUint8Max;
+        constexpr Impl(uint32 _record_index, uint16 _generation, Flag _flag, WorldNumber _world_number)
+            : record_index(_record_index)
+            , generation(_generation)
+            , flag(_flag)
+            , world_number(_world_number)
+        {
+        }
+        uint32 record_index;
+        uint16 generation;
+        Flag flag;
+        WorldNumber world_number;
+    };
+
+    struct ReleasedData {
+        constexpr ReleasedData(uint32 _next_released_index, uint16 _current_generation, Flag _flag, ChunkIndex _chunk_index)
+            : next_released_index(_next_released_index)
+            , current_generation(_current_generation)
+            , flag(_flag)
+            , next_released_chunk_index(_chunk_index)
+        {
+        }
+        uint32 next_released_index;
+        uint16 current_generation;
+        Flag flag;
+        ChunkIndex next_released_chunk_index;
     };
 
     NewEntity() = default;
 
-    constexpr NewEntity(uint32 index,uint8 world_number, Flag flag)
+    constexpr NewEntity(WorldNumber world_number, Flag flag)
+        : impl(0,0,flag,world_number)
     {
-        impl.index = index;
-        impl.generation = 0;
-        impl.flag = flag;
-        impl.world_number = world_number;
+    }
+
+    constexpr NewEntity(uint32 next_released_index, ChunkIndex chunk_index, Flag flag)
+        : relesed_data(next_released_index,0,flag,chunk_index)
+    {
     }
 
     explicit operator uint64() const
@@ -38,7 +60,12 @@ public:
 
     static constexpr NewEntity Invalid()
     {
-        return NewEntity(0, 0, Flag::Invalid);
+        return NewEntity(0, Flag::Invalid);
+    }
+
+    void ReUse(uint32 record_index,WorldNumber world_number)
+    {
+        impl = Impl(record_index, impl.generation, Flag::None, world_number);
     }
 
     void Release()
@@ -69,6 +96,10 @@ public:
         return *this;
     }
 
+    uint32 GetRecordIndex() const
+    {
+        return impl.record_index;
+    }
 
     bool IncrementGeneration()
     {
@@ -84,10 +115,10 @@ public:
 
     auto operator<=>(const NewEntity&) const = default;
 
-    private:
-    union   {
-        Impl impl = {};
-        uint64 id ;
+    union {
+        Impl impl;
+        ReleasedData relesed_data;
+        uint64 id;
     };
 };
 

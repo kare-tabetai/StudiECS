@@ -1,5 +1,5 @@
 #pragma once
-#include "Entity.h"
+#include "NewEntity.h"
 #include "World.h"
 
 class FixedClass {
@@ -26,19 +26,19 @@ class TestClass1 {
 void WorldTest()
 {
     World world;
-    // Entity entity = world.CreateEntity<int, float*>();
-    // Entity entity = world.CreateEntity<int, float&>();
-    // Entity entity = world.CreateEntity<int, Entity>();
-    Entity entity_FixedClass_0 = world.CreateEntity<int, FixedClass>();
-    Entity entity_TestClass0_0 = world.CreateEntity<int, TestClass0>();
-    Entity entity_FixedClass_1 = world.CreateEntity<int, FixedClass>();
-    Entity entity_TestClass0_1 = world.CreateEntity<int, TestClass0>();
-    Entity entity_TestClass1_0 = world.CreateEntity<TestClass1, int>();
-    Entity entity_TestClass1_1 = world.CreateEntity<int, TestClass1>();
-    Entity entity_TestClass1_2 = world.CreateEntity<float, int, TestClass0>();
-    Entity entity_TestClass1_3 = world.CreateEntity<float, int, TestClass1>();
-    Entity entity_TestClass1_4 = world.CreateEntity<float, int, double, TestClass1>();
-    Entity entity_TestClass1_5 = world.CreateEntity<float, int, TestClass1>();
+    // NewEntity entity = world.CreateEntity<int, float*>();
+    // NewEntity entity = world.CreateEntity<int, float&>();
+    // NewEntity entity = world.CreateEntity<int, Entity>();
+    NewEntity entity_FixedClass_0 = world.CreateEntity<int, FixedClass>();
+    NewEntity entity_TestClass0_0 = world.CreateEntity<int, TestClass0>();
+    NewEntity entity_FixedClass_1 = world.CreateEntity<int, FixedClass>();
+    NewEntity entity_TestClass0_1 = world.CreateEntity<int, TestClass0>();
+    NewEntity entity_TestClass1_0 = world.CreateEntity<TestClass1, int>();
+    NewEntity entity_TestClass1_1 = world.CreateEntity<int, TestClass1>();
+    NewEntity entity_TestClass1_2 = world.CreateEntity<float, int, TestClass0>();
+    NewEntity entity_TestClass1_3 = world.CreateEntity<float, int, TestClass1>();
+    NewEntity entity_TestClass1_4 = world.CreateEntity<float, int, double, TestClass1>();
+    NewEntity entity_TestClass1_5 = world.CreateEntity<float, int, TestClass1>();
     auto float_ptr = world.Get<float>(entity_TestClass1_4);
     *float_ptr = 0.5f;
     auto [float_ptr_, duble_ptr] = world.GetTypes<float, double>(entity_TestClass1_4);
