@@ -9,6 +9,8 @@
 #include <memory>
 #include <unordered_map>
 #include <vector>
+#include "EntityRecord.h"
+#include "NewEntity.h"
 
 /// \brief 一番rootになるクラスここから全部操作する
 class World {
@@ -33,8 +35,8 @@ public:
         Entity entity = archetype_ref->CreateEntity();
 
         //m_entity_datasにアーキタイプを設定
-        assert(m_entity_datas.count(entity) == 0);
-        m_entity_datas.emplace(entity, archetype_ref);
+        //assert(m_entity_datas.count(entity) == 0);
+        //m_entity_datas.emplace(entity, archetype_ref);
 
         // m_component_indexにアーキタイプを設定
         for (const auto& type_info : type_info_refs) {
@@ -146,9 +148,8 @@ private:
     /// \brief Archetype情報の実体 [ArchetypeNumber]
     SparseSet<OwnerPtr<ArchetypeInfo>> m_archetype_infos; 
 
-    /// \brief Entityから持っているCDを探す用の参照
-    /// \note EntityにArchetypeNUmberを持たせているため、おそらくいらない
-    /// TODO:消す
-    std::unordered_map<Entity, RefPtr<ArchetypeInfo>> m_entity_datas;
+    /// \brief Entityの情報コンテナ
+    /// \note Entity->Chunkとそのindexをたどるよう
+    std::unordered_map<NewEntity,EntityRecord> m_entity_record;
 
 };

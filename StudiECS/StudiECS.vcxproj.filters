@@ -1472,6 +1472,12 @@
     <ClInclude Include="boost_hana.h">
       <Filter>ヘッダー ファイル\external</Filter>
     </ClInclude>
+    <ClInclude Include="EntityRecord.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="NewEntity.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="boost\hana\detail\struct_macros.hpp.erb">
