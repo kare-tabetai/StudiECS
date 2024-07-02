@@ -17,6 +17,9 @@ public:
     template<class T>
     static TypeInfo Make()
     {
+        constexpr bool kTriviallyConstructible = std::is_trivially_constructible_v<T>;
+        constexpr bool kTriviallyDestructible = std::is_trivially_destructible_v<T>;
+
         TypeInfo ret;
 
 #if _DEBUG
@@ -24,19 +27,19 @@ public:
 #endif // DEBUG
 
         ret.m_is_trivial_copyable = std::is_trivially_copyable_v<T>;
-        ret.m_is_trivial_destructible = std::is_trivially_destructible_v<T>;
+        ret.m_is_trivial_destructible = kTriviallyDestructible;
         ret.m_type_size = sizeof(T);
         ret.m_align_size = alignof(T);
         ret.m_is_empty_type = std::is_empty_v<T>;
         ret.m_id = TypeIDGenerator<T>::id();
 
-        if constexpr (std::is_default_constructible_v<T>) {
+        if constexpr (std::is_default_constructible_v<T> && !kTriviallyConstructible) {
             ret.m_default_constructor = [](void* ptr) {
                 T* casted_ptr = static_cast<T*>(ptr);
                 new (casted_ptr) T();
             };
         }
-        if constexpr (std::is_destructible_v<T>) {
+        if constexpr (std::is_destructible_v<T> && !kTriviallyDestructible) {
             ret.m_destructor = [](void* ptr) {
                 T* casted_ptr = static_cast<T*>(ptr);
                 casted_ptr->~T();
@@ -80,11 +83,13 @@ public:
 
     bool Construct(void* strage) const
     {
-        if (!m_default_constructor) {
+        if (m_default_constructor) {
+            m_default_constructor(strage);
+            return true;
+        } else {
             return false;
         }
-        m_default_constructor(strage);
-        return true;
+
     }
 
     void Destruct(void* strage) const
@@ -94,38 +99,43 @@ public:
 
     bool CopyConstruct(const void* source, void* dest) const
     {
-        if (!m_copy_constructor) {
+        if (m_copy_constructor) {
+            m_copy_constructor(source, dest);
+            return true;
+        } else {
             return false;
         }
-        m_copy_constructor(source, dest);
-        return true;
     }
 
     bool MoveConstruct(void* source, void* dest) const
     {
-        if (!m_move_constructor) {
+        if (m_move_constructor) {
+            m_move_constructor(source, dest);
+            return true;
+        } else {
             return false;
         }
-        m_move_constructor(source, dest);
-        return true;
+
     }
 
     bool CopyAsign(const void* source, void* dest) const
     {
-        if (!m_copy_asign) {
+        if (m_copy_asign) {
+            m_copy_asign(source, dest);
+            return true;
+        } else {
             return false;
         }
-        m_copy_asign(source, dest);
-        return true;
     }
 
     bool MoveAsign(void* source, void* dest) const
     {
-        if (!m_move_asign) {
+        if (m_move_asign) {
+            m_move_asign(source, dest);
+            return true;
+        } else {
             return false;
         }
-        m_move_asign(source, dest);
-        return true;
     }
 
     bool CanTrivialCopy() const { return m_is_trivial_copyable; }
