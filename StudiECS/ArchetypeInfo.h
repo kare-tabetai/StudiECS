@@ -3,7 +3,7 @@
 #include "Chunk.h"
 #include "OffsetArrayView.h"
 #include "Type.h"
-#include "NewEntity.h"
+#include "Entity.h"
 #include "ContainerTypes.h"
 #include <unordered_map>
 
@@ -30,19 +30,18 @@ public:
         addChunk();
     }
 
-    NewEntity CreateEntity(uint32 record_index)
+    std::tuple<Entity, ChunkIndex> CreateEntity(RecordIndex record_index, Generation generation)
     {
         auto chunk_index = static_cast<ChunkIndex>(m_chunks.size() - 1); // 最後のchunk
         auto index = m_empty_index;
         auto* entity_ptr = getEntity(
             chunk_index,
-            index
-        );
+            index);
         assert(entity_ptr->IsInvalid());
 
-        entity_ptr->ReUse(record_index,m_world_number); // 使用中にする
+        entity_ptr->ReSet(record_index, generation, m_world_number); // 使用中にする
 
-        m_empty_index++;//空きentityを指すように加算
+        m_empty_index++; // 空きentityを指すように加算
 
         // Chunkがいっぱいになった場合
         if (m_max_chunk_entity_max <= m_empty_index) [[unlikely]] {
@@ -50,9 +49,9 @@ public:
             m_empty_index = 0;
         }
 
-        //CDをコンストラクト
-        construct(chunk_index,index);
-        return *entity_ptr;
+        // CDをコンストラクト
+        construct(chunk_index, index);
+        return std::make_pair(*entity_ptr, chunk_index);
     }
 
     ArchetypeNumber GetNumber() const {
@@ -84,8 +83,7 @@ private:
         auto chunk = std::make_shared<Chunk>(
             m_type_infos, 
             m_max_chunk_entity_max,
-            m_world_number,
-            static_cast<ChunkIndex>(m_chunks.size()));
+            m_world_number);
         m_chunks.emplace_back(std::move(chunk));
     }
 
@@ -105,7 +103,7 @@ private:
         }
     }
 
-    NewEntity* getEntity(ChunkIndex chunk_index, uint32 index)
+    Entity* getEntity(ChunkIndex chunk_index, uint32 index)
     {
         assert(chunk_index < m_chunks.size());
         assert(chunk_index < m_max_chunk_entity_max);

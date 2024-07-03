@@ -4,7 +4,7 @@
 #include "ContainerTypes.h"
 #include "Concept.h"
 #include "Constant.h"
-#include "NewEntity.h"
+#include "Entity.h"
 #include <array>
 #include <cstddef>
 #include <memory>
@@ -15,13 +15,11 @@ public:
     Chunk(
         const TypeInfoRefContainer& type_infos_ref,
         uint32 max_entity_count, 
-        WorldNumber world_number,
-        ChunkIndex chunk_index)
+        WorldNumber world_number)
         : m_strage()
         , m_max_entity_count(max_entity_count)
         , m_cd_accessor(createCdArrayAccessor(m_strage, m_max_entity_count, type_infos_ref ))
     {
-        initializeEntities(world_number, chunk_index);
     }
 
     template<CdOrEntityConcept CdOrEntity>
@@ -41,8 +39,8 @@ public:
         return m_cd_accessor[cd_index].At(m_strage.data(), entity_index, type_size);
     }
 
-    NewEntity* GetEntity(uint32 index) {
-        return At<NewEntity>(0, index);
+    Entity* GetEntity(uint32 index) {
+        return At<Entity>(0, index);
     }
 
     template<CdOrEntityConcept CD>
@@ -81,7 +79,7 @@ private:
         uint32 max_entity_count,
         const TypeInfoRefContainer& type_infos_ref)
     {
-        assert(type_infos_ref.front()->GetID() == TypeIDGenerator<NewEntity>::id());
+        assert(type_infos_ref.front()->GetID() == TypeIDGenerator<Entity>::id());
 
         std::vector<OffsetArrayView> array_views;
         const std::byte* end_ptr = strage.data() + strage.size();
@@ -111,19 +109,6 @@ private:
         }
 
         return array_views;
-    }
-
-    void initializeEntities(ChunkIndex chunk_index)
-    {
-        auto entity_array = GetArray<NewEntity>(0);
-        for (uint32 i = 0; i < entity_array.size() - 1; ++i) {
-            assert(Util::IsInRange(&entity_array[i], m_strage.data(), &m_strage.back() + 1));
-
-            // MEMO: placement new
-            // 未使用のEntityは未使用リストとして扱うため
-            // 次の未使用の要素(次のindex)をさすようにしている
-            new (&entity_array[i]) NewEntity(i + 1, chunk_index, NewEntity::Flag::Invalid);
-        }
     }
 
     std::array<std::byte, kChunkSize> m_strage ;

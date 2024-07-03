@@ -8,14 +8,14 @@
 #include <tuple>
 
 template<CdConcept... CD>
-using EntityCdPtrTuple = std::tuple<NewEntity*,CD*...>;
+using EntityCdPtrTuple = std::tuple<Entity*,CD*...>;
 
 namespace Util {
 
 template<class... T>
 constexpr auto PushFrontEntity(hana_tuple<T...> input_type_list)
 {
-    constexpr auto entity_type_list = boost::hana::tuple_t<NewEntity>;
+    constexpr auto entity_type_list = boost::hana::tuple_t<Entity>;
     return TypeUtil::AddTypes(entity_type_list, input_type_list);
 }
 

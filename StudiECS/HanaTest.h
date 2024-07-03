@@ -23,7 +23,7 @@ constexpr auto connected_types = TypeUtil::AddTypes(
 
 
 
-constexpr bool is_front_type_entity = TypeUtil::IsFrontType(boost::hana::type_c<NewEntity>, sanitized_types);
+constexpr bool is_front_type_entity = TypeUtil::IsFrontType(boost::hana::type_c<Entity>, sanitized_types);
 
 constexpr bool is_true_type = TypeUtil::HanaTypeToBool(
     boost::hana::traits::is_void(boost::hana::type_c<void>));

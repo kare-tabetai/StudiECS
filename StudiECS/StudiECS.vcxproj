@@ -618,7 +618,7 @@
     <ClInclude Include="EnumUtilTest.h" />
     <ClInclude Include="external\boost\hana.hpp" />
     <ClInclude Include="HanaTest.h" />
-    <ClInclude Include="NewEntity.h" />
+    <ClInclude Include="Entity.h" />
     <ClInclude Include="OffsetArrayView.h" />
     <ClInclude Include="SparseSetTest.h" />
     <ClInclude Include="TypeUtil.h" />

@@ -92,9 +92,14 @@ public:
 
     }
 
-    void Destruct(void* strage) const
+    bool Destruct(void* strage) const
     {
-        m_destructor(strage);
+        if (m_destructor) {
+            m_destructor(strage);
+            return true;
+        } else {
+            return false;
+        }
     }
 
     bool CopyConstruct(const void* source, void* dest) const

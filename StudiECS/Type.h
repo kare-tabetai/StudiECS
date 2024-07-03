@@ -25,6 +25,8 @@ using CdIndex = uint8;
 using ArchetypeNumber = uint32;
 /// \brief アーキタイプごとのいくつめのchunkに属するかのindex
 using ChunkIndex = uint8;
+using RecordIndex = uint32;
+using Generation = uint16;
 
 /// \brief 所有権を持っておきたいポインタ(unique_ptrに置き換え予定)
 template<class T>

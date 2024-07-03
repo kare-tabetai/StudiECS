@@ -24,9 +24,7 @@ public:
 
     const T& operator[](uint32 sparse_index) const
     {
-        assert(sparse_index < m_sparse.size());
-        assert(m_sparse[sparse_index].has_value());
-        return m_dense[m_sparse[sparse_index].value()];
+        return const_cast<SparseSet<T>*>(this)[sparse_index];
     }
 
     bool Has(uint32 sparse_index) const
@@ -67,7 +65,7 @@ public:
 
     ArrayView<T> GetArray()
     {
-        return ArrayView<T>(m_dense.data(), m_dense.size());
+        return ArrayView<T>(m_dense.data(), static_cast<uint32>( m_dense.size()));
     }
 
 private:

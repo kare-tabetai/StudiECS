@@ -9,19 +9,21 @@
 #include <unordered_map>
 #include <vector>
 #include "EntityRecord.h"
-#include "NewEntity.h"
+#include "Entity.h"
 
 /// \brief 一番rootになるクラスここから全部操作する
 class World {
 public:
     World() {
         m_number = s_world_number_counter;
-        s_world_number_counter++;
+        if (s_world_number_counter != kUint8Max) {
+            s_world_number_counter++;
+        }
         assert(s_world_number_counter != kUint8Max);
     }
 
     template<CdConcept... Args>
-    NewEntity CreateEntity()
+    Entity CreateEntity()
     {
         constexpr auto type_list = TypeUtil::MakeTypeList<Args...>();
         constexpr auto sanitized = Util::SanitizeTypeList(type_list);
@@ -32,8 +34,15 @@ public:
         //m_archetype_infosにアーキタイプを設定
         RefPtr<ArchetypeInfo> archetype_ref = getOrRegisterArchetypeInfo(sanitized, type_info_refs);
 
-        uint32 record_index = 0;//TODO:m_entity_recordから空きindexを抽出
-        NewEntity entity = archetype_ref->CreateEntity(record_index);
+        RecordIndex record_index = getOrRegisterEntityRecord();
+        auto [entity, chunk_index] = archetype_ref->CreateEntity(
+            record_index, 
+            m_entity_record[record_index].record.generation
+        );
+
+
+        //TODO:EntityRecordに情報を登録する
+        m_entity_record[record_index]
 
         // m_component_indexにアーキタイプを設定
         for (const auto& type_info : type_info_refs) {
@@ -41,23 +50,22 @@ public:
                 m_component_index.emplace(type_info->GetID() ,ArchetypeMap());
             }
             m_component_index[type_info->GetID()][archetype_ref->GetNumber()] = archetype_ref;
-
         }
+
         return entity;
     }
 
     template<CdConcept CD>
-    CD* Get(NewEntity entity) {
+    CD* Get(Entity entity) {
         PtrTuple<CD> cd_ptr_tuple = GetTypes<CD>(entity);
         return std::get<0>(cd_ptr_tuple);
     }
 
     template<CdConcept... CD>
-    PtrTuple<CD...> GetTypes(NewEntity entity)
+    PtrTuple<CD...> GetTypes(Entity entity)
     {
-        //TODO:m_entity_recordからchunkにアクセスして取ってくるように変更
-
-        return m_archetype_infos[entity.GetIndex().archetype_number]->GetTypes<CD...>(entity.GetIndex());
+        auto& record = m_entity_record[entity.GetRecordIndex()];
+        return record.archetype_ref->GetTypes<CD...>(record.chunk_index, record.index);
     }
 
     template<CdOrEntityConcept CdOrEntity>
@@ -133,7 +141,14 @@ private:
         }
     }
 
-    static inline WorldNumber s_world_number_counter = 0;
+    RecordIndex getOrRegisterEntityRecord()
+    {
+        if (destroyed_index == kInvalidRecordIndex) {
+        
+        }
+    }
+
+    static inline std::atomic<WorldNumber> s_world_number_counter = 0;
 
     WorldNumber m_number = 0;
 
@@ -149,6 +164,6 @@ private:
 
     /// \brief Entityの情報コンテナ
     /// \note Entity->Chunkとそのindexをたどるよう
-    std::unordered_map<NewEntity,EntityRecord> m_entity_record;// TODO:SparseSetにする?
-
+    std::vector<EntityRecord> m_entity_record;
+    RecordIndex destroyed_index = kInvalidRecordIndex;
 };
