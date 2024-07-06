@@ -14,8 +14,7 @@ class Chunk {
 public:
     Chunk(
         const TypeInfoRefContainer& type_infos_ref,
-        uint32 max_entity_count, 
-        WorldNumber world_number)
+        uint32 max_entity_count)
         : m_strage()
         , m_max_entity_count(max_entity_count)
         , m_cd_accessor(createCdArrayAccessor(m_strage, m_max_entity_count, type_infos_ref ))

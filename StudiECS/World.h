@@ -1,20 +1,21 @@
 #pragma once
 #include "ArchetypeInfo.h"
+#include "Concept.h"
+#include "Constant.h"
+#include "Entity.h"
+#include "EntityRecord.h"
+#include "SparseSet.h"
 #include "Type.h"
 #include "TypeUtil.h"
-#include "SparseSet.h"
-#include "Constant.h"
-#include "Concept.h"
 #include <memory>
 #include <unordered_map>
 #include <vector>
-#include "EntityRecord.h"
-#include "Entity.h"
 
 /// \brief 一番rootになるクラスここから全部操作する
 class World {
 public:
-    World() {
+    World()
+    {
         m_number = s_world_number_counter;
         if (s_world_number_counter != kUint8Max) {
             s_world_number_counter++;
@@ -28,26 +29,25 @@ public:
         constexpr auto type_list = TypeUtil::MakeTypeList<Args...>();
         constexpr auto sanitized = Util::SanitizeTypeList(type_list);
 
-        //m_cd_infosにCDを設定
+        // m_cd_infosにCDを設定
         TypeInfoRefContainer type_info_refs = registerTypeInfos(sanitized);
 
-        //m_archetype_infosにアーキタイプを設定
+        // m_archetype_infosにアーキタイプを設定
         RefPtr<ArchetypeInfo> archetype_ref = getOrRegisterArchetypeInfo(sanitized, type_info_refs);
 
-        RecordIndex record_index = getOrRegisterEntityRecord();
+        RecordIndex record_index = getOrCreateEntityRecord();
+        assert(record_index < m_entity_record.size());
+
         auto [entity, chunk_index] = archetype_ref->CreateEntity(
-            record_index, 
-            m_entity_record[record_index].record.generation
-        );
+            record_index,
+            m_entity_record[record_index].record.generation);
 
-
-        //TODO:EntityRecordに情報を登録する
-        m_entity_record[record_index]
+        m_entity_record[record_index].Initialize(archetype_ref,chunk_index);
 
         // m_component_indexにアーキタイプを設定
         for (const auto& type_info : type_info_refs) {
-            if (m_component_index.count(type_info->GetID())== 0) {
-                m_component_index.emplace(type_info->GetID() ,ArchetypeMap());
+            if (m_component_index.count(type_info->GetID()) == 0) {
+                m_component_index.emplace(type_info->GetID(), ArchetypeMap());
             }
             m_component_index[type_info->GetID()][archetype_ref->GetNumber()] = archetype_ref;
         }
@@ -56,7 +56,8 @@ public:
     }
 
     template<CdConcept CD>
-    CD* Get(Entity entity) {
+    CD* Get(Entity entity)
+    {
         PtrTuple<CD> cd_ptr_tuple = GetTypes<CD>(entity);
         return std::get<0>(cd_ptr_tuple);
     }
@@ -65,11 +66,12 @@ public:
     PtrTuple<CD...> GetTypes(Entity entity)
     {
         auto& record = m_entity_record[entity.GetRecordIndex()];
-        return record.archetype_ref->GetTypes<CD...>(record.chunk_index, record.index);
+        return record.record.archetype_ref->GetTypes<CD...>(record.record.chunk_index, record.record.record_index);
     }
 
     template<CdOrEntityConcept CdOrEntity>
-    std::vector<ArrayView<CdOrEntity>> GetCdArray() {
+    std::vector<ArrayView<CdOrEntity>> GetCdArray()
+    {
         TypeDataID id = TypeIDGenerator<CdOrEntity>::id();
         auto component_data_itr = m_component_index.find(id);
         if (component_data_itr == m_component_index.end()) {
@@ -86,13 +88,13 @@ public:
         return result;
     }
 
-    void Shrink() {
-        //未使用になっているchunkなどを削除する
-        // denseを指していないsparse setのsparse配列をdenseを指しているところまで縮める
+    void Shrink()
+    {
+        // 未使用になっているchunkなどを削除する
+        //  denseを指していないsparse setのsparse配列をdenseを指しているところまで縮める
     }
 
 private:
-
     template<CdOrEntityConcept CD>
     RefPtr<TypeInfo> getOrRegisterTypeInfo()
     {
@@ -141,11 +143,9 @@ private:
         }
     }
 
-    RecordIndex getOrRegisterEntityRecord()
+    RecordIndex getOrCreateEntityRecord()
     {
-        if (destroyed_index == kInvalidRecordIndex) {
-        
-        }
+        return 0;
     }
 
     static inline std::atomic<WorldNumber> s_world_number_counter = 0;
@@ -153,14 +153,14 @@ private:
     WorldNumber m_number = 0;
 
     /// \brief CdOrEntity->所属Archetype検索用の参照
-    using ArchetypeMap = SparseSet<RefPtr<ArchetypeInfo>>;//[ArchetypeNumber]
-    std::unordered_map<TypeDataID,ArchetypeMap> m_component_index; // [TypeInfo::GetID()]
+    using ArchetypeMap = SparseSet<RefPtr<ArchetypeInfo>>; //[ArchetypeNumber]
+    std::unordered_map<TypeDataID, ArchetypeMap> m_component_index; // [TypeInfo::GetID()]
 
     /// \brief CD情報の実体 [CdNumber]
     SparseSet<OwnerPtr<TypeInfo>> m_cd_infos;
 
     /// \brief Archetype情報の実体 [ArchetypeNumber]
-    SparseSet<OwnerPtr<ArchetypeInfo>> m_archetype_infos; 
+    SparseSet<OwnerPtr<ArchetypeInfo>> m_archetype_infos;
 
     /// \brief Entityの情報コンテナ
     /// \note Entity->Chunkとそのindexをたどるよう
