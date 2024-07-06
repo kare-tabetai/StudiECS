@@ -16,8 +16,10 @@ public:
         const TypeInfoRefContainer& type_infos_ref,
         uint32 max_entity_count)
         : m_strage()
+#if _DEBUG
         , m_max_entity_count(max_entity_count)
-        , m_cd_accessor(createCdArrayAccessor(m_strage, m_max_entity_count, type_infos_ref ))
+#endif
+        , m_cd_accessor(createCdArrayAccessor(m_strage, max_entity_count, type_infos_ref))
     {
     }
 
@@ -43,13 +45,14 @@ public:
     }
 
     template<CdOrEntityConcept CD>
-    ArrayView<CD> GetArray(uint32 cd_index)
+    ArrayView<CD> GetArray(uint32 cd_index,uint32 size)
     {
         assert(cd_index < m_cd_accessor.size());
+        assert(size < m_max_entity_count);
 
         auto array_view = m_cd_accessor[cd_index].ToArrayView<CD>(
             m_strage.data(), 
-            m_max_entity_count
+            size
         );
 
         assert(Util::IsInRange(array_view.begin(), m_strage.data(), &m_strage.back() + 1));
@@ -110,7 +113,12 @@ private:
         return array_views;
     }
 
-    std::array<std::byte, kChunkSize> m_strage ;
+#if _DEBUG
+    /// \brief chunk‚É“ü‚ê‚ç‚ê‚éentity‚ÌÅ‘å”
+    /// \note assert—p
     uint32 m_max_entity_count = 0;
+#endif // DEBUG
+
+    std::array<std::byte, kChunkSize> m_strage ;
     std::vector<OffsetArrayView> m_cd_accessor = {};
 };

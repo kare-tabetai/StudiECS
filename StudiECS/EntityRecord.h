@@ -4,47 +4,42 @@
 #include "Chunk.h"
 #include "ArchetypeInfo.h"
 
-union EntityRecord {
-    struct Record {
-        Record() = default;
-        Record(
-            uint32 _record_index)
-            : archetype_ref(nullptr)
-            , record_index(_record_index)
-            , generation(0)
-            , chunk_index(kUint8Max)
-        {}
+struct EntityRecord {
+    EntityRecord(RecordIndex record_index)
+        : archetype_ref(nullptr)
+        , record_index(record_index)
+        , generation(0)
+        , chunk_index(kUint8Max)
+    {
+    }
 
-        RefPtr<ArchetypeInfo> archetype_ref = nullptr;
-        RecordIndex record_index = kInvalidRecordIndex;
-        Generation generation = kUint16Max;
-        ChunkIndex chunk_index = kUint8Max;
-    };
-    struct DestroyedRecord {
-        std::array<std::byte, sizeof(RefPtr<ArchetypeInfo>)> padding0;
-        RecordIndex destroyed_index = kUint32Max;
-        Generation generation = kUint16Max;
-        uint8 destroyed = kUint8Max;
-    };
-
-    EntityRecord() = default;
     ~EntityRecord() = default;
 
-    EntityRecord(
-        RecordIndex _record_index)
-        : record(
-            _record_index)
+    void Initialize(
+        const RefPtr<ArchetypeInfo>& _archetype_ref,
+        ChunkIndex _chunk_index)
     {
+        archetype_ref = _archetype_ref;
+        chunk_index = _chunk_index;
     }
 
-    void Initialize(
-        const RefPtr<ArchetypeInfo>& archetype_ref,
-        ChunkIndex chunk_index)
+    RecordIndex GetDestroyedIndex() {
+        assert(destroyed == kUint8Max);
+        return destroyed_index;
+    }
+    void ReUse(RecordIndex _record_index)
     {
-        record.archetype_ref = archetype_ref;
-        record.chunk_index = chunk_index;
+        record_index = _record_index;
     }
     
-    Record record = {};
-    DestroyedRecord destroyed_record;
+    RefPtr<ArchetypeInfo> archetype_ref;
+    union {
+        RecordIndex record_index = kInvalidRecordIndex;
+        RecordIndex destroyed_index;
+    };
+    Generation generation = kUint16Max;
+    union {
+        ChunkIndex chunk_index = kUint8Max;
+        uint8 destroyed;
+    };
 };

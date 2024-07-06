@@ -67,12 +67,21 @@ public:
 
     template<CdOrEntityConcept CdOrEntity>
     std::vector<ArrayView<CdOrEntity>> GetTypeArrays() {
+        if (m_chunks.empty()) {
+            return std::vector<ArrayView<CdOrEntity>>();
+        }
+
         std::vector<ArrayView<CdOrEntity>> result;
         result.reserve(m_chunks.size());
-
-        for (auto& chunk : m_chunks) {
-            result.push_back(chunk->GetArray<CdOrEntity>(getCdIndex<CdOrEntity>()));
+        
+        for (uint32 i = 0; i < m_chunks.size() - 1;++i) {
+            result.push_back(m_chunks[i]->GetArray<CdOrEntity>(getCdIndex<CdOrEntity>(), m_max_chunk_entity_max));
         }
+
+        assert(m_empty_index != 0);
+        // MEMO:最後のチャンクは途中の要素までしか使われていないはずなのでsizeを指定
+        result.push_back(m_chunks.back()->GetArray<CdOrEntity>(getCdIndex<CdOrEntity>(), m_empty_index ));
+
         return result;
     }
 
@@ -82,8 +91,8 @@ private:
     {
         auto chunk = std::make_shared<Chunk>(
             m_type_infos, 
-            m_max_chunk_entity_max,
-            m_world_number);
+            m_max_chunk_entity_max
+            );
         m_chunks.emplace_back(std::move(chunk));
     }
 

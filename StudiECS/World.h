@@ -40,7 +40,7 @@ public:
 
         auto [entity, chunk_index] = archetype_ref->CreateEntity(
             record_index,
-            m_entity_record[record_index].record.generation);
+            m_entity_record[record_index].generation);
 
         m_entity_record[record_index].Initialize(archetype_ref,chunk_index);
 
@@ -66,7 +66,7 @@ public:
     PtrTuple<CD...> GetTypes(Entity entity)
     {
         auto& record = m_entity_record[entity.GetRecordIndex()];
-        return record.record.archetype_ref->GetTypes<CD...>(record.record.chunk_index, record.record.record_index);
+        return record.archetype_ref->GetTypes<CD...>(record.chunk_index, record.record_index);
     }
 
     template<CdOrEntityConcept CdOrEntity>
@@ -145,7 +145,17 @@ private:
 
     RecordIndex getOrCreateEntityRecord()
     {
-        return 0;
+        if (destroyed_index == kInvalidRecordIndex) {
+            // MEMO:í«â¡Ç∑ÇÈç≈å„ÇÃóvëfÇÃindexÇæÇ©ÇÁsizeÇ≈Ç¢Ç¢
+            RecordIndex record_index = static_cast<RecordIndex>(m_entity_record.size());
+            m_entity_record.emplace_back(record_index);
+            return record_index;
+        } else {
+            RecordIndex record_index = destroyed_index;
+            destroyed_index = m_entity_record[record_index].GetDestroyedIndex();
+            m_entity_record[record_index].ReUse(record_index);
+            return record_index;
+        }
     }
 
     static inline std::atomic<WorldNumber> s_world_number_counter = 0;
