@@ -34,7 +34,7 @@ namespace _hana {
     //
     // EBOs can be indexed using an arbitrary type. The recommended usage is
     // to define an integrap constant wrapper for the specific container using
-    // EBO, and then record_index using that wrapper:
+    // EBO, and then index using that wrapper:
     //
     //      template <int> struct idx; // wrapper for tuple
     //      template <typename ...T>

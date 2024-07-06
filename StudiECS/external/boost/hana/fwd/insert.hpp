@@ -29,17 +29,17 @@ namespace boost { namespace hana {
     BOOST_HANA_INLINE_VARIABLE constexpr insert_t insert{};
 
 
-    //! Insert a value at a given record_index in a sequence.
+    //! Insert a value at a given index in a sequence.
     //! @ingroup group-Sequence
     //!
-    //! Given a sequence, an record_index and an element to insert, `insert` inserts
-    //! the element at the given record_index.
+    //! Given a sequence, an index and an element to insert, `insert` inserts
+    //! the element at the given index.
     //!
     //! @param xs
     //! The sequence in which a value should be inserted.
     //!
     //! @param n
-    //! The record_index at which an element should be inserted. This must be a
+    //! The index at which an element should be inserted. This must be a
     //! non-negative `Constant` of an integral type, and it must also be
     //! true that `n < length(xs)` if `xs` is a finite sequence.
     //!

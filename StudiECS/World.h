@@ -38,11 +38,11 @@ public:
         RecordIndex record_index = getOrCreateEntityRecord();
         assert(record_index < m_entity_record.size());
 
-        auto [entity, chunk_index] = archetype_ref->CreateEntity(
+        auto [entity, chunk_index,index] = archetype_ref->CreateEntity(
             record_index,
             m_entity_record[record_index].GetGeneration());
 
-        m_entity_record[record_index].Initialize(archetype_ref,chunk_index);
+        m_entity_record[record_index].Initialize(archetype_ref, index, chunk_index);
 
         // m_component_indexにアーキタイプを設定
         for (const auto& type_info : type_info_refs) {
@@ -58,8 +58,22 @@ public:
     void DestroyEntity(Entity entity) {
         assert(entity.GetRecordIndex() < m_entity_record.size());
         auto& record = m_entity_record[entity.GetRecordIndex()];
-        //record.archetype_ref
-        //TODO:
+        record.Destroy(entity, m_destroyed_index);
+        m_destroyed_index = entity.GetRecordIndex();
+        // TODO:m_entity_recordを総なめして削除されたchunkのindex以上のindexをずらす
+
+        assert(!IsValid(entity));
+    }
+
+    bool IsValid(Entity entity) {
+        if (entity.IsInvalid()) {
+            return false;
+        }
+        if (m_entity_record.size() <= entity.GetRecordIndex()) {
+            return false;
+        }
+        auto& record = m_entity_record[entity.GetRecordIndex()];
+        return record.IsCurrentGeneration(entity.GetGeneration());
     }
 
     template<CdConcept CD>
@@ -74,7 +88,7 @@ public:
     {
         assert(entity.GetRecordIndex() < m_entity_record.size());
         auto& record = m_entity_record[entity.GetRecordIndex()];
-        return record.GetArchetypeInfo()->GetTypes<CD...>(record.GetChunkIndex(), record.GetRecordIndex());
+        return record.GetArchetypeInfo()->GetTypes<CD...>(record.GetChunkIndex(), record.GetIndex());
     }
 
     template<CdOrEntityConcept CdOrEntity>
@@ -147,14 +161,14 @@ private:
 
     RecordIndex getOrCreateEntityRecord()
     {
-        if (destroyed_index == kInvalidRecordIndex) {
+        if (m_destroyed_index == kInvalidRecordIndex) {
             // MEMO:追加する最後の要素のindexだからsizeでいい
             RecordIndex record_index = static_cast<RecordIndex>(m_entity_record.size());
-            m_entity_record.emplace_back(record_index);
+            m_entity_record.emplace_back(); 
             return record_index;
         } else {
-            RecordIndex record_index = destroyed_index;
-            destroyed_index = m_entity_record[record_index].GetDestroyedIndex();
+            RecordIndex record_index = m_destroyed_index;
+            m_destroyed_index = m_entity_record[record_index].GetDestroyedIndex();
             m_entity_record[record_index].ReUse(record_index);
             return record_index;
         }
@@ -177,5 +191,5 @@ private:
     /// \brief Entityの情報コンテナ
     /// \note Entity->Chunkとそのindexをたどるよう
     std::vector<EntityRecord> m_entity_record;
-    RecordIndex destroyed_index = kInvalidRecordIndex;
+    RecordIndex m_destroyed_index = kInvalidRecordIndex;
 };

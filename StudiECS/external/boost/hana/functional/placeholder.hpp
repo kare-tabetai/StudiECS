@@ -65,7 +65,7 @@ namespace boost { namespace hana {
     //! ### Example
     //! @include example/functional/placeholder.cpp
     //!
-    //! [Boost.Phoenix]: http://www.boost.org/doc/libs/release/libs/phoenix/doc/html/record_index.html
+    //! [Boost.Phoenix]: http://www.boost.org/doc/libs/release/libs/phoenix/doc/html/index.html
 #ifdef BOOST_HANA_DOXYGEN_INVOKED
     constexpr unspecified _{};
 #else

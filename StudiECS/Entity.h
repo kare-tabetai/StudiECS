@@ -52,7 +52,6 @@ public:
     void Release()
     {
         AddFlag(Flag::Invalid);
-        impl.generation++;
     }
 
     /// \brief –³Œø‚Èentity‚©‚Ç‚¤‚©
@@ -77,21 +76,14 @@ public:
         return *this;
     }
 
-    uint32 GetRecordIndex() const
+    RecordIndex GetRecordIndex() const
     {
         return impl.record_index;
     }
 
-    bool IncrementGeneration()
+    Generation GetGeneration()const
     {
-        if (impl.generation == kUint16Max) [[unlikely]] {
-            assert(false);
-            impl.generation = 0;
-            return false;
-        }
-
-        impl.generation++;
-        return true;
+        return impl.generation;
     }
 
     auto operator<=>(const Entity&) const = default;

@@ -19,7 +19,7 @@ namespace boost { namespace hana {
     //! @ingroup group-Searchable
     //!
     //! The keys of the structure must be `Logical`s. If the structure is not
-    //! finite, a false-valued key must appear at a finite "record_index" in order
+    //! finite, a false-valued key must appear at a finite "index" in order
     //! for this method to finish.
     //!
     //!

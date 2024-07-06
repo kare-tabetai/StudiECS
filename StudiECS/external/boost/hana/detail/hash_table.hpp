@@ -53,8 +53,8 @@ namespace boost { namespace hana { namespace detail {
     // end find_indices
 
     // find_index:
-    //  Returns the actual record_index of a `Key` in the `Map`. The type of the key
-    //  associated to any given record_index must be retrievable with the `KeyAtIndex`
+    //  Returns the actual index of a `Key` in the `Map`. The type of the key
+    //  associated to any given index must be retrievable with the `KeyAtIndex`
     //  alias.
     template <template <std::size_t> class KeyAtIndex, typename Key>
     struct find_pred {
@@ -112,7 +112,7 @@ namespace boost { namespace hana { namespace detail {
 
     template <typename ...Buckets, typename Key, std::size_t Index>
     struct bucket_insert<hash_table<Buckets...>, Key, Index, true> {
-        // There is a bucket for that Hash; append the new record_index to it.
+        // There is a bucket for that Hash; append the new index to it.
         using Hash = typename decltype(hana::hash(std::declval<Key>()))::type;
         using type = hash_table<typename update_bucket<Buckets, Hash, Index>::type...>;
     };
@@ -127,7 +127,7 @@ namespace boost { namespace hana { namespace detail {
 
     // make_hash_table:
     //  Creates a `hash_table` type able of holding the given number of
-    //  elements. The type of the key associated to any given record_index must
+    //  elements. The type of the key associated to any given index must
     //  be retrievable using the `KeyAtIndex` alias. All the keys must
     //  be distinct and have different hashes too.
     template <template <std::size_t> class KeyAtIndex, std::size_t N,

@@ -29,8 +29,8 @@ namespace boost { namespace hana {
     //!
     //! The indices do not have to be ordered or contiguous in any particular
     //! way, but they must not be out of the bounds of the sequence. It is
-    //! also possible to specify the same record_index multiple times, in which case
-    //! the element at this record_index will be repeatedly included in the resulting
+    //! also possible to specify the same index multiple times, in which case
+    //! the element at this index will be repeatedly included in the resulting
     //! sequence.
     //!
     //!
@@ -78,10 +78,10 @@ namespace boost { namespace hana {
     //!
     //!
     //! @tparam from
-    //! The record_index of the first element in the slice.
+    //! The index of the first element in the slice.
     //!
     //! @tparam to
-    //! One-past the record_index of the last element in the slice. It must hold
+    //! One-past the index of the last element in the slice. It must hold
     //! that `from <= to`.
     //!
     //!

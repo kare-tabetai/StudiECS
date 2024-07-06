@@ -40,7 +40,7 @@ namespace boost { namespace hana { namespace detail {
     };
 
     //! @ingroup group-details
-    //! Returns the record_index of the first element which does not satisfy `Pred`,
+    //! Returns the index of the first element which does not satisfy `Pred`,
     //! or `sizeof...(Xs)` if no such element exists.
     template <typename Pred>
     struct first_unsatisfied_index {

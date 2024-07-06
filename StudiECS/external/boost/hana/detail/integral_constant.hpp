@@ -146,7 +146,7 @@ namespace boost { namespace hana {
         //! `times` is equivalent to the `hana::repeat` function, which works
         //! on an arbitrary `IntegralConstant`.
         //!
-        //! Sometimes, it is also useful to know the record_index we're at inside the
+        //! Sometimes, it is also useful to know the index we're at inside the
         //! function. This can be achieved by using `times.with_index`:
         //! @snippet example/integral_constant.cpp times_with_index_runtime
         //!
@@ -160,7 +160,7 @@ namespace boost { namespace hana {
         //!
         //! @note
         //! `times.with_index(f)` guarantees that the calls to `f` will be
-        //! done in order of ascending record_index. In other words, `f` will be
+        //! done in order of ascending index. In other words, `f` will be
         //! called as `f(0)`, `f(1)`, `f(2)`, etc., but with `integral_constant`s
         //! instead of normal integers. Side effects can also be done in the
         //! function passed to `times` and `times.with_index`.

@@ -21,7 +21,7 @@ namespace boost { namespace hana {
     //!
     //! Given an `Iterable` structure `xs` and a predicate `pred`,
     //! `index_if(xs, pred)` returns a `hana::optional` containing an `IntegralConstant`
-    //! of the record_index of the first element that satisfies the predicate or nothing
+    //! of the index of the first element that satisfies the predicate or nothing
     //! if no element satisfies the predicate.
     //!
     //!

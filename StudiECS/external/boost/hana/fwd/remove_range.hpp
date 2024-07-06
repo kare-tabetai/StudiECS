@@ -27,7 +27,7 @@ namespace boost { namespace hana {
     //!
     //!
     //! @note
-    //! The behavior is undefined if the range contains any record_index out of the
+    //! The behavior is undefined if the range contains any index out of the
     //! bounds of the sequence.
     //!
     //!

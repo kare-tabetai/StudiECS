@@ -19,7 +19,7 @@ Distributed under the Boost Software License, Version 1.0.
 
 namespace boost { namespace hana {
     //! @ingroup group-datatypes
-    //! General purpose record_index-based heterogeneous sequence with a fixed length.
+    //! General purpose index-based heterogeneous sequence with a fixed length.
     //!
     //! The tuple is the bread and butter for static metaprogramming.
     //! Conceptually, it is like a `std::tuple`; it is a container able
@@ -28,7 +28,7 @@ namespace boost { namespace hana {
     //! than its `std` counterpart, and it is also much more efficient than
     //! all standard library implementations tested so far.
     //!
-    //! Tuples are record_index-based sequences. If you need an associative
+    //! Tuples are index-based sequences. If you need an associative
     //! sequence with a key-based access, then you should consider
     //! `hana::map` or `hana::set` instead.
     //!

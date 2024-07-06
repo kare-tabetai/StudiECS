@@ -100,7 +100,7 @@ namespace boost { namespace hana {
     //! @code
     //!     any_of(xs, equal.to(z))  <=>  xi == z
     //! @endcode
-    //! for some _finite_ record_index `i`. Furthermore,
+    //! for some _finite_ index `i`. Furthermore,
     //! @code
     //!     find_if(xs, pred) == just(the first xi such that pred(xi) is satisfied)
     //! @endcode

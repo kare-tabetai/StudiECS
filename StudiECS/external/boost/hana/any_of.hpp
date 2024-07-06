@@ -157,7 +157,7 @@ namespace boost { namespace hana {
         }
 
         // Since an array contains homogeneous data, if the predicate returns
-        // a compile-time logical at any record_index, it must do so at every record_index
+        // a compile-time logical at any index, it must do so at every index
         // (because the type of the elements won't change)! In this case, we
         // then only need to evaluate the predicate on the first element.
         template <typename Xs, typename Pred>

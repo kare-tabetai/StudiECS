@@ -30,7 +30,7 @@ public:
         addChunk();
     }
 
-    std::tuple<Entity, ChunkIndex> CreateEntity(RecordIndex record_index, Generation generation)
+    std::tuple<Entity, ChunkIndex,uint32> CreateEntity(RecordIndex record_index, Generation generation)
     {
         auto chunk_index = static_cast<ChunkIndex>(m_chunks.size() - 1); // 最後のchunk
         auto index = m_empty_index;
@@ -51,7 +51,12 @@ public:
 
         // CDをコンストラクト
         construct(chunk_index, index);
-        return std::make_pair(*entity_ptr, chunk_index);
+        return std::make_tuple(*entity_ptr, chunk_index, index);
+    }
+
+    void DestroyEntity(Entity entity,ChunkIndex _chunk_index,uint32 _index) {
+        //TODO:
+        destruct(_chunk_index, _index);
     }
 
     ArchetypeNumber GetNumber() const {
@@ -101,7 +106,7 @@ private:
         assert(chunk_index < m_chunks.size());
         auto& chunk = m_chunks[chunk_index];
 
-        // MEMO: Entityは初期化しない
+        // MEMO: Entityは呼ばない
         for (uint32 cd_index = 1; cd_index < m_type_infos.size(); cd_index++) {
             void* cd = chunk->At(
                 cd_index, 
@@ -109,6 +114,20 @@ private:
                 static_cast<uint32>(m_type_infos[cd_index]->GetTypeSize())
             );
             m_type_infos[cd_index]->Construct(cd);
+        }
+    }
+
+    void destruct(ChunkIndex chunk_index, uint32 index) {
+        assert(chunk_index < m_chunks.size());
+        auto& chunk = m_chunks[chunk_index];
+
+        // MEMO: Entityは呼ばない
+        for (uint32 cd_index = 1; cd_index < m_type_infos.size(); cd_index++) {
+            void* cd = chunk->At(
+                cd_index,
+                index,
+                static_cast<uint32>(m_type_infos[cd_index]->GetTypeSize()));
+            m_type_infos[cd_index]->Destruct(cd);
         }
     }
 
