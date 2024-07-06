@@ -40,7 +40,7 @@ public:
 
         auto [entity, chunk_index] = archetype_ref->CreateEntity(
             record_index,
-            m_entity_record[record_index].generation);
+            m_entity_record[record_index].GetGeneration());
 
         m_entity_record[record_index].Initialize(archetype_ref,chunk_index);
 
@@ -55,6 +55,13 @@ public:
         return entity;
     }
 
+    void DestroyEntity(Entity entity) {
+        assert(entity.GetRecordIndex() < m_entity_record.size());
+        auto& record = m_entity_record[entity.GetRecordIndex()];
+        //record.archetype_ref
+        //TODO:
+    }
+
     template<CdConcept CD>
     CD* Get(Entity entity)
     {
@@ -65,8 +72,9 @@ public:
     template<CdConcept... CD>
     PtrTuple<CD...> GetTypes(Entity entity)
     {
+        assert(entity.GetRecordIndex() < m_entity_record.size());
         auto& record = m_entity_record[entity.GetRecordIndex()];
-        return record.archetype_ref->GetTypes<CD...>(record.chunk_index, record.record_index);
+        return record.GetArchetypeInfo()->GetTypes<CD...>(record.GetChunkIndex(), record.GetRecordIndex());
     }
 
     template<CdOrEntityConcept CdOrEntity>
@@ -86,12 +94,6 @@ public:
             result.insert(result.end(), cd_arrays.begin(), cd_arrays.end());
         }
         return result;
-    }
-
-    void Shrink()
-    {
-        // 未使用になっているchunkなどを削除する
-        //  denseを指していないsparse setのsparse配列をdenseを指しているところまで縮める
     }
 
 private:

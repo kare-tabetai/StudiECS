@@ -23,15 +23,40 @@ struct EntityRecord {
         chunk_index = _chunk_index;
     }
 
-    RecordIndex GetDestroyedIndex() {
-        assert(destroyed == kUint8Max);
+    RecordIndex GetDestroyedIndex() const
+    {
+        assert(isDestroyed());
         return destroyed_index;
+    }
+    Generation GetGeneration() const
+    {
+        return generation;
+    }
+    ChunkIndex GetChunkIndex()const
+    {
+        assert(!isDestroyed());
+        return chunk_index;
+    }
+    RecordIndex GetRecordIndex() const
+    {
+        assert(!isDestroyed());
+        return record_index;
+    }
+    RefPtr<ArchetypeInfo> GetArchetypeInfo()
+    {
+        assert(!isDestroyed());
+        return archetype_ref;
     }
     void ReUse(RecordIndex _record_index)
     {
         record_index = _record_index;
     }
-    
+
+private:
+    bool isDestroyed() const{
+        return destroyed == kUint8Max;
+    }
+
     RefPtr<ArchetypeInfo> archetype_ref;
     union {
         RecordIndex record_index = kInvalidRecordIndex;
