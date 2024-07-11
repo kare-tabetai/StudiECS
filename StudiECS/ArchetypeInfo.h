@@ -31,7 +31,7 @@ public:
         addChunk();
     }
 
-    /// \ret_val Entityの参照とそのindexを返す
+    /// \retval Entityの参照とそのindexを返す
     std::tuple<Entity, EntityIndex> CreateEntity(RecordIndex record_index, Generation generation)
     {
         // 最後のchunk,空きindex
@@ -56,7 +56,7 @@ public:
     }
 
     /// \brief Entityを削除する
-    /// \ret_val 削除されたEntity以降のindexのEntity
+    /// \retval 削除されたEntity以降のindexのEntity
     std::vector<ArrayView<Entity>> DestroyEntity(const EntityIndex& entity_index)
     {
         destruct(entity_index);
@@ -67,7 +67,9 @@ public:
         }
 
         auto next_index = entity_index.GetIncremented(m_chunks.size(), m_max_entity_size);
-        return GetTypeArrays<Entity>(next_index);
+        auto shift_entitiese =  GetTypeArrays<Entity>(next_index);
+        //TODO:既存のchunkない要素を空いた分だけmemcpyで移動する処理
+        return shift_entitiese;
     }
 
     ArchetypeNumber GetNumber() const {
@@ -121,7 +123,7 @@ public:
     }
 
 private:
-    /// \ret_val 追加したchunkの最初の要素を示すindexを返す
+    /// \retval 追加したchunkの最初の要素を示すindexを返す
     void addChunk()
     {
         auto chunk = std::make_shared<Chunk>(
@@ -216,7 +218,7 @@ private:
 
     /// \brief chunkごとに入れられるentityの数
     uint32 m_max_entity_size = 0;
-    std::vector<OwnerPtr<Chunk>> m_chunks;
+    std::vector<OwnerPtr<Chunk>> m_chunks;//TODO: ChunkContainerに変更
 
     ///  \brief CD追加時に移動するArchetypeへの参照キャッシュ
     std::unordered_map<CdID, ArchetypeBrunch> m_brunch;

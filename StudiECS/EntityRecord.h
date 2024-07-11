@@ -13,15 +13,18 @@ struct EntityRecord {
         archetype_ref = _archetype_ref;
         chunk_index = _entity_index.GetChunkIndex();
     }
-    void Destroy( RecordIndex _destroyed_index)
+
+    /// \retval çÌèúÇ≥ÇÍÇΩEntityà»ç~ÇÃindexÇÃEntity
+    std::vector<ArrayView<Entity>> Destroy(RecordIndex _destroyed_index)
     {
         assert(!isDestroyed());
 
-        archetype_ref->DestroyEntity(EntityIndex(chunk_index, local_index));
+        auto shift_entities = archetype_ref->DestroyEntity(EntityIndex(chunk_index, local_index));
         archetype_ref = nullptr;
         destroyed_index = _destroyed_index;
         incrementGeneration();
         destroyed = kUint8Max;
+        return shift_entities;
     }
 
     EntityIndex GetEntityIndex() const
@@ -70,11 +73,11 @@ private:
     }
 
     RefPtr<ArchetypeInfo> archetype_ref = nullptr;
+    Generation generation = 0;
     union {
-        LocalIndex local_index = kInvalidRecordIndex;
+        LocalIndex local_index = kInvalidRecordIndex;//TODO:chunk_indexÇ∆Ç‹Ç∆ÇﬂÇƒEntityIndexâª
         RecordIndex destroyed_index;
     };
-    Generation generation = 0;
     union {
         ChunkIndex chunk_index = kUint8Max;
         uint8 destroyed;

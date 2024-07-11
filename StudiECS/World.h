@@ -58,10 +58,16 @@ public:
     void DestroyEntity(Entity entity) {
         assert(entity.GetRecordIndex() < m_entity_record.size());
         auto& record = m_entity_record[entity.GetRecordIndex()];
-        record.Destroy( m_destroyed_index);
+        auto shift_entities = record.Destroy(m_destroyed_index);
         m_destroyed_index = entity.GetRecordIndex();
 
         assert(!IsValid(entity));
+
+        for (auto& shift_entity_array : shift_entities) {
+            for (Entity shift_entity : shift_entity_array) {
+                //TODO:EntityRecord‚ª·‚·EntityIndex‚ð‚ ‚¢‚½•ª‚¾‚¯‚¸‚ç‚·
+            }
+        }
     }
 
     bool IsValid(Entity entity) {

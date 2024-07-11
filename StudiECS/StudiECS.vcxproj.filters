@@ -1475,6 +1475,9 @@
     <ClInclude Include="EntityIndex.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
+    <ClInclude Include="ChunkContainer.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="boost\hana\detail\struct_macros.hpp.erb">

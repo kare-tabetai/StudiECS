@@ -37,7 +37,7 @@ public:
     }
 
     /// \brief indexを加算
-    /// \ret_val chunkのサイズを超えた場合はtrue
+    /// \retval chunkのサイズを超えた場合はtrue
     bool Increment(size_t chunk_size, uint32 local_index_size)
     {
         if (!IsLastLocalIndex(local_index_size)) {

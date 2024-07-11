@@ -634,6 +634,7 @@
     <ClInclude Include="UtilTest.h" />
     <ClInclude Include="World.h" />
     <ClInclude Include="WorldTest.h" />
+    <ClInclude Include="ChunkContainer.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="boost\hana\detail\struct_macros.hpp.erb" />
