@@ -38,11 +38,11 @@ public:
         RecordIndex record_index = getOrCreateEntityRecord();
         assert(record_index < m_entity_record.size());
 
-        auto [entity, chunk_index,index] = archetype_ref->CreateEntity(
+        auto [entity, entity_index] = archetype_ref->CreateEntity(
             record_index,
             m_entity_record[record_index].GetGeneration());
 
-        m_entity_record[record_index].Initialize(archetype_ref, index, chunk_index);
+        m_entity_record[record_index].Initialize(archetype_ref, entity_index);
 
         // m_component_indexにアーキタイプを設定
         for (const auto& type_info : type_info_refs) {
@@ -58,9 +58,8 @@ public:
     void DestroyEntity(Entity entity) {
         assert(entity.GetRecordIndex() < m_entity_record.size());
         auto& record = m_entity_record[entity.GetRecordIndex()];
-        record.Destroy(entity, m_destroyed_index);
+        record.Destroy( m_destroyed_index);
         m_destroyed_index = entity.GetRecordIndex();
-        // TODO:m_entity_recordを総なめして削除されたchunkのindex以上のindexをずらす
 
         assert(!IsValid(entity));
     }
@@ -88,7 +87,7 @@ public:
     {
         assert(entity.GetRecordIndex() < m_entity_record.size());
         auto& record = m_entity_record[entity.GetRecordIndex()];
-        return record.GetArchetypeInfo()->GetTypes<CD...>(record.GetChunkIndex(), record.GetIndex());
+        return record.GetArchetypeInfo()->GetTypes<CD...>(record.GetEntityIndex());
     }
 
     template<CdOrEntityConcept CdOrEntity>
@@ -191,5 +190,7 @@ private:
     /// \brief Entityの情報コンテナ
     /// \note Entity->Chunkとそのindexをたどるよう
     std::vector<EntityRecord> m_entity_record;
+
+    /// \brief m_entity_recordの空要素をたどるよう
     RecordIndex m_destroyed_index = kInvalidRecordIndex;
 };

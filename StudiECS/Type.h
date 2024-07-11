@@ -25,6 +25,8 @@ using CdIndex = uint8;
 using ArchetypeNumber = uint32;
 /// \brief アーキタイプごとのいくつめのchunkに属するかのindex
 using ChunkIndex = uint8;
+/// \brief chunk内のEntityやCDを示すindex
+using LocalIndex = uint32;
 using RecordIndex = uint32;
 using Generation = uint16;
 

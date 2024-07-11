@@ -17,42 +17,45 @@ public:
         uint32 max_entity_count)
         : m_strage()
 #if _DEBUG
-        , m_max_entity_count(max_entity_count)
+        , m_max_entity_size(max_entity_count)
 #endif
         , m_cd_accessor(createCdArrayAccessor(m_strage, max_entity_count, type_infos_ref))
     {
     }
 
     template<CdOrEntityConcept CdOrEntity>
-    CdOrEntity* At(CdIndex cd_index, uint32 entity_index)
+    CdOrEntity* At(CdIndex cd_index, LocalIndex local_index)
     {
         assert(cd_index < m_cd_accessor.size());
-        assert(entity_index < m_max_entity_count);
+        assert(local_index < m_max_entity_size);
 
-        return m_cd_accessor[cd_index].At<CdOrEntity>(m_strage.data(),entity_index);
+        return m_cd_accessor[cd_index].At<CdOrEntity>(m_strage.data(), local_index);
     }
 
-    void* At(uint32 cd_index, uint32 entity_index, uint32 type_size)
+    void* At(uint32 cd_index, LocalIndex local_index, uint32 type_size)
     {
         assert(cd_index < m_cd_accessor.size());
-        assert(entity_index < m_max_entity_count);
+        assert(local_index < m_max_entity_size);
 
-        return m_cd_accessor[cd_index].At(m_strage.data(), entity_index, type_size);
+        return m_cd_accessor[cd_index].At(m_strage.data(), local_index, type_size);
     }
 
-    Entity* GetEntity(uint32 index) {
-        return At<Entity>(0, index);
+    Entity* GetEntity(LocalIndex local_index)
+    {
+        return At<Entity>(0, local_index);
     }
 
     template<CdOrEntityConcept CD>
-    ArrayView<CD> GetArray(uint32 cd_index,uint32 size)
+    ArrayView<CD> GetArray(uint32 cd_index,uint32 size,uint32 begin_index = 0)
     {
         assert(cd_index < m_cd_accessor.size());
-        assert(size < m_max_entity_count);
+        assert(size < m_max_entity_size);
+        assert(begin_index < size);
 
         auto array_view = m_cd_accessor[cd_index].ToArrayView<CD>(
             m_strage.data(), 
-            size
+            size,
+            begin_index
         );
 
         assert(Util::IsInRange(array_view.begin(), m_strage.data(), &m_strage.back() + 1));
@@ -116,7 +119,7 @@ private:
 #if _DEBUG
     /// \brief chunkÇ…ì¸ÇÍÇÁÇÍÇÈentityÇÃç≈ëÂêî
     /// \note assertóp
-    uint32 m_max_entity_count = 0;
+    uint32 m_max_entity_size = 0;
 #endif // DEBUG
 
     std::array<std::byte, kChunkSize> m_strage ;

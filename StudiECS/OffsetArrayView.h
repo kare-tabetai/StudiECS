@@ -27,12 +27,13 @@ public:
     }
 
     template<class T>
-    ArrayView<T> ToArrayView(void* head_ptr, uint32 size) {
+    ArrayView<T> ToArrayView(void* head_ptr, uint32 size,uint32 begin_index = 0) {
         std::byte* byte_ptr = static_cast<std::byte*>(head_ptr);
         byte_ptr += offset_byte;
-        auto* array_begin_ptr = reinterpret_cast<T*>(byte_ptr);
+        T* array_begin_ptr = reinterpret_cast<T*>(byte_ptr);
+        array_begin_ptr += begin_index;
 
-        return ArrayView<T>(array_begin_ptr, size);
+        return ArrayView<T>(array_begin_ptr, size - begin_index);
     }
 
     constexpr uint32 GetOffsetByte() const { return offset_byte; }

@@ -1,34 +1,33 @@
 #pragma once
-#include "Type.h"
-#include "Constant.h"
-#include "Chunk.h"
 #include "ArchetypeInfo.h"
+#include "Chunk.h"
+#include "Constant.h"
+#include "Type.h"
 
 struct EntityRecord {
     void Initialize(
         const RefPtr<ArchetypeInfo>& _archetype_ref,
-        uint32 _index,
-        ChunkIndex _chunk_index)
+        const EntityIndex& _entity_index)
     {
-        index = _index;
+        local_index = _entity_index.GetLocalIndex();
         archetype_ref = _archetype_ref;
-        chunk_index = _chunk_index;
+        chunk_index = _entity_index.GetChunkIndex();
     }
-    void Destroy(Entity entity,RecordIndex _destroyed_index)
+    void Destroy( RecordIndex _destroyed_index)
     {
         assert(!isDestroyed());
 
-        archetype_ref->DestroyEntity(entity, chunk_index,index);
+        archetype_ref->DestroyEntity(EntityIndex(chunk_index, local_index));
         archetype_ref = nullptr;
         destroyed_index = _destroyed_index;
         incrementGeneration();
         destroyed = kUint8Max;
     }
 
-    uint32 GetIndex()const
+    EntityIndex GetEntityIndex() const
     {
         assert(!isDestroyed());
-        return index; 
+        return EntityIndex(chunk_index,local_index);
     }
     RecordIndex GetDestroyedIndex() const
     {
@@ -38,16 +37,6 @@ struct EntityRecord {
     Generation GetGeneration() const
     {
         return generation;
-    }
-    ChunkIndex GetChunkIndex()const
-    {
-        assert(!isDestroyed());
-        return chunk_index;
-    }
-    RecordIndex GetRecordIndex() const
-    {
-        assert(!isDestroyed());
-        return index;
     }
     RefPtr<ArchetypeInfo> GetArchetypeInfo()
     {
@@ -61,11 +50,12 @@ struct EntityRecord {
     }
     void ReUse(RecordIndex _record_index)
     {
-        index = _record_index;
+        local_index = _record_index;
     }
 
 private:
-    bool isDestroyed() const{
+    bool isDestroyed() const
+    {
         return destroyed == kUint8Max;
     }
     bool incrementGeneration()
@@ -81,7 +71,7 @@ private:
 
     RefPtr<ArchetypeInfo> archetype_ref = nullptr;
     union {
-        uint32 index = kInvalidRecordIndex;
+        LocalIndex local_index = kInvalidRecordIndex;
         RecordIndex destroyed_index;
     };
     Generation generation = 0;
