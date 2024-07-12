@@ -65,6 +65,12 @@ public:
         return array_view;
     }
 
+    /// \brief beginをつぶすように1つずつ要素をずらす 最後の要素が空くはず
+    void Shrink(EntityIndex begin, EntityIndex end, const TypeInfoRefContainer& type_infos)
+    {
+        // TODO: moveかコピーを用いてずらす
+    }
+
     /// \brief 1chunkに含められる最大のentity数を返す
     static uint32 CalcMaxEntityCount(const TypeInfoRefContainer& types_ref)
     {

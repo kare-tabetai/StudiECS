@@ -156,7 +156,7 @@ private:
     }
 
     /// \brief 指定したindexをつぶすように縮める
-    void shrink(size_t index)
+    void shrink(EntityIndex index)
     {
         // TODO: moveかコピーを用いてずらす
     }
