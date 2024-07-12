@@ -6,7 +6,6 @@
 #include "Entity.h"
 #include "ContainerTypes.h"
 #include <unordered_map>
-#include "EntityIndex.h"
 
 class ArchetypeInfo {
 public:
@@ -32,44 +31,52 @@ public:
     }
 
     /// \retval Entityの参照とそのindexを返す
-    std::tuple<Entity, EntityIndex> CreateEntity(RecordIndex record_index, Generation generation)
+    std::pair<Entity, EntityIndex> CreateEntity(RecordIndex record_index, Generation generation)
     {
-        // 最後のchunk,空きindex
-        EntityIndex entity_index = EntityIndex(static_cast<ChunkIndex>(m_chunks.size() - 1), m_empty_index);
-        auto* entity_ptr = getEntity(entity_index);
-        assert(entity_ptr->IsInvalid());
+        assert(!m_chunks.empty());
 
-        entity_ptr->ReSet(record_index, generation, m_world_number); // 使用中にする
+        EntityIndex index = static_cast<EntityIndex>(m_chunks.size() - 1) * m_max_entity_size + m_empty_index;
+        Entity* entity = m_chunks.back()->GetEntity(m_empty_index);
+        assert(entity->IsInvalid());
 
-        m_empty_index++; // 空きentityを指すように加算
+        entity->ReSet(record_index, generation, m_world_number); // 使用中にする
 
         // Chunkがいっぱいになった場合
-        if (m_max_entity_size <= m_empty_index) [[unlikely]] {
+        if (m_max_entity_size <= m_empty_index + 1) [[unlikely]] {
             addChunk();
             m_empty_index = 0;
+        } else {
+            m_empty_index++; // 空きentityを指すように加算
         }
 
         // CDをコンストラクト
-        construct(entity_index);
+        construct(index);
 
-        return std::make_tuple(*entity_ptr, entity_index);
+        return std::make_pair(*entity, index);
     }
 
     /// \brief Entityを削除する
     /// \retval 削除されたEntity以降のindexのEntity
-    std::vector<ArrayView<Entity>> DestroyEntity(const EntityIndex& entity_index)
+    std::vector<ArrayView<Entity>> DestroyEntity(EntityIndex index)
     {
-        destruct(entity_index);
+        assert(!m_chunks.empty());
 
-        if (entity_index.IsLast(m_chunks.size(), m_max_entity_size)) {
-            // 最後の要素の場合は空で返す
-            return std::vector<ArrayView<Entity>>();
+        // CDをデストラクト
+        destruct(index);
+
+        shrink(index);
+
+        // Chunkが空になった場合
+        if (m_empty_index == 0) [[unlikely]] {
+            m_chunks.pop_back();
+            m_empty_index = m_max_entity_size-1;
+        } else {
+            m_empty_index--;// 空きentityを指すように減算
         }
 
-        auto next_index = entity_index.GetIncremented(m_chunks.size(), m_max_entity_size);
-        auto shift_entitiese =  GetTypeArrays<Entity>(next_index);
-        //TODO:既存のchunkない要素を空いた分だけmemcpyで移動する処理
-        return shift_entitiese;
+        //TODO:
+        assert(false);
+        return std::vector<ArrayView<Entity>>();
     }
 
     ArchetypeNumber GetNumber() const {
@@ -77,46 +84,32 @@ public:
     }
 
     template<CdConcept... CD>
-    PtrTuple<CD...> GetTypes(const EntityIndex& entity_index)
+    PtrTuple<CD...> GetTypes(EntityIndex index)
     {
-        PtrTuple<CD...> result = { getCD<CD>(entity_index)... };
+        PtrTuple<CD...> result = { getCD<CD>(index)... };
         return result;
     }
 
     template<CdOrEntityConcept CdOrEntity>
-    std::vector<ArrayView<CdOrEntity>> GetTypeArrays(const EntityIndex& begin_entity_index = kBeginEntityIndex)
+    std::vector<ArrayView<CdOrEntity>> GetTypeArrays()
     {
-        if (m_chunks.empty()) {
-            return std::vector<ArrayView<CdOrEntity>>();
-        }
+        assert(!m_chunks.empty());
+        assert(m_empty_index != 0);
 
-        assert(begin_entity_index.InRange(m_chunks.size(), m_max_entity_size, m_empty_index));
-        
         std::vector<ArrayView<CdOrEntity>> result;
-
-        if (begin_entity_index.IsLastChunk(m_chunks.size())) {
-            result.push_back(
-                m_chunks.back()->GetArray<CdOrEntity>(
-                    getCdIndex<CdOrEntity>(), 
-                    m_empty_index, 
-                    begin_entity_index.GetLocalIndex())
-            );
-            return result;
-        }
-
         result.reserve(m_chunks.size());
         
-        for (uint32 i = begin_entity_index.GetChunkIndex(); i < m_chunks.size() - 1; ++i) {
+        // 最後のチャンク以外はchunk内のCdOrEntityの要素をすべて取得する
+        for (uint32 i = 0; i < m_chunks.size() - 1; ++i) {
             result.push_back(
                 m_chunks[i]->GetArray<CdOrEntity>(
                     getCdIndex<CdOrEntity>(), 
-                    m_max_entity_size,
-                    begin_entity_index.GetLocalIndex()
+                    m_max_entity_size
                 )
             );
         }
 
-        assert(m_empty_index != 0);
+        // 最後のチャンクはchunk内のCdOrEntityの要素をm_empty_indexのサイズ取得する
         result.push_back(m_chunks.back()->GetArray<CdOrEntity>(getCdIndex<CdOrEntity>(), m_empty_index ));
 
         return result;
@@ -133,50 +126,52 @@ private:
         m_chunks.emplace_back(std::move(chunk));
     }
 
-    void construct(EntityIndex entity_index)
+    void construct(EntityIndex index)
     {
-        assert(entity_index.InRange(m_chunks.size(), m_max_entity_size, m_empty_index));
-        auto& chunk = m_chunks[entity_index.GetChunkIndex()];
+        auto& chunk = m_chunks[index / m_max_entity_size];
 
         // MEMO: Entityは呼ばない
         for (uint32 cd_index = 1; cd_index < m_type_infos.size(); cd_index++) {
             void* cd = chunk->At(
                 cd_index, 
-                entity_index.GetLocalIndex(),
+                index % m_max_entity_size,
                 static_cast<uint32>(m_type_infos[cd_index]->GetTypeSize())
             );
             m_type_infos[cd_index]->Construct(cd);
         }
     }
 
-    void destruct(const EntityIndex& entity_index)
+    void destruct(EntityIndex index)
     {
-        assert(entity_index.InRange(m_chunks.size(),m_max_entity_size,m_empty_index));
-        auto& chunk = m_chunks[entity_index.GetChunkIndex()];
+        auto& chunk = m_chunks[index / m_max_entity_size];
 
         // MEMO: Entityは呼ばないため1から開始
         for (uint32 cd_index = 1; cd_index < m_type_infos.size(); cd_index++) {
             void* cd = chunk->At(
                 cd_index,
-                entity_index.GetLocalIndex(),
+                index % m_max_entity_size,
                 static_cast<uint32>(m_type_infos[cd_index]->GetTypeSize()));
             m_type_infos[cd_index]->Destruct(cd);
         }
     }
 
-    Entity* getEntity(const EntityIndex& entity_index)
+    /// \brief 指定したindexをつぶすように縮める
+    void shrink(size_t index)
     {
-        assert(entity_index.InRange(m_chunks.size(), m_max_entity_size, m_empty_index+1));
-        auto& chunk = m_chunks[entity_index.GetChunkIndex()];
-        return chunk->GetEntity(entity_index.GetLocalIndex());
+        // TODO: moveかコピーを用いてずらす
+    }
+
+    Entity* getEntity(EntityIndex index)
+    {
+        auto& chunk = m_chunks[index / m_max_entity_size];
+        return chunk->GetEntity(index % m_max_entity_size);
     }
 
     template<CdConcept CD>
-    CD* getCD(const EntityIndex& entity_index)
+    CD* getCD(EntityIndex index)
     {
-        assert(entity_index.InRange(m_chunks.size(), m_max_entity_size, m_empty_index));
-        auto& chunk = m_chunks[entity_index.GetChunkIndex()];
-        return chunk->At<CD>(getCdIndex<CD>(), entity_index.GetLocalIndex());
+        auto& chunk = m_chunks[index / m_max_entity_size];
+        return chunk->At<CD>(getCdIndex<CD>(), index % m_max_entity_size);
     }
 
     template<CdOrEntityConcept CdOrEntity>

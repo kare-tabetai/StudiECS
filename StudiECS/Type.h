@@ -23,12 +23,13 @@ using CdNumber = uint32;
 using CdIndex = uint8;
 /// \brief Archetypeの組み合わせごとに割り振られる数字 0から総数分加算されていく
 using ArchetypeNumber = uint32;
-/// \brief アーキタイプごとのいくつめのchunkに属するかのindex
-using ChunkIndex = uint8;
-/// \brief chunk内のEntityやCDを示すindex
+/// \brief Chunk内の何番目の要素かを示すindex
 using LocalIndex = uint32;
 using RecordIndex = uint32;
 using Generation = uint16;
+
+/// \brief chunks内のidnex
+using EntityIndex = uint32;
 
 /// \brief 所有権を持っておきたいポインタ(unique_ptrに置き換え予定)
 template<class T>
