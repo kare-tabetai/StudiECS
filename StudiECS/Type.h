@@ -36,6 +36,7 @@ template<class T>
 using OwnerPtr = std::shared_ptr<T>;
 
 /// \brief 保証済みの参照をするだけのポインタ(生ポインタに置き換え予定)
+/// TODO: 循環参照になってそうなので生ぽにかえる
 template<class T>
 using RefPtr = std::shared_ptr<T>;
 

@@ -15,6 +15,7 @@ concept CdConcept = MoveOrCopyable<T>
     && DefaultConstructible<T> //現状はDefaultConstruct後に値を変更するインターフェースを想定しているため
     && !std::is_same_v<T, Entity> // Entityはこちらで追加するため
     && !std::is_pointer_v<T>//実装が面倒になりそうなため、参照はDefaultConstructibleではじいている
+    && std::is_destructible_v<T>
     && (sizeof(T) <= kUint32Max);//内部でkUint32Max以下を前提に組んでいるため
 
 template<class T>

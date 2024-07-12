@@ -46,7 +46,7 @@ public:
     }
 
     template<CdOrEntityConcept CD>
-    ArrayView<CD> GetArray(uint32 cd_index,uint32 size,uint32 begin_index = 0)
+    ArrayView<CD> GetArray(CdIndex cd_index, uint32 size, uint32 begin_index = 0)
     {
         assert(cd_index < m_cd_accessor.size());
         assert(size < m_max_entity_size);
@@ -65,10 +65,36 @@ public:
         return array_view;
     }
 
-    /// \brief beginをつぶすように1つずつ要素をずらす 最後の要素が空くはず
-    void Shrink(EntityIndex begin, EntityIndex end, const TypeInfoRefContainer& type_infos)
+    /// \brief beginをつぶすように1つずつAsignでずらす end - 1の要素がデストラクトされる
+    void Shrink(LocalIndex begin, LocalIndex end, const TypeInfoRefContainer& type_infos)
     {
-        // TODO: moveかコピーを用いてずらす
+        assert(begin < end);
+        for (CdIndex cd_index = 0; cd_index < type_infos.size(); cd_index++) {
+            const auto& type_info = type_infos[cd_index];
+            if (type_info->IsEmptyType()) {
+                continue;
+            } else if (type_info->CanTrivialCopy()) {
+                //TODO: std::memmoveで一括で動かす
+            }
+
+            for (LocalIndex local_index = begin; local_index < end-1; local_index++) {
+                void* dest = At(cd_index, local_index, type_info->GetTypeSize());
+                void* source = At(cd_index, local_index+1, type_info->GetTypeSize());
+
+                if (type_info->MoveAsign(source, dest)) {
+                    // moveができたら次の要素へ
+                    continue;
+                }
+                if (type_info->CopyAsign(source, dest)) {
+                    // copyができたら次の要素へ
+                    continue;
+                }
+                // CDにはcopyableもしくはmoveableのconceptを指定しているため来るはずがない
+                assert(false);
+            }
+            void* last = At(cd_index, end-1, type_info->GetTypeSize());
+            type_info->Destruct(last);
+        }
     }
 
     /// \brief 1chunkに含められる最大のentity数を返す

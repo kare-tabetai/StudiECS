@@ -61,9 +61,6 @@ public:
     {
         assert(!m_chunks.empty());
 
-        // CDをデストラクト
-        destruct(index);
-
         shrink(index);
 
         // Chunkが空になった場合
@@ -158,7 +155,11 @@ private:
     /// \brief 指定したindexをつぶすように縮める
     void shrink(EntityIndex index)
     {
-        // TODO: moveかコピーを用いてずらす
+        uint32 erase_chunk_index = index / m_max_entity_size;
+        LocalIndex erase_local_index = index % m_max_entity_size;
+        auto& erase_chunk = m_chunks[erase_chunk_index];
+        erase_chunk->Shrink(erase_local_index, m_max_entity_size,m_type_infos);
+        //TODO:該当entityがあるchunk以外もずらす処理とchunkのお尻と頭をムーブする処理をかく
     }
 
     Entity* getEntity(EntityIndex index)
