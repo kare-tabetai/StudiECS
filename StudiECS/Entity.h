@@ -4,8 +4,6 @@
 #include "EnumUtil.h"
 #include <cassert>
 
-
-
 class Entity {
 public:
     enum class Flag : uint8 {

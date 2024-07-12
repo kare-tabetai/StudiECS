@@ -35,18 +35,18 @@ public:
     {
         assert(!m_chunks.empty());
 
-        EntityIndex index = static_cast<EntityIndex>(m_chunks.size() - 1) * m_max_entity_size + m_empty_index;
-        Entity* entity = m_chunks.back()->GetEntity(m_empty_index);
+        EntityIndex index = static_cast<EntityIndex>(m_chunks.size() - 1) * m_max_entity_size + m_last_chunk_entity_size;
+        Entity* entity = m_chunks.back()->GetEntity(m_last_chunk_entity_size);
         assert(entity->IsInvalid());
 
         entity->ReSet(record_index, generation, m_world_number); // 使用中にする
 
         // Chunkがいっぱいになった場合
-        if (m_max_entity_size <= m_empty_index + 1) [[unlikely]] {
+        if (m_max_entity_size <= m_last_chunk_entity_size + 1) [[unlikely]] {
             addChunk();
-            m_empty_index = 0;
+            m_last_chunk_entity_size = 0;
         } else {
-            m_empty_index++; // 空きentityを指すように加算
+            m_last_chunk_entity_size++; // 空きentityを指すように加算
         }
 
         // CDをコンストラクト
@@ -67,11 +67,11 @@ public:
         shrink(index);
 
         // Chunkが空になった場合
-        if (m_empty_index == 0) [[unlikely]] {
+        if (m_last_chunk_entity_size == 0) [[unlikely]] {
             m_chunks.pop_back();
-            m_empty_index = m_max_entity_size-1;
+            m_last_chunk_entity_size = m_max_entity_size-1;
         } else {
-            m_empty_index--;// 空きentityを指すように減算
+            m_last_chunk_entity_size--;// 空きentityを指すように減算
         }
 
         //TODO:
@@ -94,7 +94,7 @@ public:
     std::vector<ArrayView<CdOrEntity>> GetTypeArrays()
     {
         assert(!m_chunks.empty());
-        assert(m_empty_index != 0);
+        assert(m_last_chunk_entity_size != 0);
 
         std::vector<ArrayView<CdOrEntity>> result;
         result.reserve(m_chunks.size());
@@ -110,7 +110,7 @@ public:
         }
 
         // 最後のチャンクはchunk内のCdOrEntityの要素をm_empty_indexのサイズ取得する
-        result.push_back(m_chunks.back()->GetArray<CdOrEntity>(getCdIndex<CdOrEntity>(), m_empty_index ));
+        result.push_back(m_chunks.back()->GetArray<CdOrEntity>(getCdIndex<CdOrEntity>(), m_last_chunk_entity_size ));
 
         return result;
     }
@@ -205,15 +205,16 @@ private:
     ArchetypeNumber m_archetype_number;
     Archetype m_archetype;
 
-    /// \brief 空きentityへのindex
-    uint32 m_empty_index = 0;
-
     /// \brief 型情報への参照 indexはcd_index
     TypeInfoRefContainer m_type_infos;
 
+    /// \brief 最後のchunkに含まれているenittyの数 空きentityへのindex
+    uint32 m_last_chunk_entity_size = 0;
+
     /// \brief chunkごとに入れられるentityの数
     uint32 m_max_entity_size = 0;
-    std::vector<OwnerPtr<Chunk>> m_chunks;//TODO: ChunkContainerに変更
+
+    std::vector<OwnerPtr<Chunk>> m_chunks;
 
     ///  \brief CD追加時に移動するArchetypeへの参照キャッシュ
     std::unordered_map<CdID, ArchetypeBrunch> m_brunch;
