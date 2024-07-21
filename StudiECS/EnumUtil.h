@@ -67,13 +67,19 @@ constexpr Enum operator~(Enum flag)
 template<EnumConcept Enum>
 constexpr bool HasAnyFlags(Enum flag, Enum check_flag)
 {
-    return (flag & check_flag) != 0;
+    return ToBase(flag & check_flag) != 0;
 }
 
 template<EnumConcept Enum>
 constexpr bool HasAllFlags(Enum flag, Enum check_flag)
 {
-    return (flag & check_flag) == check_flag;
+    return ToBase(flag & check_flag) == check_flag;
+}
+
+template<EnumConcept Enum>
+constexpr bool IsFlagsOff(Enum flag, Enum check_flag)
+{
+    return !HasAnyFlags(flag, check_flag);
 }
 
 }

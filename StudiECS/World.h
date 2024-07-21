@@ -24,7 +24,7 @@ public:
     }
 
     template<CdConcept... Args>
-    Entity CreateEntity()
+    [[nodiscard]] Entity CreateEntity()
     {
         constexpr auto type_list = TypeUtil::MakeTypeList<Args...>();
         constexpr auto sanitized = Util::SanitizeTypeList(type_list);
@@ -55,30 +55,58 @@ public:
         return entity;
     }
 
-    void DestroyEntity(Entity entity) {
+    void DestroyEntity(Entity entity)
+    {
         assert(entity.GetRecordIndex() < m_entity_record.size());
-        auto& record = m_entity_record[entity.GetRecordIndex()];
-        auto shift_entities = record.Destroy(m_destroyed_index);
-        m_destroyed_index = entity.GetRecordIndex();
+        if (!IsValid(entity)) {
+            return;
+        }
 
+        auto& destroy_record = m_entity_record[entity.GetRecordIndex()];
+        auto shift_entities = destroy_record.Destroy(m_destroyed_index);
+        m_destroyed_index = entity.GetRecordIndex();
         assert(!IsValid(entity));
 
         for (auto& shift_entity_array : shift_entities) {
             for (Entity shift_entity : shift_entity_array) {
-                //TODO:EntityRecordÇ™ç∑Ç∑EntityIndexÇÇ†Ç¢ÇΩï™ÇæÇØÇ∏ÇÁÇ∑
+                std::cout << shift_entity.GetRecordIndex() << "\n";
+                auto& shift_entity_record = m_entity_record[shift_entity.GetRecordIndex()];
+                shift_entity_record.DecrementIndex();
+
+                assert(IsValid(shift_entity));
             }
         }
+        std::cout << "shifted\n";
+
+#if defined(_DEBUG)
+        for (auto& shift_entity_array : shift_entities) {
+            for (Entity shift_entity : shift_entity_array) {
+                auto& assert_entity_record = m_entity_record[shift_entity.GetRecordIndex()];
+                auto assert_archetype_info = assert_entity_record.GetArchetypeInfo();
+                auto assert_entity = assert_archetype_info->GetCD<Entity>(assert_entity_record.GetEntityIndex());
+                assert(assert_entity->GetRecordIndex() == shift_entity.GetRecordIndex());
+            }
+        }
+#endif
     }
 
-    bool IsValid(Entity entity) {
-        if (entity.IsInvalid()) {
-            return false;
-        }
+    bool IsValid(Entity entity) const
+    {
         if (m_entity_record.size() <= entity.GetRecordIndex()) {
             return false;
         }
-        auto& record = m_entity_record[entity.GetRecordIndex()];
-        return record.IsCurrentGeneration(entity.GetGeneration());
+
+        const auto& record = m_entity_record[entity.GetRecordIndex()];
+        if (!record.IsValid()) {
+            return false;
+        }
+        if (!record.IsCurrentGeneration(entity.GetGeneration())) {
+            return false;
+        }
+
+        const auto archetype_info = record.GetArchetypeInfo();
+        const auto* entity_ptr = archetype_info->GetCD<Entity>(record.GetEntityIndex());
+        return !entity_ptr->IsInvalid();
     }
 
     template<CdConcept CD>
@@ -169,7 +197,7 @@ private:
         if (m_destroyed_index == kInvalidRecordIndex) {
             // MEMO:í«â¡Ç∑ÇÈç≈å„ÇÃóvëfÇÃindexÇæÇ©ÇÁsizeÇ≈Ç¢Ç¢
             RecordIndex record_index = static_cast<RecordIndex>(m_entity_record.size());
-            m_entity_record.emplace_back(); 
+            m_entity_record.emplace_back();
             return record_index;
         } else {
             RecordIndex record_index = m_destroyed_index;

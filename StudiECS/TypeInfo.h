@@ -169,3 +169,22 @@ private:
     CopyAsignFunc m_copy_asign = nullptr;
     MoveAsignFunc m_move_asign = nullptr;
 };
+
+class TypeInfoHelper {
+public:
+    /// \brief move‚ª‚Å‚«‚½‚çmove,‚Å‚«‚È‚©‚Á‚½‚çcopy,copy‚à–³—‚È‚çfalse‚Å•Ô‚·
+    static bool MoveOrCopy(const TypeInfo& info, void* source, void* dest) {
+        if (info.CanTrivialCopy()) {
+            // TODO: std::memmove‚ÅˆêŠ‡‚Å“®‚©‚·
+        }
+        if (info.MoveAsign(source, dest)) {
+            // move‚ª‚Å‚«‚½‚çtrue
+            return true;
+        }
+        if (info.CopyAsign(source, dest)) {
+            // copy‚ª‚Å‚«‚½‚çtrue
+            return true;
+        }
+        return false;
+    }
+};

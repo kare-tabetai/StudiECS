@@ -8,10 +8,11 @@ class Entity {
 public:
     enum class Flag : uint8 {
         None = 0,
-        Invalid = 1 << 0,
+        Valid = 1 << 0,// ON‚È‚ç—LŒø
     };
 
     struct Impl {
+        Impl() = default;
         constexpr Impl(uint32 _record_index, uint16 _generation, Flag _flag, WorldNumber _world_number)
             : record_index(_record_index)
             , generation(_generation)
@@ -37,25 +38,20 @@ public:
         return id;
     }
 
-    static constexpr Entity Invalid()
-    {
-        return Entity(0, Flag::Invalid);
-    }
-
     void ReSet(RecordIndex record_index,Generation generation, WorldNumber world_number)
     {
-        impl = Impl(record_index, generation, Flag::None, world_number);
+        impl = Impl(record_index, generation, Flag::Valid, world_number);
     }
 
     void Release()
     {
-        AddFlag(Flag::Invalid);
+        RemoveFlag(Flag::Valid);
     }
 
     /// \brief –³Œø‚Èentity‚©‚Ç‚¤‚©
     bool IsInvalid() const
     {
-        return ToBool(impl.flag | Flag::Invalid);
+        return IsFlagsOff(impl.flag , Flag::Valid);
     }
 
     Entity& SetFlag(Flag flag)
@@ -91,6 +87,11 @@ public:
         uint64 id;
     };
 };
+
+// chunk“à‚ÉentityŽ©‘Ì‚ð–„‚ßž‚Ýmemcpy“™‚ð‚µ‚½‚¢‚½‚ßtrivialŒn‚Ì§ŒÀ‚ð‚µ‚Ä‚¢‚é
+static_assert(std::is_trivially_move_constructible_v<Entity>);
+static_assert(std::is_trivially_destructible_v<Entity>);
+static_assert(std::is_trivially_copyable_v<Entity>);
 
 namespace std {
 template<>

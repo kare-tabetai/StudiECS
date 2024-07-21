@@ -11,6 +11,7 @@ struct EntityRecord {
     {
         archetype_ref = _archetype_ref;
         index = entity_index;
+        is_valid = true;
     }
 
     /// \retval íœ‚³‚ê‚½EntityˆÈ~‚Ìindex‚ÌEntity
@@ -20,6 +21,7 @@ struct EntityRecord {
         archetype_ref = nullptr;
         destroyed_index = _destroyed_index;
         incrementGeneration();
+        is_valid = false;
         return shift_entities;
     }
 
@@ -39,6 +41,10 @@ struct EntityRecord {
     {
         return archetype_ref;
     }
+    const RefPtr<ArchetypeInfo> GetArchetypeInfo()const
+    {
+        return archetype_ref;
+    }
     bool IsCurrentGeneration(Generation _generation) const
     {
         assert(_generation <= generation);
@@ -48,6 +54,12 @@ struct EntityRecord {
     {
         index = _index;
     }
+    void DecrementIndex()
+    {
+        assert(0 < index);
+        index--;
+    }
+    bool IsValid() const { return is_valid; }
 
 private:
     bool incrementGeneration()
@@ -67,4 +79,5 @@ private:
         EntityIndex index = 0; // Chunks‚Ìindex
         RecordIndex destroyed_index;
     };
+    bool is_valid = false;
 };

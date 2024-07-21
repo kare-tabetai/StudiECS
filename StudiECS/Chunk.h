@@ -49,7 +49,7 @@ public:
     ArrayView<CD> GetArray(CdIndex cd_index, uint32 size, uint32 begin_index = 0)
     {
         assert(cd_index < m_cd_accessor.size());
-        assert(size < m_max_entity_size);
+        assert(size <= m_max_entity_size);
         assert(begin_index < size);
 
         auto array_view = m_cd_accessor[cd_index].ToArrayView<CD>(
@@ -65,7 +65,7 @@ public:
         return array_view;
     }
 
-    /// \brief beginをつぶすように1つずつAsignでずらす end - 1の要素がデストラクトされる
+    /// \brief beginをつぶすように1つずつAsignでずらす end - 1の要素はmoveした後の状態になる
     void Shrink(LocalIndex begin, LocalIndex end, const TypeInfoRefContainer& type_infos)
     {
         assert(begin < end);
@@ -78,22 +78,17 @@ public:
             }
 
             for (LocalIndex local_index = begin; local_index < end-1; local_index++) {
-                void* dest = At(cd_index, local_index, type_info->GetTypeSize());
-                void* source = At(cd_index, local_index+1, type_info->GetTypeSize());
+                uint32 type_size = static_cast<uint32>(type_info->GetTypeSize());
+                void* dest = At(cd_index, local_index, type_size);
+                void* source = At(cd_index, local_index + 1, type_size);
 
-                if (type_info->MoveAsign(source, dest)) {
-                    // moveができたら次の要素へ
-                    continue;
-                }
-                if (type_info->CopyAsign(source, dest)) {
-                    // copyができたら次の要素へ
+                // moveかcopyができたら次の要素へ
+                if (TypeInfoHelper::MoveOrCopy(*type_info, source, dest)) {
                     continue;
                 }
                 // CDにはcopyableもしくはmoveableのconceptを指定しているため来るはずがない
                 assert(false);
             }
-            void* last = At(cd_index, end-1, type_info->GetTypeSize());
-            type_info->Destruct(last);
         }
     }
 
