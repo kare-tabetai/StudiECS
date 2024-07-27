@@ -34,12 +34,12 @@ using EntityIndex = uint32;
 
 /// \brief 所有権を持っておきたいポインタ(unique_ptrに置き換え予定)
 template<class T>
-using OwnerPtr = std::shared_ptr<T>;
+using OwnerPtr = std::unique_ptr<T>;
 
 /// \brief 保証済みの参照をするだけのポインタ(生ポインタに置き換え予定)
 /// TODO: 循環参照になってそうなので生ぽにかえる
 template<class T>
-using RefPtr = std::shared_ptr<T>;
+using RefPtr = T*;
 
 /// \brief どの型を持っているかを示す
 /// \note numberではなくてID

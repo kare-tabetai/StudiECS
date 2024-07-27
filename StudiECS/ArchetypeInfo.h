@@ -85,9 +85,10 @@ public:
     template<CdOrEntityConcept CdOrEntity>
     std::vector<ArrayView<CdOrEntity>> GetTypeArrays(EntityIndex begin_index = 0)
     {
-        if (m_chunks.empty()) {
+        if (IsEmpty()) {
             return std::vector<ArrayView<CdOrEntity>>();
         }
+
         assert(m_last_chunk_entity_size != 0);
 
         uint32 begin_chunk_index = begin_index / m_max_entity_size;
@@ -133,11 +134,15 @@ public:
         return const_cast<ArchetypeInfo>(this)->GetCD<CdOrEntity>(index);
     }
 
+    bool IsEmpty() const {
+        return m_chunks.size() == 1 && m_last_chunk_entity_size == 0;
+    }
+
 private:
     /// \retval ’Ç‰Á‚µ‚½chunk‚ÌÅ‰‚Ì—v‘f‚ğ¦‚·index‚ğ•Ô‚·
     void addChunk()
     {
-        auto chunk = std::make_shared<Chunk>(
+        auto chunk = std::make_unique<Chunk>(
             m_type_infos, 
             m_max_entity_size
             );
