@@ -79,15 +79,23 @@ void WorldTest()
     assert(world.IsValid(test_entities.front()));
     world.DestroyEntity(test_entities.front());
     assert(!world.IsValid(test_entities.front()));
+    world.DestroyEntity(test_entities.front());
 
-    for (auto itr = test_entities.begin(); itr != test_entities.end(); ) {
-        //size_t index = std::distance(test_entities.begin(), itr);
-        //if (index % 3 == 0) {
-            world.DestroyEntity(*itr);
-            itr = test_entities.erase(itr);
-        //} else {
-            //itr++;
-        //}
+    if (!test_entities.empty()) {
+        auto index = test_entities.size() / 2;
+        auto destroy_entiy = test_entities[index];
+        world.DestroyEntity(destroy_entiy);
+        test_entities.erase(test_entities.begin() + index);
+    }
+    if (!test_entities.empty()) {
+        auto index = test_entities.size() / 3;
+        world.DestroyEntity(test_entities[index]);
+        test_entities.erase(test_entities.begin() + index);
+    }
+
+    for (auto itr = test_entities.begin(); itr != test_entities.end();) {
+        world.DestroyEntity(*itr);
+        itr = test_entities.erase(itr);
     }
 
     for (size_t i = 0; i < 24; i++) {

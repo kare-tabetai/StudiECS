@@ -97,27 +97,33 @@ public:
         std::vector<ArrayView<CdOrEntity>> result;
         result.reserve(m_chunks.size() - begin_chunk_index);
         
-        if (1 < m_chunks.size()) {
+        if (m_chunks.size() == 1) {
+            result.push_back(
+                m_chunks[begin_chunk_index]->GetArray<CdOrEntity>(
+                    getCdIndex<CdOrEntity>(),
+                    m_last_chunk_entity_size,
+                    begin_local_index));
+        }
+        else
+        {
             result.push_back(
                 m_chunks[begin_chunk_index]->GetArray<CdOrEntity>(
                     getCdIndex<CdOrEntity>(),
                     m_max_entity_size,
                     begin_local_index));
+
+            // 最後のチャンク以外はchunk内のCdOrEntityの要素をすべて取得する
+            for (uint32 i = begin_chunk_index + 1; i < m_chunks.size() - 1; ++i) {
+                result.push_back(
+                    m_chunks[i]->GetArray<CdOrEntity>(
+                        getCdIndex<CdOrEntity>(),
+                        m_max_entity_size));
+            }
+
+            // 最後のチャンクはchunk内のCdOrEntityの要素をm_empty_indexのサイズ取得する
+            result.push_back(m_chunks.back()->GetArray<CdOrEntity>(getCdIndex<CdOrEntity>(), m_last_chunk_entity_size));
         }
-
-        // 最後のチャンク以外はchunk内のCdOrEntityの要素をすべて取得する
-        for (uint32 i = begin_chunk_index + 1; i < m_chunks.size() - 1; ++i) {
-            result.push_back(
-                m_chunks[i]->GetArray<CdOrEntity>(
-                    getCdIndex<CdOrEntity>(), 
-                    m_max_entity_size
-                )
-            );
-        }
-
-        // 最後のチャンクはchunk内のCdOrEntityの要素をm_empty_indexのサイズ取得する
-        result.push_back(m_chunks.back()->GetArray<CdOrEntity>(getCdIndex<CdOrEntity>(), m_last_chunk_entity_size ));
-
+        
         return result;
     }
 
