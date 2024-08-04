@@ -154,7 +154,6 @@
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="ArchetypeBrunch.h" />
     <ClInclude Include="ArchetypeInfo.h" />
     <ClInclude Include="ArrayView.h" />
     <ClInclude Include="boost\hana\accessors.hpp" />

@@ -22,8 +22,6 @@ using WorldNumber = uint8;
 using CdNumber = uint32;
 /// \brief ‚»‚ÌArchetype‚Å‰½”Ô–Ú‚ÌCD‚©
 using CdIndex = uint8;
-/// \brief Archetype‚Ì‘g‚İ‡‚í‚¹‚²‚Æ‚ÉŠ„‚èU‚ç‚ê‚é”š 0‚©‚ç‘”•ª‰ÁZ‚³‚ê‚Ä‚¢‚­
-using ArchetypeNumber = uint32;
 /// \brief Chunk“à‚Ì‰½”Ô–Ú‚Ì—v‘f‚©‚ğ¦‚·index
 using LocalIndex = uint32;
 using RecordIndex = uint32;
@@ -42,6 +40,7 @@ using RefPtr = T*;
 
 /// \brief ‚Ç‚ÌŒ^‚ğ‚Á‚Ä‚¢‚é‚©‚ğ¦‚·
 /// \note number‚Å‚Í‚È‚­‚ÄID
+/// æ“ª‚Íí‚ÉEntity
 using Archetype = std::vector<CdID>;
 
 template<class T>

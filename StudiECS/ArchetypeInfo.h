@@ -1,5 +1,4 @@
 #pragma once
-#include "ArchetypeBrunch.h"
 #include "Chunk.h"
 #include "OffsetArrayView.h"
 #include "Type.h"
@@ -10,7 +9,6 @@
 class ArchetypeInfo {
 public:
     ArchetypeInfo(
-        ArchetypeNumber archetype_number,
         const Archetype& archetype,
         const TypeInfoRefContainer& type_infos,
         WorldNumber world_number)
@@ -20,12 +18,10 @@ public:
         ,
 #endif // DEBUG
         m_world_number(world_number)
-        , m_archetype_number(archetype_number)
         , m_archetype(archetype)
         , m_type_infos(type_infos)
         , m_max_entity_size(Chunk::CalcMaxEntityCount(type_infos))
         , m_chunks()
-        , m_brunch()
     {
         assert(m_max_entity_size != 0);
         addChunk();
@@ -64,10 +60,6 @@ public:
         return GetTypeArrays<Entity>(index);
     }
 
-    ArchetypeNumber GetNumber() const {
-        return m_archetype_number;
-    }
-
     template<CdOrEntityConcept... CdOrEntity>
     PtrTuple<CdOrEntity...> GetTypes(EntityIndex index)
     {
@@ -80,6 +72,16 @@ public:
     {
         PtrTuple<const CdOrEntity...> result = { GetCD<CdOrEntity>(index)... };
         return result;
+    }
+
+    std::vector<void*> GetTypesRaw(EntityIndex index)
+    {
+        std::vector<void*> ret;
+        for (size_t cd_index = 0; cd_index < m_archetype.size(); ++cd_index) {
+            void* raw_cd_ptr = GetCDRaw(cd_index, index);
+            ret.push_back(raw_cd_ptr);
+        }
+        return ret;
     }
 
     template<CdOrEntityConcept CdOrEntity>
@@ -140,8 +142,56 @@ public:
         return const_cast<ArchetypeInfo>(this)->GetCD<CdOrEntity>(index);
     }
 
+    void* GetCDRaw(CdIndex cd_index, EntityIndex index) {
+        auto& chunk = m_chunks[index / m_max_entity_size];
+        auto& type_ref = m_type_infos[cd_index];
+        return chunk->At(cd_index, index % m_max_entity_size, type_ref->GetTypeSize());
+    }
+
     bool IsEmpty() const {
         return m_chunks.size() == 1 && m_last_chunk_entity_size == 0;
+    }
+
+    RefPtr<ArchetypeInfo> TryGetAddCdArchetypeInfo(CdID cd_index) {
+        auto itr = m_add_cd_brunch.find(cd_index);
+        if (itr != m_add_cd_brunch.end()) {
+            return itr->second;
+        } else {
+            return nullptr;
+        }
+    }
+
+    template<CdConcept CD>
+    void AddAddCdArchetypeInfo(const ArchetypeInfo* info) {
+        CdID cd_id = CdIdGenerator<CD>::number();
+        if (m_add_cd_brunch.count(cd_id) != 0) {
+            return;
+        }
+
+        m_add_cd_brunch.try_emplace(cd_id, info);
+    }
+
+    bool IsSameArchetype(const Archetype& archetype) const
+    {
+        if (m_archetype.size() != archetype.size()) {
+            return false;
+        }
+
+        for (size_t i = 0; i < m_archetype.size(); i++) {
+            if (m_archetype[i] != archetype[i]) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    Archetype GetArcehtype() const {
+        return m_archetype;
+    }
+
+    TypeInfoRefContainer GetTypeInfoRefContainer() const {
+        return m_type_infos;
     }
 
 private:
@@ -296,7 +346,6 @@ private:
 #endif // DEBUG
 
     WorldNumber m_world_number;
-    ArchetypeNumber m_archetype_number;
     Archetype m_archetype;
 
     /// \brief 型情報への参照 indexはcd_index
@@ -311,5 +360,7 @@ private:
     std::vector<OwnerPtr<Chunk>> m_chunks;
 
     ///  \brief CD追加時に移動するArchetypeへの参照キャッシュ
-    std::unordered_map<CdID, ArchetypeBrunch> m_brunch;
+    std::unordered_map<CdID, const RefPtr<ArchetypeInfo>> m_add_cd_brunch;
+    ///  \brief CD削除時に移動するArchetypeへの参照キャッシュ
+    std::unordered_map<CdID, const RefPtr<ArchetypeInfo>> m_remove_cd_brunch;
 };

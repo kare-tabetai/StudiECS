@@ -343,13 +343,13 @@ namespace boost { namespace hana {
     //! function call is valid with the given arguments. Specifically, given
     //! a function `f` and arguments `args...`,
     //! @code
-    //!   is_valid(f, args...) == whether f(args...) is valid
+    //!   m_is_valid(f, args...) == whether f(args...) is valid
     //! @endcode
     //!
     //! The result is returned as a compile-time `Logical`. Furthermore,
     //! `is_valid` can be used in curried form as follows:
     //! @code
-    //!   is_valid(f)(args...)
+    //!   m_is_valid(f)(args...)
     //! @endcode
     //!
     //! This syntax makes it easy to create functions that check the validity
@@ -364,7 +364,7 @@ namespace boost { namespace hana {
     //!
     //! Example
     //! -------
-    //! @include example/type/is_valid.cpp
+    //! @include example/type/m_is_valid.cpp
 #ifdef BOOST_HANA_DOXYGEN_INVOKED
     constexpr auto is_valid = [](auto&& f) {
         return [](auto&& ...args) {

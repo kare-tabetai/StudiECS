@@ -56,9 +56,6 @@
     <ClInclude Include="MurMur3.h">
       <Filter>ヘッダー ファイル\external</Filter>
     </ClInclude>
-    <ClInclude Include="ArchetypeBrunch.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="World.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>

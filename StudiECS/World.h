@@ -10,6 +10,7 @@
 #include <memory>
 #include <unordered_map>
 #include <vector>
+#include <numeric>
 
 /// \brief 一番rootになるクラスここから全部操作する
 class World {
@@ -27,13 +28,15 @@ public:
     [[nodiscard]] Entity CreateEntity()
     {
         constexpr auto type_list = TypeUtil::MakeTypeList<Args...>();
-        constexpr auto sanitized = Util::SanitizeTypeList(type_list);
+        constexpr auto sanitized_type_list = Util::SanitizeTypeList(type_list);
 
         // m_cd_infosにCDを設定
-        TypeInfoRefContainer type_info_refs = registerTypeInfos(sanitized);
-
+        TypeInfoRefContainer type_info_refs = getAndRegisterTypeInfos(sanitized_type_list);
         // m_archetype_infosにアーキタイプを設定
-        RefPtr<ArchetypeInfo> archetype_ref = getOrRegisterArchetypeInfo(sanitized, type_info_refs);
+        Archetype arche_type = Util::TypeListToArchetype(sanitized_type_list);
+        sortTypeInfosRefsAndArchetype(type_info_refs, arche_type);
+
+        RefPtr<ArchetypeInfo> archetype_ref = getOrRegisterArchetypeInfo(arche_type, type_info_refs);
 
         RecordIndex record_index = getOrCreateEntityRecord();
         assert(record_index < m_entity_record.size());
@@ -49,7 +52,11 @@ public:
             if (m_component_index.count(type_info->GetID()) == 0) {
                 m_component_index.emplace(type_info->GetID(), ArchetypeMap());
             }
-            m_component_index[type_info->GetID()][archetype_ref->GetNumber()] = archetype_ref;
+            auto& archetype_map = m_component_index[type_info->GetID()];
+            auto archetype_map_itr = std::find(archetype_map.begin(), archetype_map.end() ,archetype_ref);
+            if (archetype_map_itr == archetype_map.end()) {
+                archetype_map.emplace_back(archetype_ref);
+            }
         }
 
         return entity;
@@ -116,6 +123,9 @@ public:
     template<CdConcept... CD>
     PtrTuple<CD...> GetTypes(Entity entity)
     {
+        // TODO: nullptrのtupleを返すようにする
+        assert(IsValid(entity));
+
         assert(entity.GetRecordIndex() < m_entity_record.size());
         auto& record = m_entity_record[entity.GetRecordIndex()];
         return record.GetArchetypeInfo()->GetTypes<CD...>(record.GetEntityIndex());
@@ -130,17 +140,57 @@ public:
             return std::vector<ArrayView<CdOrEntity>>();
         }
 
-        auto archetypes = component_data_itr->second.GetArray();
         std::vector<ArrayView<CdOrEntity>> result;
-        result.reserve(archetypes.size() * 2);
-        for (auto& archetype : archetypes) {
+        result.reserve(component_data_itr->second.size() * 2);
+        for (auto& archetype : component_data_itr->second) {
             auto cd_arrays = archetype->GetTypeArrays<CdOrEntity>();
             result.insert(result.end(), cd_arrays.begin(), cd_arrays.end());
         }
         return result;
     }
 
+    template<CdConcept CD>
+    CD* AddCD(Entity entity) {
+        if (!IsValid(entity)) {
+            return nullptr;
+        }
+
+        auto& record = m_entity_record[entity.GetRecordIndex()];
+        auto archetype_ref = record.GetArchetypeInfo();
+
+        // キャッシュが取得できればそれを使う
+        auto add_archetype = archetype_ref->TryGetAddCdArchetypeInfo();
+        // キャッシュが取得できない場合はArchetypeInfoを検索
+        if (!add_archetype) {
+            auto new_archetype = archetype_ref->GetArcehtype();
+            new_archetype.push_back(TypeIDGenerator<CD>::id());
+            sortArchetype(new_archetype);
+
+            auto itr = std::find_if(
+                m_archetype_infos.begin(),
+                m_archetype_infos.end(),
+                [](const OwnerPtr<ArchetypeInfo> item) {
+                    return item->IsSameArchetype(new_archetype);
+                });
+
+            // ArchetypeInfoが見つからなければ新たに登録
+            if (itr == m_archetype_infos.end()) {
+                auto new_type_info_ref_container = archetype_ref->GetTypeInfoRefContainer();
+                new_type_info_ref_container.push_back(getOrRegisterTypeInfo<CD>());
+                sortTypeInfosRefsAndArchetype(new_type_info_ref_container, new_archetype);
+                add_archetype = getOrRegisterArchetypeInfo(new_archetype, new_type_info_ref_container);
+            } else {
+                add_archetype = &(*itr);
+            }
+        }
+
+        assert(add_archetype);
+
+        record.ChangeAddArchetype(add_archetype);
+    }
+
 private:
+
     template<CdOrEntityConcept CD>
     RefPtr<TypeInfo> getOrRegisterTypeInfo()
     {
@@ -156,7 +206,7 @@ private:
     }
 
     template<CdOrEntityConcept... T>
-    TypeInfoRefContainer registerTypeInfos(const hana_tuple<T...>& sanitized_type_list)
+    TypeInfoRefContainer getAndRegisterTypeInfos(const hana_tuple<T...>& sanitized_type_list)
     {
         TypeInfoRefContainer refs;
         boost::hana::for_each(sanitized_type_list, [this, &refs](auto t) {
@@ -167,25 +217,23 @@ private:
         return refs;
     }
 
-    template<CdOrEntityConcept... T>
-    RefPtr<ArchetypeInfo> registerArchetypeInfo(ArchetypeNumber archetype_number, const hana_tuple<T...>& sanitized_type_list, const TypeInfoRefContainer& types_ref)
+    RefPtr<ArchetypeInfo> getOrRegisterArchetypeInfo(const Archetype& arche_type, const TypeInfoRefContainer& types_ref)
     {
-        Archetype arche_type = Util::TypeListToArchetype(sanitized_type_list);
-        auto&& info = std::make_unique<ArchetypeInfo>(archetype_number, arche_type, types_ref, m_number);
-        m_archetype_infos[archetype_number] = std::move(info);
-        return m_archetype_infos[archetype_number].get();
-    }
+        assert(types_ref.front()->GetID() == TypeIDGenerator<Entity>::id());
+        assert(arche_type.front() == TypeIDGenerator<Entity>::id());
 
-    template<CdOrEntityConcept... T>
-    RefPtr<ArchetypeInfo> getOrRegisterArchetypeInfo(const hana_tuple<T...>& sanitized_type_list, const TypeInfoRefContainer& types_ref)
-    {
-        assert(TypeUtil::IsFrontType(boost::hana::type_c<Entity>, sanitized_type_list));
-
-        ArchetypeNumber archetype_number = ArchetypeIDGenerator<decltype(sanitized_type_list)>::number();
-        if (m_archetype_infos.Has(archetype_number)) {
-            return m_archetype_infos[archetype_number].get();
+        auto archetype_infos_itr = std::find_if(
+            m_archetype_infos.begin(), 
+            m_archetype_infos.end(),
+            [&arche_type](const OwnerPtr<ArchetypeInfo>& item) {
+                return item->IsSameArchetype(arche_type);
+            });
+        if (archetype_infos_itr == m_archetype_infos.end()) {
+            auto&& info = std::make_unique<ArchetypeInfo>(arche_type, types_ref, m_number);
+            m_archetype_infos.push_back(std::move(info));
+            return m_archetype_infos.back().get();
         } else {
-            return registerArchetypeInfo(archetype_number, sanitized_type_list, types_ref);
+            return archetype_infos_itr->get();
         }
     }
 
@@ -204,19 +252,68 @@ private:
         }
     }
 
+    void sortArchetype(Archetype& arche_type)
+    {
+        std::sort(
+            arche_type.begin(),
+            arche_type.end(),
+            [](CdID lhs, CdID rhs) {
+                if (lhs == TypeIDGenerator<Entity>::id()) {
+                    return true;
+                } else if (rhs == TypeIDGenerator<Entity>::id()) {
+                    return false;
+                } else {
+                    return lhs < rhs;
+                }
+            });
+
+        assert(arche_type.front() == TypeIDGenerator<Entity>::id());
+    }
+
+    void sortTypeInfoRefs(TypeInfoRefContainer& type_info_refs)
+    {
+        std::sort(
+            type_info_refs.begin(),
+            type_info_refs.end(),
+            [](const RefPtr<TypeInfo>& lhs, const RefPtr<TypeInfo>& rhs) {
+                if (lhs->GetID() == TypeIDGenerator<Entity>::id()) {
+                    return true;
+                } else if (rhs->GetID() == TypeIDGenerator<Entity>::id()) {
+                    return false;
+                } else {
+                    return lhs->GetID() < rhs->GetID();
+                }
+            });
+
+        assert(type_info_refs.front()->GetID() == TypeIDGenerator<Entity>::id());
+    }
+
+    void sortTypeInfosRefsAndArchetype(TypeInfoRefContainer& type_info_refs, Archetype& arche_type) {
+        assert(type_info_refs.size() == arche_type.size());
+        
+        sortArchetype(arche_type);
+        sortTypeInfoRefs(type_info_refs);
+
+#if defined(_DEBUG)
+        for (size_t i = 0; i < arche_type.size(); i++) {
+            assert(arche_type[i] == type_info_refs[i]->GetID());
+        }
+#endif
+    }
+
     static inline std::atomic<WorldNumber> s_world_number_counter = 0;
 
     WorldNumber m_number = 0;
 
     /// \brief CdOrEntity->所属Archetype検索用の参照
-    using ArchetypeMap = SparseSet<RefPtr<ArchetypeInfo>>; //[ArchetypeNumber]
+    using ArchetypeMap =std::vector<RefPtr<ArchetypeInfo>>;
     std::unordered_map<TypeDataID, ArchetypeMap> m_component_index; // [TypeInfo::GetID()]
 
     /// \brief CD情報の実体 [CdNumber]
     SparseSet<OwnerPtr<TypeInfo>> m_cd_infos;
 
     /// \brief Archetype情報の実体 [ArchetypeNumber]
-    SparseSet<OwnerPtr<ArchetypeInfo>> m_archetype_infos;
+    std::vector<OwnerPtr<ArchetypeInfo>> m_archetype_infos;
 
     /// \brief Entityの情報コンテナ
     /// \note Entity->Chunkとそのindexをたどるよう
