@@ -69,14 +69,11 @@ public:
 
         for (auto& shift_entity_array : shift_entities) {
             for (Entity shift_entity : shift_entity_array) {
-                std::cout << shift_entity.GetRecordIndex() << "\n";
                 auto& shift_entity_record = m_entity_record[shift_entity.GetRecordIndex()];
                 shift_entity_record.DecrementIndex();
-
                 assert(IsValid(shift_entity));
             }
         }
-        std::cout << "shifted\n";
 
 #if defined(_DEBUG)
         for (auto& shift_entity_array : shift_entities) {

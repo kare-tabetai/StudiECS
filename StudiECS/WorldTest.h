@@ -46,60 +46,81 @@ struct Size128B {
 
 void WorldTest()
 {
+    std::vector<Entity> entities;
     World world;
-    // Entity entity = world.CreateEntity<int, float*>();
-    // Entity entity = world.CreateEntity<int, float&>();
-    Entity entity_FixedClass_0 = world.CreateEntity<int, MoveableClass>();
-    Entity entity_TestClass0_0 = world.CreateEntity<int, TestClass0>();
-    Entity entity_FixedClass_1 = world.CreateEntity<int, MoveableClass>();
-    Entity entity_TestClass0_1 = world.CreateEntity<int, TestClass0>();
-    Entity entity_TestClass1_0 = world.CreateEntity<TestClass1, int>();
-    Entity entity_TestClass1_1 = world.CreateEntity<int, TestClass1>();
-    Entity entity_TestClass1_2 = world.CreateEntity<float, int, TestClass0>();
-    Entity entity_TestClass1_3 = world.CreateEntity<float, int, TestClass1>();
-    Entity entity_TestClass1_4 = world.CreateEntity<float, int, double, TestClass1>();
-    Entity entity_TestClass1_5 = world.CreateEntity<float, int, TestClass1>();
-    auto float_ptr = world.Get<float>(entity_TestClass1_4);
-    *float_ptr = 0.5f;
-    auto [float_ptr_, duble_ptr] = world.GetTypes<float, double>(entity_TestClass1_4);
+    entities.emplace_back(world.CreateEntity<int, float, MoveableClass>());
+    entities.emplace_back(world.CreateEntity<int, TestClass0>());
+    entities.emplace_back(world.CreateEntity<int, MoveableClass>());
+    entities.emplace_back(world.CreateEntity<int, TestClass0>());
+    entities.emplace_back(world.CreateEntity<TestClass1, int>());
+    entities.emplace_back(world.CreateEntity<int, TestClass1>());
+    entities.emplace_back(world.CreateEntity<float, int, TestClass0>());
+    entities.emplace_back(world.CreateEntity<float, int, TestClass1>());
+    entities.emplace_back(world.CreateEntity<float, int, double, TestClass1>());
+    entities.emplace_back(world.CreateEntity<float, int, TestClass1>());
 
-    auto test_class_1_array = world.GetCdArray<TestClass1>();
-    auto float_array = world.GetCdArray<float>();
+    auto float_ptr = world.Get<float>(entities.front());
+    *float_ptr = 4.8f;
+    auto [_float_ptr_, _int_ptr] = world.GetTypes<float, int>(entities.front());
+    std::cout << *float_ptr << "\n";
 
-    //constexpr size_t kEntitySize = 2048;
-    constexpr size_t kEntitySize = 24;
+    auto int_arrays = world.GetCdArray<int>();
+    for (auto int_array : int_arrays) {
+        for (auto& int_ref : int_array) {
+            int_ref = -35;
+        }
+    }
 
-    std::vector<Entity> test_entities;
+    auto float_arrays = world.GetCdArray<float>();
+    for (auto float_array : float_arrays) {
+        for (auto& float_ref : float_array) {
+            float_ref = -5.555f;
+        }
+    }
+
+    constexpr size_t kEntitySize = 2048;
+    std::vector<Entity> iim_entities;
     for (size_t i = 0; i < kEntitySize; i++) {
         Entity index_entity = world.CreateEntity<IndexStruct, int, MoveableClass>();
-        test_entities.push_back(index_entity);
+        iim_entities.push_back(index_entity);
         [[maybe_unused]] auto index_struct_ptr = world.Get<IndexStruct>(index_entity)->index = i;
     }
 
-    assert(world.IsValid(test_entities.front()));
-    world.DestroyEntity(test_entities.front());
-    assert(!world.IsValid(test_entities.front()));
-    world.DestroyEntity(test_entities.front());
+    assert(world.IsValid(iim_entities.front()));
+    world.DestroyEntity(iim_entities.front());
+    assert(!world.IsValid(iim_entities.front()));
+    world.DestroyEntity(iim_entities.front());
 
-    if (!test_entities.empty()) {
-        auto index = test_entities.size() / 2;
-        auto destroy_entiy = test_entities[index];
+    if (!iim_entities.empty()) {
+        auto index = iim_entities.size() / 2;
+        auto destroy_entiy = iim_entities[index];
         world.DestroyEntity(destroy_entiy);
-        test_entities.erase(test_entities.begin() + index);
+        iim_entities.erase(iim_entities.begin() + index);
     }
-    if (!test_entities.empty()) {
-        auto index = test_entities.size() / 3;
-        world.DestroyEntity(test_entities[index]);
-        test_entities.erase(test_entities.begin() + index);
+    if (!iim_entities.empty()) {
+        auto index = iim_entities.size() / 3;
+        world.DestroyEntity(iim_entities[index]);
+        iim_entities.erase(iim_entities.begin() + index);
     }
 
-    for (auto itr = test_entities.begin(); itr != test_entities.end();) {
+    for (auto itr = iim_entities.begin(); itr != iim_entities.end();) {
         world.DestroyEntity(*itr);
-        itr = test_entities.erase(itr);
+        itr = iim_entities.erase(itr);
     }
 
     for (size_t i = 0; i < 24; i++) {
         Entity index_entity = world.CreateEntity<IndexStruct, int, MoveableClass>();
-        test_entities.push_back(index_entity);
+        iim_entities.push_back(index_entity);
     }
- }
+
+    for (auto itr = entities.begin(); itr != entities.end();) {
+        world.DestroyEntity(*itr);
+        itr = entities.erase(itr);
+    }
+
+    for (auto itr = iim_entities.begin(); itr != iim_entities.end();) {
+        world.DestroyEntity(*itr);
+        itr = iim_entities.erase(itr);
+    }
+
+}
