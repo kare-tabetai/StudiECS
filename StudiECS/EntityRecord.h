@@ -27,12 +27,20 @@ struct EntityRecord {
 
     void ChangeAddArchetype(RecordIndex record_index,RefPtr<ArchetypeInfo> new_archetype_info)
     {
+        if (!IsValid()) {
+            return;
+        }
+
         auto old_archetype_info = m_archetype_ref;
         auto old_cds = old_archetype_info->GetTypesRaw(index);
+        auto old_type_rec_container = old_archetype_info->GetTypeInfoRefContainer();
 
         auto [new_entity, new_entity_index] = new_archetype_info->CreateEntity(record_index, m_generation);
+        auto new_cds = new_archetype_info->GetTypesRaw(new_entity_index);
 
-        //TODO:
+        for (size_t i = 0; i < old_type_rec_container.size(); i++) {
+            //TODO:
+        }
     }
 
     EntityIndex GetEntityIndex() const
