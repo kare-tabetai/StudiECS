@@ -117,5 +117,5 @@ private:
         EntityIndex index = 0; // Chunks‚Ìindex
         RecordIndex destroyed_index;
     };
-    bool is_valid = false;
+    bool is_valid = false;// TODO: m_archetype_ref‚ªnullptr‚©‚Ç‚¤‚©‚Å‘ã—p‚Å‚«‚é‚Í‚¸
 };

@@ -5,9 +5,15 @@
 #include <optional>
 #include <vector>
 
+/// \brief 粗密配列
+/// \note 租配列と密配列の二つで管理を行うmap
+/// 要素のメモリ局所性と添え字アクセスの高速性に優れている
 template<class T>
 class SparseSet {
 public:
+    /// \brief 添え字アクセス
+    /// \note sparseやdenseが足りない場合は拡張
+    /// 大きな添え字を指定するとsparseがかなり無駄に確保される
     T& operator[](uint32 sparse_index)
     {
         if (sparse_index < m_sparse.size()) {

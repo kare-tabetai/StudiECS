@@ -101,7 +101,7 @@ public:
         if (m_chunks.size() == 1) {
             result.push_back(
                 m_chunks[begin_chunk_index]->GetArray<CdOrEntity>(
-                    getCdIndex<CdOrEntity>(),
+                    getCdIndexByConcept<CdOrEntity>(),
                     m_last_chunk_entity_size,
                     begin_local_index));
         }
@@ -109,7 +109,7 @@ public:
         {
             result.push_back(
                 m_chunks[begin_chunk_index]->GetArray<CdOrEntity>(
-                    getCdIndex<CdOrEntity>(),
+                    getCdIndexByConcept<CdOrEntity>(),
                     m_max_entity_size,
                     begin_local_index));
 
@@ -117,12 +117,12 @@ public:
             for (uint32 i = begin_chunk_index + 1; i < m_chunks.size() - 1; ++i) {
                 result.push_back(
                     m_chunks[i]->GetArray<CdOrEntity>(
-                        getCdIndex<CdOrEntity>(),
+                        getCdIndexByConcept<CdOrEntity>(),
                         m_max_entity_size));
             }
 
             // 最後のチャンクはchunk内のCdOrEntityの要素をm_empty_indexのサイズ取得する
-            result.push_back(m_chunks.back()->GetArray<CdOrEntity>(getCdIndex<CdOrEntity>(), m_last_chunk_entity_size));
+            result.push_back(m_chunks.back()->GetArray<CdOrEntity>(getCdIndexByConcept<CdOrEntity>(), m_last_chunk_entity_size));
         }
         
         return result;
@@ -132,7 +132,7 @@ public:
     CdOrEntity* GetCD(EntityIndex index)
     {
         auto& chunk = m_chunks[index / m_max_entity_size];
-        return chunk->At<CdOrEntity>(getCdIndex<CdOrEntity>(), index % m_max_entity_size);
+        return chunk->At<CdOrEntity>(getCdIndexByConcept<CdOrEntity>(), index % m_max_entity_size);
     }
 
     template<CdOrEntityConcept CdOrEntity>
@@ -186,17 +186,7 @@ public:
 
     bool IsSameArchetype(const Archetype& archetype) const
     {
-        if (m_archetype.size() != archetype.size()) {
-            return false;
-        }
-
-        for (size_t i = 0; i < m_archetype.size(); i++) {
-            if (m_archetype[i] != archetype[i]) {
-                return false;
-            }
-        }
-
-        return true;
+        return m_archetype == archetype;
     }
 
     Archetype GetArcehtype() const {
@@ -356,14 +346,17 @@ private:
     }
 
     template<CdOrEntityConcept CdOrEntity>
-    CdIndex getCdIndex()const {
-        for (CdIndex i = 0; i < m_archetype.size(); ++i) {
-            if (m_archetype[i] == TypeIDGenerator<CdOrEntity>::id()) {
-                return i;
-            }
+    CdIndex getCdIndexByConcept()const {
+        auto itr = std::find(
+            m_archetype.begin(), 
+            m_archetype.end(), 
+            TypeIDGenerator<CdOrEntity>::id());
+        if (itr != m_archetype.end()) [[likely]] {
+            return static_cast<CdIndex>( std::distance(m_archetype.begin(), itr));
+        } else {
+            assert(false);
+            return kUint8Max;
         }
-        assert(false);
-        return kUint8Max;
     }
     
     bool isEmpty() const

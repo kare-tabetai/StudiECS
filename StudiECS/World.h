@@ -65,7 +65,7 @@ public:
     void DestroyEntity(Entity entity)
     {
         assert(entity.GetRecordIndex() < m_entity_record.size());
-        if (!IsValid(entity)) {
+        if (!IsValid(entity)) [[unlikely]] {
             return;
         }
 
@@ -134,8 +134,8 @@ public:
     template<CdOrEntityConcept CdOrEntity>
     std::vector<ArrayView<CdOrEntity>> GetCdArray()
     {
-        TypeDataID id = TypeIDGenerator<CdOrEntity>::id();
-        auto component_data_itr = m_component_index.find(id);
+        constexpr TypeDataID kTypeDataID = TypeIDGenerator<CdOrEntity>::id();
+        auto component_data_itr = m_component_index.find(kTypeDataID);
         if (component_data_itr == m_component_index.end()) {
             return std::vector<ArrayView<CdOrEntity>>();
         }
@@ -153,8 +153,9 @@ public:
     /// \note 関数呼び出し前にこのentityへのGetCD、entityが含んでいる型のGetCdArrayで取得した参照情報は
     /// 無効(未定義動作)になる
     template<CdConcept CD>
-    CD* AddCD(Entity entity) {
-        if (!IsValid(entity)) {
+    CD* AddCD(Entity entity)
+    {
+        if (!IsValid(entity)) [[unlikely]] {
             return nullptr;
         }
 
@@ -319,12 +320,14 @@ private:
         }
     }
 
+    /// \brief Archetypeのsortを行う
     void sortArchetype(Archetype& arche_type)
     {
         std::sort(
             arche_type.begin(),
             arche_type.end(),
             [](CdID lhs, CdID rhs) {
+                // MEMO:Entityは先頭になるようにソート
                 if (lhs == TypeIDGenerator<Entity>::id()) {
                     return true;
                 } else if (rhs == TypeIDGenerator<Entity>::id()) {
