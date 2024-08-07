@@ -1,6 +1,5 @@
 #pragma once
 #include "ArchetypeInfo.h"
-#include "Chunk.h"
 #include "Constant.h"
 #include "Type.h"
 

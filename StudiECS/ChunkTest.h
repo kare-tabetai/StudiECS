@@ -1,5 +1,4 @@
 #pragma once
-#include "ArchetypeInfo.h"
 #include "ArrayView.h"
 #include <array>
 

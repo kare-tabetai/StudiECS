@@ -1,11 +1,7 @@
 #pragma once
 #include "Type.h"
-#include "IdGenerator.h"
 #include "Concept.h"
-#include "Util.h"
 #include "TypeUtil.h"
-#include "boost_hana.h"
-#include <tuple>
 
 template<CdConcept... CD>
 using EntityCdPtrTuple = std::tuple<Entity*,CD*...>;

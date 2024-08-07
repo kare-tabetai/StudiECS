@@ -1412,7 +1412,7 @@
     <ClInclude Include="HanaTest.h">
       <Filter>ヘッダー ファイル\Test</Filter>
     </ClInclude>
-    <ClInclude Include="IdGenerator.h">
+    <ClInclude Include="CdIdGenerator.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="UtilTest.h">
@@ -1467,12 +1467,6 @@
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="Entity.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="EntityIndex.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="ChunkContainer.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>

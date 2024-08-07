@@ -4,6 +4,7 @@
 #include "Constant.h"
 #include "Entity.h"
 #include "EntityRecord.h"
+#include "CdIdGenerator.h"
 #include "SparseSet.h"
 #include "Type.h"
 #include "TypeUtil.h"

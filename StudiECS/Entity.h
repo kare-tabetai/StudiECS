@@ -1,6 +1,5 @@
 #pragma once
 #include "Type.h"
-#include "Constant.h"
 #include "EnumUtil.h"
 #include <cassert>
 

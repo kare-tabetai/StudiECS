@@ -608,9 +608,8 @@
     <ClInclude Include="boost_hana.h" />
     <ClInclude Include="Concept.h" />
     <ClInclude Include="Constant.h" />
-    <ClInclude Include="EntityIndex.h" />
     <ClInclude Include="EntityRecord.h" />
-    <ClInclude Include="IdGenerator.h" />
+    <ClInclude Include="CdIdGenerator.h" />
     <ClInclude Include="Chunk.h" />
     <ClInclude Include="ChunkTest.h" />
     <ClInclude Include="ContainerTypes.h" />
@@ -633,7 +632,6 @@
     <ClInclude Include="UtilTest.h" />
     <ClInclude Include="World.h" />
     <ClInclude Include="WorldTest.h" />
-    <ClInclude Include="ChunkContainer.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="boost\hana\detail\struct_macros.hpp.erb" />
