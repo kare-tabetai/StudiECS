@@ -33,14 +33,28 @@ struct EntityRecord {
 
         auto old_archetype_info = m_archetype_ref;
         auto old_cds = old_archetype_info->GetTypesRaw(index);
-        auto old_type_rec_container = old_archetype_info->GetTypeInfoRefContainer();
+        auto old_type_ref_container = old_archetype_info->GetTypeInfoRefContainer();
 
+        // 移動後ArchetypeInfoにEntityを作成
         auto [new_entity, new_entity_index] = new_archetype_info->CreateEntity(record_index, m_generation);
-        auto new_cds = new_archetype_info->GetTypesRaw(new_entity_index);
 
-        for (size_t i = 0; i < old_type_rec_container.size(); i++) {
-            //TODO:
+        // 移動後のEntityにCDとEntityをコピー
+        // MEMO:Entityは移動前の内容と同じでいいためそのままコピー
+        auto new_cds = new_archetype_info->GetTypesRaw(new_entity_index);
+        for (size_t i = 0; i < old_type_ref_container.size(); i++) {
+            auto* source_cd = old_cds[i];
+            auto type_info = old_type_ref_container[i];
+            auto dest_cd_index = new_archetype_info->GetCdIndexByTypeInfo(type_info);
+            assert(dest_cd_index.has_value());
+
+            auto* dest_cd = new_cds[i];
+            [[maybe_unused]] auto move_or_copy_success = TypeInfoHelper::MoveOrCopy(*type_info, source_cd, dest_cd);
+            assert(move_or_copy_success);
         }
+
+        // EntityRecordの内容を移動後のものに変更
+        m_archetype_ref = new_archetype_info;
+        index = new_entity_index;
     }
 
     EntityIndex GetEntityIndex() const

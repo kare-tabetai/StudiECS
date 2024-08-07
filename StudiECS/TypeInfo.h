@@ -174,6 +174,8 @@ class TypeInfoHelper {
 public:
     /// \brief move‚ª‚Å‚«‚½‚çmove,‚Å‚«‚È‚©‚Á‚½‚çcopy,copy‚à–³—‚È‚çfalse‚Å•Ô‚·
     static bool MoveOrCopy(const TypeInfo& info, void* source, void* dest) {
+        assert(source != dest);
+
         if (info.CanTrivialCopy()) {
             // TODO: std::memmove‚ÅˆêŠ‡‚Å“®‚©‚·
         }

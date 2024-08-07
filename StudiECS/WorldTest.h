@@ -44,6 +44,29 @@ struct Size128B {
     std::array<std::byte, 128> padding;
 };
 
+void AddCDTest(World& world) {
+    auto add_test_entity = world.CreateEntity<int>();
+    auto* int_add_test_entity = world.Get<int>(add_test_entity);
+    assert(int_add_test_entity);
+    *int_add_test_entity = 5;
+
+    world.AddCD<float>(add_test_entity);
+    auto* flt_add_test_entity = world.Get<float>(add_test_entity);
+    assert(flt_add_test_entity);
+    *flt_add_test_entity = 5.5;
+
+    world.AddCD<double>(add_test_entity);
+    auto* dbl_add_test_entity = world.Get<double>(add_test_entity);
+    assert(dbl_add_test_entity);
+    *dbl_add_test_entity = 5.5;
+
+    world.AddCD<Size1KB>(add_test_entity);
+    auto* size_1kb_add_test_entity = world.Get<Size1KB>(add_test_entity);
+    assert(size_1kb_add_test_entity);
+
+    world.DestroyEntity(add_test_entity);
+}
+
 void WorldTest()
 {
     std::vector<Entity> entities;
@@ -123,4 +146,7 @@ void WorldTest()
         itr = iim_entities.erase(itr);
     }
 
+    AddCDTest(world);
+    AddCDTest(world);
+    
 }

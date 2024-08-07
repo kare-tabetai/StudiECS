@@ -77,7 +77,7 @@ public:
     std::vector<void*> GetTypesRaw(EntityIndex index)
     {
         std::vector<void*> ret;
-        for (size_t cd_index = 0; cd_index < m_archetype.size(); ++cd_index) {
+        for (CdIndex cd_index = 0; cd_index < m_archetype.size(); ++cd_index) {
             void* raw_cd_ptr = GetCDRaw(cd_index, index);
             ret.push_back(raw_cd_ptr);
         }
@@ -145,20 +145,26 @@ public:
     void* GetCDRaw(CdIndex cd_index, EntityIndex index) {
         auto& chunk = m_chunks[index / m_max_entity_size];
         auto& type_ref = m_type_infos[cd_index];
-        return chunk->At(cd_index, index % m_max_entity_size, type_ref->GetTypeSize());
+        return chunk->At(cd_index, index % m_max_entity_size, static_cast<uint32>( type_ref->GetTypeSize()));
     }
 
     bool IsEmpty() const {
         return m_chunks.size() == 1 && m_last_chunk_entity_size == 0;
     }
 
-    RefPtr<ArchetypeInfo> TryGetAddCdArchetypeInfo(CdID cd_index) {
-        auto itr = m_add_cd_brunch.find(cd_index);
+    RefPtr<ArchetypeInfo> TryGetAddCdArchetypeInfo(CdID cd_id) {
+        auto itr = m_add_cd_brunch.find(cd_id);
         if (itr != m_add_cd_brunch.end()) {
             return itr->second;
         } else {
             return nullptr;
         }
+    }
+
+    void RegisterAddCdArchetypeInfo(CdID cd_id,const RefPtr<ArchetypeInfo>& archetype_info)
+    {
+        assert(m_add_cd_brunch.find(cd_id) == m_add_cd_brunch.end());
+        m_add_cd_brunch.try_emplace(cd_id, archetype_info);
     }
 
     template<CdConcept CD>
@@ -192,6 +198,16 @@ public:
 
     TypeInfoRefContainer GetTypeInfoRefContainer() const {
         return m_type_infos;
+    }
+
+    std::optional<CdIndex> GetCdIndexByTypeInfo(const RefPtr<TypeInfo>& serch_info)
+    {
+        auto itr = std::find(m_type_infos.begin(), m_type_infos.end(), serch_info);
+        if (itr != m_type_infos.end()) {
+            return std::distance(m_type_infos.begin(), itr);
+        } else {
+            return std::nullopt;
+        }
     }
 
 private:

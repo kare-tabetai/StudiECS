@@ -149,27 +149,32 @@ public:
         return result;
     }
 
+    /// \brief 既存のentityにCDを追加する
+    /// \note 関数呼び出し前にこのentityへのGetCD、entityが含んでいる型のGetCdArrayで取得した参照情報は
+    /// 無効(未定義動作)になる
     template<CdConcept CD>
     CD* AddCD(Entity entity) {
         if (!IsValid(entity)) {
             return nullptr;
         }
 
+        constexpr CdID kCdTypeID = TypeIDGenerator<CD>::id();
+
         auto& record = m_entity_record[entity.GetRecordIndex()];
         auto archetype_ref = record.GetArchetypeInfo();
 
         // キャッシュが取得できればそれを使う
-        auto add_archetype = archetype_ref->TryGetAddCdArchetypeInfo();
+        auto add_archetype_info = archetype_ref->TryGetAddCdArchetypeInfo(kCdTypeID);
         // キャッシュが取得できない場合はArchetypeInfoを検索
-        if (!add_archetype) {
+        if (!add_archetype_info) {
             auto new_archetype = archetype_ref->GetArcehtype();
-            new_archetype.push_back(TypeIDGenerator<CD>::id());
+            new_archetype.push_back(kCdTypeID);
             sortArchetype(new_archetype);
 
             auto itr = std::find_if(
                 m_archetype_infos.begin(),
                 m_archetype_infos.end(),
-                [](const OwnerPtr<ArchetypeInfo> item) {
+                [&new_archetype](const OwnerPtr<ArchetypeInfo>& item) {
                     return item->IsSameArchetype(new_archetype);
                 });
 
@@ -178,15 +183,21 @@ public:
                 auto new_type_info_ref_container = archetype_ref->GetTypeInfoRefContainer();
                 new_type_info_ref_container.push_back(getOrRegisterTypeInfo<CD>());
                 sortTypeInfosRefsAndArchetype(new_type_info_ref_container, new_archetype);
-                add_archetype = getOrRegisterArchetypeInfo(new_archetype, new_type_info_ref_container);
+                add_archetype_info = getOrRegisterArchetypeInfo(new_archetype, new_type_info_ref_container);
             } else {
-                add_archetype = &(*itr);
+                add_archetype_info = itr->get();
             }
+
+            archetype_ref->RegisterAddCdArchetypeInfo(kCdTypeID, add_archetype_info);
         }
 
-        assert(add_archetype);
+        assert(add_archetype_info);
 
-        record.ChangeAddArchetype(add_archetype);
+        // Entityの内容を新しいArchetypeInfoへ移動してEntityRecordのIndexも更新
+        record.ChangeAddArchetype(kCdTypeID, add_archetype_info);
+
+        // OPTIMIZE:ChangeAddArchetypeの処理中に取得したほうが処理が軽そう
+        return Get<CD>(entity);
     }
 
 private:
