@@ -3,12 +3,8 @@
 #include "Concept.h"
 #include "TypeIDGenerator.h"
 
-struct ArchetypeIdCounter {
-    static inline uint32 counter = 0;
-};
-
 struct CdIdCounter {
-    static inline uint32 counter = 0;
+    static inline std::atomic<uint32> counter = 0;
 };
 
 template<CdOrEntityConcept CD>
