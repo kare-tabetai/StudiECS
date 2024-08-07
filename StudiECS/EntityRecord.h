@@ -50,6 +50,9 @@ struct EntityRecord {
             auto* dest_cd = new_cds[i];
             [[maybe_unused]] auto move_or_copy_success = TypeInfoHelper::MoveOrCopy(*type_info, source_cd, dest_cd);
             assert(move_or_copy_success);
+
+            // 移動orコピー後にデストラクト
+            type_info->Destruct(source_cd);
         }
 
         // EntityRecordの内容を移動後のものに変更
