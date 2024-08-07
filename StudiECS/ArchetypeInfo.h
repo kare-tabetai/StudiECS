@@ -86,7 +86,7 @@ public:
     template<CdOrEntityConcept CdOrEntity>
     std::vector<ArrayView<CdOrEntity>> GetTypeArrays(EntityIndex begin_index = 0)
     {
-        if (IsEmpty()) {
+        if (isEmpty()) {
             return std::vector<ArrayView<CdOrEntity>>();
         }
 
@@ -145,10 +145,6 @@ public:
         auto& chunk = m_chunks[index / m_max_entity_size];
         auto& type_ref = m_type_infos[cd_index];
         return chunk->At(cd_index, index % m_max_entity_size, static_cast<uint32>( type_ref->GetTypeSize()));
-    }
-
-    bool IsEmpty() const {
-        return m_chunks.size() == 1 && m_last_chunk_entity_size == 0;
     }
 
     RefPtr<ArchetypeInfo> TryGetAddCdArchetypeInfo(CdID cd_id) {
@@ -219,6 +215,20 @@ public:
         } else {
             return std::nullopt;
         }
+    }
+
+    template<CdConcept CD>
+    bool Has()const
+    {
+        constexpr CdID kCdTypeID = TypeIDGenerator<CD>::id();
+        auto itr = std::find_if(
+            m_type_infos.begin(),
+            m_type_infos.end(), 
+            [kCdTypeID](const RefPtr<TypeInfo>& item) {
+                return item->GetID() == kCdTypeID;
+            }
+            );
+        return itr != m_type_infos.end();
     }
 
 private:
@@ -354,6 +364,11 @@ private:
         }
         assert(false);
         return kUint8Max;
+    }
+    
+    bool isEmpty() const
+    {
+        return m_chunks.size() == 1 && m_last_chunk_entity_size == 0;
     }
 
 #if _DEBUG

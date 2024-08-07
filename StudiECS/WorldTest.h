@@ -87,6 +87,10 @@ void AddRemoveCDTest(World& world)
     int_cd = world.Get<int>(test_entity);
     assert(int_cd);
 
+    world.RemoveCD<double>(test_entity);
+    dbl_cd = world.Get<double>(test_entity);
+    assert(!dbl_cd);
+
     world.DestroyEntity(test_entity);
 }
 

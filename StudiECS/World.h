@@ -163,6 +163,11 @@ public:
         auto& record = m_entity_record[entity.GetRecordIndex()];
         auto archetype_ref = record.GetArchetypeInfo();
 
+        // すでに同じCDがついていた場合は返す
+        if (archetype_ref->Has<CD>()) [[unlikely]] {
+            return nullptr;
+        }
+
         // キャッシュが取得できればそれを使う
         auto add_archetype_info = archetype_ref->TryGetAddCdArchetypeInfo(kCdTypeID);
         // キャッシュが取得できない場合はArchetypeInfoを検索
@@ -202,7 +207,7 @@ public:
 
     template<CdConcept CD>
     void RemoveCD(Entity entity) {
-        if (!IsValid(entity)) {
+        if (!IsValid(entity)) [[unlikely]] {
             return ;
         }
 
@@ -210,6 +215,11 @@ public:
 
         auto& record = m_entity_record[entity.GetRecordIndex()];
         auto archetype_ref = record.GetArchetypeInfo();
+
+        // 該当のCDがついていなければ返す
+        if (!archetype_ref->Has<CD>()) [[unlikely]] {
+            return;
+        }
 
         // キャッシュが取得できればそれを使う
         auto remove_archetype_info = archetype_ref->TryGetRemoveCdArchetypeInfo(kCdTypeID);
