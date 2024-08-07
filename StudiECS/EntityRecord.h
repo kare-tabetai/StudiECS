@@ -25,7 +25,7 @@ struct EntityRecord {
         return shift_entities;
     }
 
-    void ChangeAddArchetype(RecordIndex record_index,RefPtr<ArchetypeInfo> new_archetype_info)
+    void ChangeArchetype(RecordIndex record_index, RefPtr<ArchetypeInfo> new_archetype_info)
     {
         if (!IsValid()) {
             return;
@@ -45,7 +45,11 @@ struct EntityRecord {
             auto* source_cd = old_cds[i];
             auto type_info = old_type_ref_container[i];
             auto dest_cd_index = new_archetype_info->GetCdIndexByTypeInfo(type_info);
-            assert(dest_cd_index.has_value());
+            
+            // コピー先のArchetypeに型が含まれていない場合は移動を行わない
+            if (!dest_cd_index.has_value()) {
+                continue;
+            }
 
             auto* dest_cd = new_cds[i];
             [[maybe_unused]] auto move_or_copy_success = TypeInfoHelper::MoveOrCopy(*type_info, source_cd, dest_cd);

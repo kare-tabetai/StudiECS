@@ -161,10 +161,26 @@ public:
         }
     }
 
+    RefPtr<ArchetypeInfo> TryGetRemoveCdArchetypeInfo(CdID cd_id)
+    {
+        auto itr = m_remove_cd_brunch.find(cd_id);
+        if (itr != m_remove_cd_brunch.end()) {
+            return itr->second;
+        } else {
+            return nullptr;
+        }
+    }
+
     void RegisterAddCdArchetypeInfo(CdID cd_id,const RefPtr<ArchetypeInfo>& archetype_info)
     {
         assert(m_add_cd_brunch.find(cd_id) == m_add_cd_brunch.end());
         m_add_cd_brunch.try_emplace(cd_id, archetype_info);
+    }
+
+    void RegisterRemoveCdArchetypeInfo(CdID cd_id, const RefPtr<ArchetypeInfo>& archetype_info)
+    {
+        assert(m_remove_cd_brunch.find(cd_id) == m_remove_cd_brunch.end());
+        m_remove_cd_brunch.try_emplace(cd_id, archetype_info);
     }
 
     template<CdConcept CD>

@@ -194,10 +194,53 @@ public:
         assert(add_archetype_info);
 
         // Entityの内容を新しいArchetypeInfoへ移動してEntityRecordのIndexも更新
-        record.ChangeAddArchetype(kCdTypeID, add_archetype_info);
+        record.ChangeArchetype(entity.GetRecordIndex(), add_archetype_info);
 
         // OPTIMIZE:ChangeAddArchetypeの処理中に取得したほうが処理が軽そう
         return Get<CD>(entity);
+    }
+
+    template<CdConcept CD>
+    void RemoveCD(Entity entity) {
+        if (!IsValid(entity)) {
+            return ;
+        }
+
+        constexpr CdID kCdTypeID = TypeIDGenerator<CD>::id();
+
+        auto& record = m_entity_record[entity.GetRecordIndex()];
+        auto archetype_ref = record.GetArchetypeInfo();
+
+        // キャッシュが取得できればそれを使う
+        auto remove_archetype_info = archetype_ref->TryGetRemoveCdArchetypeInfo(kCdTypeID);
+        // キャッシュが取得できない場合はArchetypeInfoを検索
+        if (!remove_archetype_info) {
+            auto new_archetype = archetype_ref->GetArcehtype();
+            new_archetype.erase(kCdTypeID);
+
+            auto itr = std::find_if(
+                m_archetype_infos.begin(),
+                m_archetype_infos.end(),
+                [&new_archetype](const OwnerPtr<ArchetypeInfo>& item) {
+                    return item->IsSameArchetype(new_archetype);
+                });
+
+            // ArchetypeInfoが見つからなければ新たに登録
+            if (itr == m_archetype_infos.end()) {
+                auto new_type_info_ref_container = archetype_ref->GetTypeInfoRefContainer();
+                new_type_info_ref_container.erase(getOrRegisterTypeInfo<CD>());
+                remove_archetype_info = getOrRegisterArchetypeInfo(new_archetype, new_type_info_ref_container);
+            } else {
+                remove_archetype_info = itr->get();
+            }
+
+            archetype_ref->RegisterRemoveCdArchetypeInfo(kCdTypeID, remove_archetype_info);
+        }
+
+        assert(remove_archetype_info);
+
+        // Entityの内容を新しいArchetypeInfoへ移動してEntityRecordのIndexも更新
+        record.ChangeArchetype(entity.GetRecordIndex(), remove_archetype_info);
     }
 
 private:
