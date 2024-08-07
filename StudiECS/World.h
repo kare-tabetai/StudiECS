@@ -10,7 +10,6 @@
 #include <memory>
 #include <unordered_map>
 #include <vector>
-#include <numeric>
 
 /// \brief 一番rootになるクラスここから全部操作する
 class World {
@@ -188,7 +187,7 @@ public:
                 add_archetype_info = itr->get();
             }
 
-            archetype_ref->RegisterAddCdArchetypeInfo(kCdTypeID, add_archetype_info);
+            archetype_ref->RegisterAddCdArchetypeInfo<CD>( add_archetype_info);
         }
 
         assert(add_archetype_info);
@@ -216,7 +215,8 @@ public:
         // キャッシュが取得できない場合はArchetypeInfoを検索
         if (!remove_archetype_info) {
             auto new_archetype = archetype_ref->GetArcehtype();
-            new_archetype.erase(kCdTypeID);
+            [[maybe_unused]] auto archetype_erase_ret = std::erase(new_archetype, kCdTypeID);
+            assert(archetype_erase_ret == 1);
 
             auto itr = std::find_if(
                 m_archetype_infos.begin(),
@@ -228,13 +228,15 @@ public:
             // ArchetypeInfoが見つからなければ新たに登録
             if (itr == m_archetype_infos.end()) {
                 auto new_type_info_ref_container = archetype_ref->GetTypeInfoRefContainer();
-                new_type_info_ref_container.erase(getOrRegisterTypeInfo<CD>());
+                [[maybe_unused]] auto type_info_ref_erase_ret = std::erase(new_type_info_ref_container, getOrRegisterTypeInfo<CD>());
+                assert(type_info_ref_erase_ret == 1);
+
                 remove_archetype_info = getOrRegisterArchetypeInfo(new_archetype, new_type_info_ref_container);
             } else {
                 remove_archetype_info = itr->get();
             }
 
-            archetype_ref->RegisterRemoveCdArchetypeInfo(kCdTypeID, remove_archetype_info);
+            archetype_ref->RegisterRemoveCdArchetypeInfo<CD>(remove_archetype_info);
         }
 
         assert(remove_archetype_info);

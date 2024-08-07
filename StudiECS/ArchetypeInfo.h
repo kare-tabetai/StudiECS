@@ -171,26 +171,22 @@ public:
         }
     }
 
-    void RegisterAddCdArchetypeInfo(CdID cd_id,const RefPtr<ArchetypeInfo>& archetype_info)
+    template<CdConcept CD>
+    void RegisterAddCdArchetypeInfo( const RefPtr<ArchetypeInfo>& archetype_info)
     {
-        assert(m_add_cd_brunch.find(cd_id) == m_add_cd_brunch.end());
-        m_add_cd_brunch.try_emplace(cd_id, archetype_info);
-    }
+        constexpr CdID kCdTypeID = TypeIDGenerator<CD>::id();
+        assert(m_add_cd_brunch.count(kCdTypeID) == 0);
 
-    void RegisterRemoveCdArchetypeInfo(CdID cd_id, const RefPtr<ArchetypeInfo>& archetype_info)
-    {
-        assert(m_remove_cd_brunch.find(cd_id) == m_remove_cd_brunch.end());
-        m_remove_cd_brunch.try_emplace(cd_id, archetype_info);
+        m_add_cd_brunch.try_emplace(kCdTypeID, archetype_info);
     }
 
     template<CdConcept CD>
-    void AddAddCdArchetypeInfo(const ArchetypeInfo* info) {
-        CdID cd_id = CdIdGenerator<CD>::number();
-        if (m_add_cd_brunch.count(cd_id) != 0) {
-            return;
-        }
+    void RegisterRemoveCdArchetypeInfo(const RefPtr<ArchetypeInfo>& archetype_info)
+    {
+        constexpr CdID kCdTypeID = TypeIDGenerator<CD>::id();
+        assert(m_remove_cd_brunch.count(kCdTypeID) == 0);
 
-        m_add_cd_brunch.try_emplace(cd_id, info);
+        m_remove_cd_brunch.try_emplace(kCdTypeID, archetype_info);
     }
 
     bool IsSameArchetype(const Archetype& archetype) const
@@ -220,7 +216,7 @@ public:
     {
         auto itr = std::find(m_type_infos.begin(), m_type_infos.end(), serch_info);
         if (itr != m_type_infos.end()) {
-            return std::distance(m_type_infos.begin(), itr);
+            return static_cast<CdIndex>(std::distance(m_type_infos.begin(), itr));
         } else {
             return std::nullopt;
         }
@@ -378,7 +374,7 @@ private:
 #endif // DEBUG
 
     WorldNumber m_world_number;
-    Archetype m_archetype;
+    Archetype m_archetype; //TODO:m_type_infosÇ≈éñë´ÇËÇÈÇÃÇ≈ÇÕÇ»Ç¢Ç©Çåüì¢
 
     /// \brief å^èÓïÒÇ÷ÇÃéQè∆ indexÇÕcd_index
     TypeInfoRefContainer m_type_infos;

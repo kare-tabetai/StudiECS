@@ -67,6 +67,29 @@ void AddCDTest(World& world) {
     world.DestroyEntity(add_test_entity);
 }
 
+void AddRemoveCDTest(World& world)
+{
+    auto test_entity = world.CreateEntity<int>();
+    auto* int_cd = world.Get<int>(test_entity);
+    assert(int_cd);
+    *int_cd = 5;
+
+    world.AddCD<double>(test_entity);
+    auto* dbl_cd = world.Get<double>(test_entity);
+    assert(dbl_cd);
+    *dbl_cd = 5.5;
+
+    world.RemoveCD<int>(test_entity);
+    int_cd = world.Get<int>(test_entity);
+    assert(!int_cd);
+
+    world.AddCD<int>(test_entity);
+    int_cd = world.Get<int>(test_entity);
+    assert(int_cd);
+
+    world.DestroyEntity(test_entity);
+}
+
 void WorldTest()
 {
     std::vector<Entity> entities;
