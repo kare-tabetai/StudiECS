@@ -8,19 +8,21 @@ struct EntityRecord {
         const RefPtr<ArchetypeInfo>& _archetype_ref,
          EntityIndex entity_index)
     {
+        assert(!IsValid());
+
         m_archetype_ref = _archetype_ref;
         index = entity_index;
-        is_valid = true;
     }
 
     /// \retval íœ‚³‚ê‚½EntityˆÈ~‚Ìindex‚ÌEntity
     std::vector<ArrayView<Entity>> Destroy(RecordIndex _destroyed_index)
     {
+        assert(IsValid());
+
         auto shift_entities = m_archetype_ref->DestroyEntity(index);
         m_archetype_ref = nullptr;
         destroyed_index = _destroyed_index;
         incrementGeneration();
-        is_valid = false;
         return shift_entities;
     }
 
@@ -90,6 +92,7 @@ struct EntityRecord {
     }
     void ReUse(EntityIndex _index)
     {
+        assert(!IsValid());
         index = _index;
     }
     void DecrementIndex()
@@ -97,7 +100,7 @@ struct EntityRecord {
         assert(0 < index);
         index--;
     }
-    bool IsValid() const { return is_valid; }
+    bool IsValid() const { return m_archetype_ref != nullptr; }
 
 private:
     bool incrementGeneration()
@@ -117,5 +120,4 @@ private:
         EntityIndex index = 0; // Chunks‚Ìindex
         RecordIndex destroyed_index;
     };
-    bool is_valid = false;// TODO: m_archetype_ref‚ªnullptr‚©‚Ç‚¤‚©‚Å‘ã—p‚Å‚«‚é‚Í‚¸
 };
