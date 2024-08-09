@@ -141,6 +141,17 @@ public:
         return const_cast<ArchetypeInfo>(this)->GetCD<CdOrEntity>(index);
     }
 
+    template<CdConcept CD>
+    bool Has() const
+    {
+        constexpr TypeDataID kTypeDataID = TypeIDGenerator<CD>::id();
+        auto itr = std::find_if(m_type_infos.begin(), m_type_infos.end(),
+            [kTypeDataID](const RefPtr<TypeInfo>& info) {
+                return info->GetID() == kTypeDataID;
+            });
+        return itr != m_type_infos.end();
+    }
+
     void* GetCDRaw(CdIndex cd_index, EntityIndex index) {
         auto& chunk = m_chunks[index / m_max_entity_size];
         auto& type_ref = m_type_infos[cd_index];
@@ -205,20 +216,6 @@ public:
         } else {
             return std::nullopt;
         }
-    }
-
-    template<CdConcept CD>
-    bool Has()const
-    {
-        constexpr CdID kCdTypeID = TypeIDGenerator<CD>::id();
-        auto itr = std::find_if(
-            m_type_infos.begin(),
-            m_type_infos.end(), 
-            [kCdTypeID](const RefPtr<TypeInfo>& item) {
-                return item->GetID() == kCdTypeID;
-            }
-            );
-        return itr != m_type_infos.end();
     }
 
 private:

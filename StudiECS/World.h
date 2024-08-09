@@ -120,6 +120,15 @@ public:
         return std::get<0>(cd_ptr_tuple);
     }
 
+    template<CdConcept CD>
+    bool Has(Entity entity) {
+        assert(IsValid(entity));
+
+        assert(entity.GetRecordIndex() < m_entity_record.size());
+        auto& record = m_entity_record[entity.GetRecordIndex()];
+        return record.GetArchetypeInfo()->Has<CD>();
+    }
+
     template<CdConcept... CD>
     PtrTuple<CD...> GetTypes(Entity entity)
     {
