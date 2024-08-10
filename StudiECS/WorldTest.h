@@ -44,66 +44,8 @@ struct Size128B {
     std::array<std::byte, 128> padding;
 };
 
-void AddCDTest(World& world) {
-    auto add_test_entity = world.CreateEntity<int>();
-    assert(!world.Has<Size1KB>(add_test_entity));
-
-    auto* int_add_test_entity = world.Get<int>(add_test_entity);
-    assert(int_add_test_entity);
-    assert(world.Has<int>(add_test_entity));
-    *int_add_test_entity = 5;
-
-    world.AddCD<float>(add_test_entity);
-    auto* flt_add_test_entity = world.Get<float>(add_test_entity);
-    assert(flt_add_test_entity);
-    assert(world.Has<float>(add_test_entity));
-    *flt_add_test_entity = 5.5;
-
-    world.AddCD<double>(add_test_entity);
-    auto* dbl_add_test_entity = world.Get<double>(add_test_entity);
-    assert(dbl_add_test_entity);
-    assert(world.Has<double>(add_test_entity));
-    *dbl_add_test_entity = 5.5;
-
-    world.AddCD<Size1KB>(add_test_entity);
-    auto* size_1kb_add_test_entity = world.Get<Size1KB>(add_test_entity);
-    assert(size_1kb_add_test_entity);
-    assert(world.Has<Size1KB>(add_test_entity));
-
-    world.DestroyEntity(add_test_entity);
-}
-
-void AddRemoveCDTest(World& world)
-{
-    auto test_entity = world.CreateEntity<int>();
-    auto* int_cd = world.Get<int>(test_entity);
-    assert(int_cd);
-    *int_cd = 5;
-
-    world.AddCD<double>(test_entity);
-    auto* dbl_cd = world.Get<double>(test_entity);
-    assert(dbl_cd);
-    *dbl_cd = 5.5;
-
-    world.RemoveCD<int>(test_entity);
-    int_cd = world.Get<int>(test_entity);
-    assert(!int_cd);
-
-    world.AddCD<int>(test_entity);
-    int_cd = world.Get<int>(test_entity);
-    assert(int_cd);
-
-    world.RemoveCD<double>(test_entity);
-    dbl_cd = world.Get<double>(test_entity);
-    assert(!dbl_cd);
-
-    world.DestroyEntity(test_entity);
-}
-
-void WorldTest()
-{
+void CreateDestroyTest(World& world) {
     std::vector<Entity> entities;
-    World world;
     entities.emplace_back(world.CreateEntity<int, float, MoveableClass>());
     entities.emplace_back(world.CreateEntity<int, TestClass0>());
     entities.emplace_back(world.CreateEntity<int, MoveableClass>());
@@ -164,10 +106,12 @@ void WorldTest()
         itr = iim_entities.erase(itr);
     }
 
-    for (size_t i = 0; i < 24; i++) {
+    for (size_t i = 0; i < 128; i++) {
         Entity index_entity = world.CreateEntity<IndexStruct, int, MoveableClass>();
         iim_entities.push_back(index_entity);
     }
+
+    auto[int_array,float_array] = world.GetCdsArray<int, float>();
 
     for (auto itr = entities.begin(); itr != entities.end();) {
         world.DestroyEntity(*itr);
@@ -178,7 +122,84 @@ void WorldTest()
         world.DestroyEntity(*itr);
         itr = iim_entities.erase(itr);
     }
+}
 
+void AddCDTest(World& world) {
+    auto add_test_entity = world.CreateEntity<int>();
+    assert(!world.Has<Size1KB>(add_test_entity));
+
+    auto* int_add_test_entity = world.Get<int>(add_test_entity);
+    assert(int_add_test_entity);
+    assert(world.Has<int>(add_test_entity));
+    *int_add_test_entity = 5;
+
+    world.AddCD<float>(add_test_entity);
+    auto* flt_add_test_entity = world.Get<float>(add_test_entity);
+    assert(flt_add_test_entity);
+    assert(world.Has<float>(add_test_entity));
+    *flt_add_test_entity = 5.5;
+
+    world.AddCD<double>(add_test_entity);
+    auto* dbl_add_test_entity = world.Get<double>(add_test_entity);
+    assert(dbl_add_test_entity);
+    assert(world.Has<double>(add_test_entity));
+    *dbl_add_test_entity = 5.5;
+
+    world.AddCD<Size1KB>(add_test_entity);
+    auto* size_1kb_add_test_entity = world.Get<Size1KB>(add_test_entity);
+    assert(size_1kb_add_test_entity);
+    assert(world.Has<Size1KB>(add_test_entity));
+
+    world.DestroyEntity(add_test_entity);
+}
+
+void AddRemoveCDTest(World& world)
+{
+    auto test_entity = world.CreateEntity<int>();
+    auto* int_cd = world.Get<int>(test_entity);
+    assert(int_cd);
+    *int_cd = 5;
+
+    world.AddCD<double>(test_entity);
+    auto* dbl_cd = world.Get<double>(test_entity);
+    assert(dbl_cd);
+    *dbl_cd = 5.5;
+
+    world.RemoveCD<int>(test_entity);
+    int_cd = world.Get<int>(test_entity);
+    assert(!int_cd);
+
+    world.AddCD<int>(test_entity);
+    int_cd = world.Get<int>(test_entity);
+    assert(int_cd);
+
+    world.RemoveCD<double>(test_entity);
+    dbl_cd = world.Get<double>(test_entity);
+    assert(!dbl_cd);
+
+    world.AddCD<float>(test_entity);
+    auto* flt_cd = world.Get<float>(test_entity);
+    assert(flt_cd);
+
+    bool has_uint = world.Has<unsigned int>(test_entity);
+    assert(!has_uint);
+    bool has_flt_int = world.Has<float, int>(test_entity);
+    assert(has_flt_int);
+    bool has_dbl_int = world.Has<double, int>(test_entity);
+    assert(!has_dbl_int);
+
+    world.DestroyEntity(test_entity);
+}
+
+void GetCdsArrayTest(World& world)
+{
+
+}
+
+void WorldTest()
+{
+    World world;
+    CreateDestroyTest(world);
     AddCDTest(world);
     AddCDTest(world);
     

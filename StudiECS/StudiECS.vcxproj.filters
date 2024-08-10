@@ -1469,6 +1469,12 @@
     <ClInclude Include="Entity.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
+    <ClInclude Include="CdArrayView.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="TupleUtil.h">
+      <Filter>ヘッダー ファイル\Util</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="boost\hana\detail\struct_macros.hpp.erb">

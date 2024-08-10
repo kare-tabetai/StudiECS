@@ -8,6 +8,8 @@
 #include "SparseSet.h"
 #include "Type.h"
 #include "TypeUtil.h"
+#include "TupleUtil.h"
+#include "CdArrayView.h"
 #include <memory>
 #include <unordered_map>
 #include <vector>
@@ -120,13 +122,13 @@ public:
         return std::get<0>(cd_ptr_tuple);
     }
 
-    template<CdConcept CD>
+    template<CdConcept... CDs>
     bool Has(Entity entity) {
         assert(IsValid(entity));
 
         assert(entity.GetRecordIndex() < m_entity_record.size());
         auto& record = m_entity_record[entity.GetRecordIndex()];
-        return record.GetArchetypeInfo()->Has<CD>();
+        return record.GetArchetypeInfo()->HasAll<CDs...>();
     }
 
     template<CdConcept... CD>
@@ -141,7 +143,7 @@ public:
     }
 
     template<CdOrEntityConcept CdOrEntity>
-    std::vector<ArrayView<CdOrEntity>> GetCdArray()
+    CdArrayView<CdOrEntity> GetCdArray()
     {
         constexpr TypeDataID kTypeDataID = TypeIDGenerator<CdOrEntity>::id();
         auto component_data_itr = m_component_index.find(kTypeDataID);
@@ -151,9 +153,41 @@ public:
 
         std::vector<ArrayView<CdOrEntity>> result;
         result.reserve(component_data_itr->second.size() * 2);
-        for (auto& archetype : component_data_itr->second) {
-            auto cd_arrays = archetype->GetTypeArrays<CdOrEntity>();
+        for (auto& archetype_info : component_data_itr->second) {
+            auto cd_arrays = archetype_info->GetTypeArrays<CdOrEntity>();
             result.insert(result.end(), cd_arrays.begin(), cd_arrays.end());
+        }
+        return result;
+    }
+
+    template<CdOrEntityConcept... CdOrEntity>
+    CdArrayViews<CdOrEntity...> GetCdsArray()
+    {
+        using LastCdOrEntity = TypeParameterAtLast<CdOrEntity...>;
+        constexpr TypeDataID kLastTypeDataID = TypeIDGenerator<LastCdOrEntity>::id();
+        auto component_data_itr = m_component_index.find(kLastTypeDataID);
+        if (component_data_itr == m_component_index.end()) {
+            return CdArrayViews<CdOrEntity...>();
+        }
+
+        CdArrayViews<CdOrEntity...> result;
+        const size_t reserve_size = component_data_itr->second.size() * 2;
+        std::apply([reserve_size](auto&... args) { (args.reserve(reserve_size), ...); }, result);
+
+        for (auto& archetype_info : component_data_itr->second) {
+            if (!archetype_info->HasAll<CdOrEntity...>()) {
+                continue;
+            }
+
+            auto cd_arrays = archetype_info->GetTypesArrays<CdOrEntity...>();
+
+            // result‚Écd_arrays‚ÌŒ‹‰Ê‚ðÚ‘±
+            TupleUtil::ApplyTuples(
+                [](auto& lhs, auto& rhs) {
+                    lhs.insert(lhs.end(), rhs.begin(), rhs.end());
+                },
+                result,
+                cd_arrays);
         }
         return result;
     }
@@ -174,7 +208,7 @@ public:
         auto archetype_ref = record.GetArchetypeInfo();
 
         // ‚·‚Å‚É“¯‚¶CD‚ª‚Â‚¢‚Ä‚¢‚½ê‡‚Í•Ô‚·
-        if (archetype_ref->Has<CD>()) [[unlikely]] {
+        if (archetype_ref->HasAll<CD>()) [[unlikely]] {
             return nullptr;
         }
 
@@ -227,7 +261,7 @@ public:
         auto archetype_ref = record.GetArchetypeInfo();
 
         // ŠY“–‚ÌCD‚ª‚Â‚¢‚Ä‚¢‚È‚¯‚ê‚Î•Ô‚·
-        if (!archetype_ref->Has<CD>()) [[unlikely]] {
+        if (!archetype_ref->HasAll<CD>()) [[unlikely]] {
             return;
         }
 

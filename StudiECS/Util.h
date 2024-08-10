@@ -3,8 +3,7 @@
 #include "Concept.h"
 #include "TypeUtil.h"
 
-template<CdConcept... CD>
-using EntityCdPtrTuple = std::tuple<Entity*,CD*...>;
+
 
 namespace Util {
 

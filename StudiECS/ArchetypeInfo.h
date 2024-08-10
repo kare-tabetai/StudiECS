@@ -3,6 +3,8 @@
 #include "Type.h"
 #include "Entity.h"
 #include "ContainerTypes.h"
+#include "CdArrayView.h"
+#include "TypeUtil.h"
 #include <unordered_map>
 
 class ArchetypeInfo {
@@ -52,7 +54,7 @@ public:
 
     /// \brief EntityÇçÌèúÇ∑ÇÈ
     /// \retval çÌèúÇ≥ÇÍÇΩEntityà»ç~ÇÃindexÇÃEntity
-    std::vector<ArrayView<Entity>> DestroyEntity(EntityIndex index)
+    CdArrayView<Entity> DestroyEntity(EntityIndex index)
     {
         assert(!m_chunks.empty());
         shrink(index);
@@ -84,7 +86,7 @@ public:
     }
 
     template<CdOrEntityConcept CdOrEntity>
-    std::vector<ArrayView<CdOrEntity>> GetTypeArrays(EntityIndex begin_index = 0)
+    CdArrayView<CdOrEntity> GetTypeArrays(EntityIndex begin_index = 0)
     {
         if (isEmpty()) {
             return std::vector<ArrayView<CdOrEntity>>();
@@ -128,6 +130,12 @@ public:
         return result;
     }
 
+    template<CdOrEntityConcept... CdOrEntity>
+    CdArrayViews<CdOrEntity...> GetTypesArrays(EntityIndex begin_index = 0)
+    {
+        return std::make_tuple(GetTypeArrays<CdOrEntity>()...);
+    }
+
     template<CdOrEntityConcept CdOrEntity>
     CdOrEntity* GetCD(EntityIndex index)
     {
@@ -141,15 +149,22 @@ public:
         return const_cast<ArchetypeInfo>(this)->GetCD<CdOrEntity>(index);
     }
 
-    template<CdConcept CD>
-    bool Has() const
+
+
+    template<CdOrEntityConcept FirstCdOrEntity, CdOrEntityConcept... CdOrEntities>
+    bool HasAll() const
     {
-        constexpr TypeDataID kTypeDataID = TypeIDGenerator<CD>::id();
-        auto itr = std::find_if(m_type_infos.begin(), m_type_infos.end(),
-            [kTypeDataID](const RefPtr<TypeInfo>& info) {
-                return info->GetID() == kTypeDataID;
-            });
-        return itr != m_type_infos.end();
+        bool has_first = has<FirstCdOrEntity>();
+
+        if constexpr (sizeof...(CdOrEntities) == 0) {
+            return has_first;
+        } else {
+            if (!has_first) {
+                return false;
+            } else {
+                return HasAll<CdOrEntities...>();
+            }
+        }
     }
 
     void* GetCDRaw(CdIndex cd_index, EntityIndex index) {
@@ -359,6 +374,17 @@ private:
     bool isEmpty() const
     {
         return m_chunks.size() == 1 && m_last_chunk_entity_size == 0;
+    }
+
+    template<CdOrEntityConcept CdOrEntity>
+    bool has() const
+    {
+        constexpr TypeDataID kTypeDataID = TypeIDGenerator<CdOrEntity>::id();
+        auto itr = std::find_if(m_type_infos.begin(), m_type_infos.end(),
+            [kTypeDataID](const RefPtr<TypeInfo>& info) {
+                return info->GetID() == kTypeDataID;
+            });
+        return itr != m_type_infos.end();
     }
 
 #if _DEBUG

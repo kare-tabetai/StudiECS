@@ -606,6 +606,7 @@
     <ClInclude Include="boost\hana\zip_shortest_with.hpp" />
     <ClInclude Include="boost\hana\zip_with.hpp" />
     <ClInclude Include="boost_hana.h" />
+    <ClInclude Include="CdArrayView.h" />
     <ClInclude Include="Concept.h" />
     <ClInclude Include="Constant.h" />
     <ClInclude Include="EntityRecord.h" />
@@ -620,6 +621,7 @@
     <ClInclude Include="Entity.h" />
     <ClInclude Include="OffsetArrayView.h" />
     <ClInclude Include="SparseSetTest.h" />
+    <ClInclude Include="TupleUtil.h" />
     <ClInclude Include="TypeUtil.h" />
     <ClInclude Include="MurMur3.h" />
     <ClInclude Include="SparseSet.h" />
